@@ -1,38 +1,50 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  cars,
+  type Car,
+  type InsertCar,
+  type UpdateCarRequest
+} from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Car operations
+  getCars(userId: string): Promise<Car[]>;
+  getCar(id: number): Promise<Car | undefined>;
+  createCar(car: InsertCar): Promise<Car>;
+  updateCar(id: number, updates: UpdateCarRequest): Promise<Car>;
+  deleteCar(id: number): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getCars(userId: string): Promise<Car[]> {
+    return await db.select()
+      .from(cars)
+      .where(eq(cars.userId, userId))
+      .orderBy(desc(cars.createdAt));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getCar(id: number): Promise<Car | undefined> {
+    const [car] = await db.select().from(cars).where(eq(cars.id, id));
+    return car;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createCar(insertCar: InsertCar): Promise<Car> {
+    const [car] = await db.insert(cars).values(insertCar).returning();
+    return car;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateCar(id: number, updates: UpdateCarRequest): Promise<Car> {
+    const [updated] = await db.update(cars)
+      .set(updates)
+      .where(eq(cars.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCar(id: number): Promise<void> {
+    await db.delete(cars).where(eq(cars.id, id));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
