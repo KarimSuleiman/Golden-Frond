@@ -8,38 +8,34 @@
   --font-body: 'Manrope', sans-serif;
   --font-display: 'Playfair Display', serif;
 
-  /* Golden Palm Luxury Palette - Light Mode (Default but dark preferred for luxury) */
-  /* We will default to a dark-leaning theme even in "light" mode variables for consistency, 
-     or implement a true dark mode. Given the prompt, a dark luxury theme is best. 
-     So I will map variables to Dark Luxury colors directly. */
+  /* Light Golden Theme - السعفة الذهبية */
+  --background: 45 30% 97%;        /* Warm off-white */
+  --foreground: 20 15% 15%;        /* Dark brown/black text */
 
-  --background: 240 10% 4%;       /* #09090b - Very dark */
-  --foreground: 0 0% 98%;         /* #fafafa */
+  --card: 0 0% 100%;               /* Pure white cards */
+  --card-foreground: 20 15% 15%;
 
-  --card: 240 10% 7%;             /* #101012 */
-  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 15% 15%;
 
-  --popover: 240 10% 4%;
-  --popover-foreground: 0 0% 98%;
+  --primary: 46 80% 50%;           /* Golden yellow #D4A017 */
+  --primary-foreground: 20 15% 10%;
 
-  --primary: 46 70% 55%;          /* #DFC54C - Metallic Gold */
-  --primary-foreground: 240 10% 4%;
+  --secondary: 45 20% 92%;         /* Light cream */
+  --secondary-foreground: 20 15% 25%;
 
-  --secondary: 240 6% 15%;        /* #27272a */
-  --secondary-foreground: 0 0% 98%;
+  --muted: 45 15% 90%;
+  --muted-foreground: 20 10% 45%;
 
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 65%;
+  --accent: 46 80% 50%;
+  --accent-foreground: 20 15% 10%;
 
-  --accent: 46 70% 55%;
-  --accent-foreground: 240 10% 4%;
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
 
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 0% 98%;
-
-  --border: 240 4% 16%;
-  --input: 240 4% 16%;
-  --ring: 46 70% 55%;
+  --border: 45 20% 85%;
+  --input: 45 20% 85%;
+  --ring: 46 80% 50%;
 
   --radius: 0.75rem;
 }
@@ -89,5 +85,5 @@
 }
 
 .gold-gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#DFC54C] via-[#FBF4B6] to-[#DFC54C];
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#c9a227] via-[#d4a017] to-[#c9a227];
 }

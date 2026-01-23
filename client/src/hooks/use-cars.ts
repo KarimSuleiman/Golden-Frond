@@ -52,13 +52,13 @@ export function useCreateCar() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.cars.list.path] });
       toast({
-        title: "Success",
-        description: "Car added successfully to the inventory.",
+        title: "تمت الإضافة بنجاح",
+        description: "تم إضافة السيارة للمخزون بنجاح.",
       });
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: "خطأ",
         description: error.message,
         variant: "destructive",
       });
@@ -82,14 +82,14 @@ export function useDeleteCar() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.cars.list.path] });
       toast({
-        title: "Deleted",
-        description: "Car removed from the system.",
+        title: "تم الحذف",
+        description: "تم حذف السيارة من النظام.",
       });
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Could not delete the car. Please try again.",
+        title: "خطأ",
+        description: "لم نتمكن من حذف السيارة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     }

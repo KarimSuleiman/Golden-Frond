@@ -14,12 +14,13 @@ export const cars = pgTable("cars", {
   make: text("make").notNull(),
   model: text("model").notNull(),
   year: integer("year").notNull(),
-  vin: text("vin").notNull(), // Chassis Number
-  color: text("color").notNull(),
-  imageUrl: text("image_url").notNull(),
-  status: text("status").notNull().default("Purchased"), // Purchased, Reserved, In Transit
-  price: integer("price"), // Optional, maybe they want to see the value
-  details: text("details"), // Extra notes
+  vin: text("vin").notNull(), // Chassis Number - رقم الشاصي
+  color: text("color").notNull(), // لون السيارة
+  imageUrl: text("image_url").notNull(), // الصورة الرئيسية
+  images: text("images").array(), // صور إضافية للسيارة
+  status: text("status").notNull().default("Purchased"), // Purchased, Reserved, In Transit - حالة السيارة
+  price: integer("price"), // السعر (اختياري)
+  details: text("details"), // تفاصيل إضافية
   containerNumber: text("container_number"), // رقم الكونتينر
   bookingNumber: text("booking_number"), // رقم الحجز
   trackingUrl: text("tracking_url"), // رابط التتبع

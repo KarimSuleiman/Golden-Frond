@@ -11,9 +11,15 @@ interface CarCardProps {
 
 export function CarCard({ car, index = 0 }: CarCardProps) {
   const statusColors: Record<string, string> = {
-    "Purchased": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-    "Reserved": "bg-primary/10 text-primary border-primary/20",
-    "In Transit": "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    "Purchased": "bg-emerald-100 text-emerald-700 border-emerald-200",
+    "Reserved": "bg-amber-100 text-amber-700 border-amber-200",
+    "In Transit": "bg-blue-100 text-blue-700 border-blue-200",
+  };
+
+  const statusLabels: Record<string, string> = {
+    "Purchased": "تم الشراء",
+    "Reserved": "محجوز",
+    "In Transit": "قيد الشحن",
   };
 
   return (
@@ -21,22 +27,22 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group relative bg-card border border-white/5 rounded-2xl overflow-hidden hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 flex flex-col h-full"
+      className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl flex flex-col h-full"
     >
       {/* Image Section */}
-      <div className="relative aspect-[16/9] overflow-hidden bg-black/50">
+      <div className="relative aspect-[16/9] overflow-hidden bg-secondary">
         <img
           src={car.imageUrl}
           alt={`${car.make} ${car.model}`}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-transparent to-transparent opacity-80" />
         
         {/* Status Badge floating top right */}
         <Badge 
-          className={`absolute top-4 right-4 backdrop-blur-md border ${statusColors[car.status] || "bg-white/10 text-white"}`}
+          className={`absolute top-4 right-4 border shadow-sm ${statusColors[car.status] || "bg-gray-100 text-gray-700"}`}
         >
-          {car.status}
+          {statusLabels[car.status] || car.status}
         </Badge>
       </div>
 
@@ -48,23 +54,23 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
           </h3>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            {car.year} Edition
+            موديل {car.year}
           </p>
         </div>
 
         {/* Specs Grid */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
             <Palette className="w-4 h-4 text-primary" />
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">Color</span>
+              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">اللون</span>
               <span className="text-sm font-medium">{car.color}</span>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
             <Fingerprint className="w-4 h-4 text-primary" />
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">VIN (Chassis)</span>
+              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">رقم الشاصي</span>
               <span className="text-sm font-medium font-mono truncate max-w-[100px]" title={car.vin}>{car.vin}</span>
             </div>
           </div>
@@ -73,25 +79,25 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
         {/* Shipping/Tracking Info - Only show for In Transit cars */}
         {car.status === "In Transit" && (car.containerNumber || car.bookingNumber) && (
           <>
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent my-3" />
-            <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 space-y-3">
-              <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent my-3" />
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-center gap-2 text-blue-600 text-xs font-semibold uppercase tracking-wider">
                 <Ship className="w-4 h-4" />
-                <span>Shipping Information</span>
+                <span>معلومات الشحن</span>
               </div>
               
               <div className="grid grid-cols-1 gap-2 text-sm">
                 {car.containerNumber && (
                   <div className="flex items-center gap-2">
                     <Package className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">Container:</span>
+                    <span className="text-muted-foreground">رقم الكونتينر:</span>
                     <span className="font-mono font-medium text-foreground">{car.containerNumber}</span>
                   </div>
                 )}
                 {car.bookingNumber && (
                   <div className="flex items-center gap-2">
                     <Fingerprint className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">Booking:</span>
+                    <span className="text-muted-foreground">رقم الحجز:</span>
                     <span className="font-mono font-medium text-foreground">{car.bookingNumber}</span>
                   </div>
                 )}
@@ -102,7 +108,7 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
                   href={car.trackingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 rounded-lg text-sm font-medium transition-colors w-full justify-center"
+                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors w-full justify-center"
                   data-testid={`link-track-car-${car.id}`}
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -114,7 +120,7 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
         )}
 
         {/* Divider */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-2" />
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent my-2" />
 
         <div className="mt-auto pt-4 flex items-center justify-between text-xs text-muted-foreground font-mono">
           <span>ID: #{car.id.toString().padStart(4, '0')}</span>

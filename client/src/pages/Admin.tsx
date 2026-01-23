@@ -32,14 +32,14 @@ export default function Admin() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/cars"] });
       toast({
-        title: "Demo Data Loaded",
-        description: `Successfully loaded ${data.cars?.length || 0} demo vehicles with tracking info.`,
+        title: "تم تحميل البيانات التجريبية",
+        description: `تم تحميل ${data.cars?.length || 0} سيارات تجريبية بنجاح مع معلومات التتبع.`,
       });
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to load demo data. Please try again.",
+        title: "خطأ",
+        description: "فشل في تحميل البيانات التجريبية. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     },
@@ -93,21 +93,21 @@ export default function Admin() {
       
       <div className="container mx-auto px-4 py-8">
         <Link href="/dashboard">
-          <Button variant="ghost" className="mb-6 pl-0 hover:pl-2 transition-all text-muted-foreground hover:text-white hover:bg-transparent">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+          <Button variant="ghost" className="mb-6 pl-0 hover:pl-2 transition-all text-muted-foreground hover:text-foreground hover:bg-transparent">
+            <ArrowLeft className="mr-2 h-4 w-4" /> العودة للسيارات
           </Button>
         </Link>
 
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Demo Data Section */}
-          <Card className="bg-blue-500/5 border-blue-500/20">
+          <Card className="bg-blue-50 border-blue-200">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-display flex items-center gap-2">
-                <Database className="w-5 h-5 text-blue-400" />
-                Load Demo Data
+                <Database className="w-5 h-5 text-blue-600" />
+                تحميل بيانات تجريبية
               </CardTitle>
               <CardDescription>
-                Load sample cars with shipping & tracking information to test the system
+                تحميل سيارات تجريبية مع معلومات الشحن والتتبع لاختبار النظام
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -119,24 +119,24 @@ export default function Admin() {
               >
                 {reseedMutation.isPending ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> جاري التحميل...
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="mr-2 h-4 w-4" /> Load Demo Cars with Tracking
+                    <RefreshCw className="mr-2 h-4 w-4" /> تحميل سيارات تجريبية مع معلومات التتبع
                   </>
                 )}
               </Button>
               <p className="text-xs text-muted-foreground mt-3 text-center">
-                This will replace existing cars with demo data including container numbers, booking numbers, and tracking links.
+                سيتم استبدال السيارات الحالية ببيانات تجريبية تتضمن أرقام الكونتينر والحجز وروابط التتبع.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-white/10 shadow-xl shadow-black/40">
+          <Card className="bg-card border-border shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl font-display">Add Vehicle to Inventory</CardTitle>
-              <CardDescription>Manually add a car to the database (Admin/Demo Mode)</CardDescription>
+              <CardTitle className="text-2xl font-display">إضافة سيارة جديدة</CardTitle>
+              <CardDescription>إضافة سيارة يدوياً لقاعدة البيانات (وضع الأدمن)</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -148,9 +148,9 @@ export default function Admin() {
                       name="make"
                       render={({ field }) => (
                         <FormItem>
-                          <Label>Make</Label>
+                          <Label>الشركة المصنعة</Label>
                           <FormControl>
-                            <Input placeholder="Mercedes-Benz" className="bg-background/50 border-white/10" {...field} />
+                            <Input placeholder="Toyota" className="bg-secondary border-border" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -161,9 +161,9 @@ export default function Admin() {
                       name="model"
                       render={({ field }) => (
                         <FormItem>
-                          <Label>Model</Label>
+                          <Label>الموديل</Label>
                           <FormControl>
-                            <Input placeholder="S-Class" className="bg-background/50 border-white/10" {...field} />
+                            <Input placeholder="Land Cruiser" className="bg-secondary border-border" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -177,11 +177,11 @@ export default function Admin() {
                       name="year"
                       render={({ field }) => (
                         <FormItem>
-                          <Label>Year</Label>
+                          <Label>سنة الصنع</Label>
                           <FormControl>
                             <Input 
                               type="number" 
-                              className="bg-background/50 border-white/10" 
+                              className="bg-secondary border-border" 
                               {...field}
                               onChange={e => field.onChange(parseInt(e.target.value))}
                             />
@@ -195,9 +195,9 @@ export default function Admin() {
                       name="color"
                       render={({ field }) => (
                         <FormItem>
-                          <Label>Color</Label>
+                          <Label>اللون</Label>
                           <FormControl>
-                            <Input placeholder="Obsidian Black" className="bg-background/50 border-white/10" {...field} />
+                            <Input placeholder="أبيض لؤلؤي" className="bg-secondary border-border" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -210,9 +210,9 @@ export default function Admin() {
                     name="vin"
                     render={({ field }) => (
                       <FormItem>
-                        <Label>VIN (Chassis Number)</Label>
+                        <Label>رقم الشاصي (VIN)</Label>
                         <FormControl>
-                          <Input placeholder="W1K..." className="bg-background/50 border-white/10 font-mono" {...field} />
+                          <Input placeholder="JTMHT05J..." className="bg-secondary border-border font-mono" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -225,17 +225,17 @@ export default function Admin() {
                       name="status"
                       render={({ field }) => (
                         <FormItem>
-                          <Label>Status</Label>
+                          <Label>حالة السيارة</Label>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="bg-background/50 border-white/10">
-                                <SelectValue placeholder="Select status" />
+                              <SelectTrigger className="bg-secondary border-border">
+                                <SelectValue placeholder="اختر الحالة" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="Purchased">Purchased</SelectItem>
-                              <SelectItem value="Reserved">Reserved</SelectItem>
-                              <SelectItem value="In Transit">In Transit</SelectItem>
+                              <SelectItem value="Purchased">تم الشراء</SelectItem>
+                              <SelectItem value="Reserved">محجوز</SelectItem>
+                              <SelectItem value="In Transit">قيد الشحن</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -254,28 +254,29 @@ export default function Admin() {
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <Label>Image URL</Label>
+                        <Label>رابط الصورة</Label>
                         <FormControl>
-                          <Input placeholder="https://..." className="bg-background/50 border-white/10" {...field} />
+                          <Input placeholder="https://..." className="bg-secondary border-border" {...field} />
                         </FormControl>
                         <FormMessage />
-                        <p className="text-xs text-muted-foreground">Tip: Use Unsplash URL for demo</p>
+                        <p className="text-xs text-muted-foreground">نصيحة: استخدم رابط من Unsplash للتجربة</p>
                       </FormItem>
                     )}
                   />
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90"
+                    className="w-full bg-primary text-primary-foreground font-bold"
                     disabled={createCarMutation.isPending}
+                    data-testid="button-add-car"
                   >
                     {createCarMutation.isPending ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> جاري الإضافة...
                       </>
                     ) : (
                       <>
-                        <Plus className="mr-2 h-4 w-4" /> Add to Inventory
+                        <Plus className="mr-2 h-4 w-4" /> إضافة للمخزون
                       </>
                     )}
                   </Button>
