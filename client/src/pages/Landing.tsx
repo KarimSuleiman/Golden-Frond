@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, ShieldCheck, Gem, Gauge } from "lucide-react";
+import { ArrowRight, ShieldCheck, Gem, Gauge, MapPin, Phone, Mail, Calendar, Facebook, Clock } from "lucide-react";
 import logoImage from "@assets/image_1769171762465.png";
 
 export default function Landing() {
@@ -64,8 +64,8 @@ export default function Landing() {
 
               <motion.div variants={itemVariants} className="grid grid-cols-3 gap-6 pt-8 border-t border-border">
                 <div>
-                  <h4 className="text-2xl font-bold text-foreground">+250</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">سيارة فاخرة</p>
+                  <h4 className="text-2xl font-bold text-foreground">+13</h4>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">سنة خبرة</p>
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold text-foreground">100%</h4>
@@ -104,9 +104,89 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* About Section */}
+      <section className="py-20 bg-secondary border-t border-border">
+        <div className="container px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">من نحن</h2>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">السعفة الذهبية</strong> هي شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست في <strong className="text-primary">29 أكتوبر 2011</strong>، ولدينا أكثر من 13 عاماً من الخبرة في توفير أفضل السيارات لعملائنا الكرام.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                نحن متخصصون في استيراد السيارات من أمريكا وأوروبا وتوفير خدمات التتبع والشحن لعملائنا، مع ضمان الجودة والشفافية في كل خطوة.
+              </p>
+              
+              <div className="grid sm:grid-cols-2 gap-4 pt-4">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
+                  <Calendar className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">تأسست في</p>
+                    <p className="font-bold text-foreground">29 أكتوبر 2011</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
+                  <Clock className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">سنوات الخبرة</p>
+                    <p className="font-bold text-foreground">+13 سنة</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="rounded-2xl overflow-hidden border border-border shadow-xl">
+                <img 
+                  src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop" 
+                  alt="معرض السيارات" 
+                  className="w-full h-80 object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl">
+                <p className="text-3xl font-bold">+13</p>
+                <p className="text-sm">سنة خبرة</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Strip */}
       <section className="py-20 bg-card border-t border-border">
         <div className="container px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">خدماتنا</h2>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
+          </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
               icon={ShieldCheck}
@@ -127,11 +207,115 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Contact Section */}
+      <section className="py-20 bg-secondary border-t border-border">
+        <div className="container px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">تواصل معنا</h2>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
+            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+              نحن هنا لمساعدتك. تواصل معنا عبر أي من الوسائل التالية
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <motion.a
+              href="tel:0798860078"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
+              data-testid="link-phone"
+            >
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Phone className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">الهاتف</h3>
+              <p className="text-muted-foreground text-center" dir="ltr">0798860078</p>
+            </motion.a>
+
+            <motion.a
+              href="mailto:amairehkareem@gmail.com"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
+              data-testid="link-email"
+            >
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Mail className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">البريد الإلكتروني</h3>
+              <p className="text-muted-foreground text-center text-sm" dir="ltr">amairehkareem@gmail.com</p>
+            </motion.a>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-all group"
+            >
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <MapPin className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">الموقع</h3>
+              <p className="text-muted-foreground text-center text-sm">الزرقاء - المنطقة الحرة<br />شارع ١٥ شمال</p>
+            </motion.div>
+
+            <motion.a
+              href="https://www.facebook.com/golden.frond.gallery"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
+              data-testid="link-facebook"
+            >
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Facebook className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">فيسبوك</h3>
+              <p className="text-muted-foreground text-center text-sm">golden.frond.gallery</p>
+            </motion.a>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="py-8 border-t border-border bg-card text-center">
-        <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} السعفة الذهبية. جميع الحقوق محفوظة.
-        </p>
+      <footer className="py-8 border-t border-border bg-card">
+        <div className="container px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img src={logoImage} alt="السعفة الذهبية" className="h-10 w-auto" />
+              <span className="font-display font-bold text-foreground">السعفة الذهبية</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.
+            </p>
+            <div className="flex items-center gap-4">
+              <a href="tel:0798860078" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-phone">
+                <Phone className="w-5 h-5" />
+              </a>
+              <a href="mailto:amairehkareem@gmail.com" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-email">
+                <Mail className="w-5 h-5" />
+              </a>
+              <a href="https://www.facebook.com/golden.frond.gallery" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-facebook">
+                <Facebook className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );
