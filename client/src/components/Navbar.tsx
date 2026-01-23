@@ -49,13 +49,14 @@ export function Navbar() {
                 variant="ghost" 
                 onClick={() => logout()}
                 className="text-foreground/70 hover:text-destructive"
+                data-testid="button-logout"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 خروج
               </Button>
             ) : (
-              <a href="/api/login">
-                <Button className="bg-primary text-primary-foreground font-bold shadow-md">
+              <a href="/login">
+                <Button className="bg-primary text-primary-foreground font-bold shadow-md" data-testid="button-login">
                   تسجيل دخول
                 </Button>
               </a>
@@ -104,8 +105,8 @@ export function Navbar() {
                     خروج
                   </Button>
                 ) : (
-                  <a href="/api/login" className="block w-full">
-                    <Button className="w-full bg-primary text-primary-foreground font-bold">
+                  <a href="/login" className="block w-full">
+                    <Button className="w-full bg-primary text-primary-foreground font-bold" data-testid="button-login-mobile">
                       تسجيل دخول
                     </Button>
                   </a>

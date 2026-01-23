@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { authStorage } from "./replit_integrations/auth/storage";
+import bcrypt from "bcryptjs";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -13,6 +14,67 @@ export async function registerRoutes(
   // Setup Authentication
   await setupAuth(app);
   registerAuthRoutes(app);
+
+  // Custom Email/Password Login Route
+  app.post("/api/auth/login", async (req: any, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
+      }
+
+      const user = await authStorage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(401).json({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
+      }
+
+      if (!user.password) {
+        return res.status(401).json({ message: "هذا الحساب غير مفعل. يرجى التواصل مع المسؤول" });
+      }
+
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
+      }
+
+      // Set session user (compatible with existing isAuthenticated middleware)
+      req.session.user = {
+        claims: {
+          sub: user.id,
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+        }
+      };
+
+      res.json({ 
+        message: "تم تسجيل الدخول بنجاح",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        }
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء تسجيل الدخول" });
+    }
+  });
+
+  // Custom Logout Route
+  app.post("/api/auth/logout", (req: any, res) => {
+    req.session.destroy((err: any) => {
+      if (err) {
+        return res.status(500).json({ message: "حدث خطأ أثناء تسجيل الخروج" });
+      }
+      res.clearCookie("connect.sid");
+      res.json({ message: "تم تسجيل الخروج بنجاح" });
+    });
+  });
 
   // === Car Routes ===
 

@@ -55,9 +55,9 @@ export default function Landing() {
               </motion.p>
 
               <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
-                <a href="/api/login">
-                  <Button size="lg" className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all">
-                    الدخول لحسابي <ArrowRight className="mr-2 w-5 h-5" />
+                <a href="/login">
+                  <Button size="lg" className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all" data-testid="button-login-hero">
+                    تسجيل الدخول <ArrowRight className="mr-2 w-5 h-5" />
                   </Button>
                 </a>
               </motion.div>

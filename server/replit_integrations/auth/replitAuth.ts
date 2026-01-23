@@ -130,10 +130,17 @@ export async function setupAuth(app: Express) {
   });
 }
 
-export const isAuthenticated: RequestHandler = async (req, res, next) => {
+export const isAuthenticated: RequestHandler = async (req: any, res, next) => {
+  // Check for custom session login first
+  if (req.session?.user?.claims?.sub) {
+    req.user = req.session.user;
+    return next();
+  }
+
+  // Check for OIDC passport login
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !user?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
