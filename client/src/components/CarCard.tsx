@@ -1,7 +1,8 @@
 import { Car } from "@shared/schema";
 import { motion } from "framer-motion";
-import { CarFront, Calendar, Palette, Fingerprint } from "lucide-react";
+import { CarFront, Calendar, Palette, Fingerprint, Ship, Package, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface CarCardProps {
   car: Car;
@@ -68,6 +69,49 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
             </div>
           </div>
         </div>
+
+        {/* Shipping/Tracking Info - Only show for In Transit cars */}
+        {car.status === "In Transit" && (car.containerNumber || car.bookingNumber) && (
+          <>
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent my-3" />
+            <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 space-y-3">
+              <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+                <Ship className="w-4 h-4" />
+                <span>Shipping Information</span>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-2 text-sm">
+                {car.containerNumber && (
+                  <div className="flex items-center gap-2">
+                    <Package className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Container:</span>
+                    <span className="font-mono font-medium text-foreground">{car.containerNumber}</span>
+                  </div>
+                )}
+                {car.bookingNumber && (
+                  <div className="flex items-center gap-2">
+                    <Fingerprint className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Booking:</span>
+                    <span className="font-mono font-medium text-foreground">{car.bookingNumber}</span>
+                  </div>
+                )}
+              </div>
+
+              {car.trackingUrl && (
+                <a
+                  href={car.trackingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 rounded-lg text-sm font-medium transition-colors w-full justify-center"
+                  data-testid={`link-track-car-${car.id}`}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  تتبع الشحنة
+                </a>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Divider */}
         <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-2" />

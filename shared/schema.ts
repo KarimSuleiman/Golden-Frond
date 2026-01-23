@@ -20,6 +20,9 @@ export const cars = pgTable("cars", {
   status: text("status").notNull().default("Purchased"), // Purchased, Reserved, In Transit
   price: integer("price"), // Optional, maybe they want to see the value
   details: text("details"), // Extra notes
+  containerNumber: text("container_number"), // رقم الكونتينر
+  bookingNumber: text("booking_number"), // رقم الحجز
+  trackingUrl: text("tracking_url"), // رابط التتبع
   createdAt: timestamp("created_at").defaultNow(),
 });
 

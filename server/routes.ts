@@ -126,7 +126,10 @@ export async function registerRoutes(
         status: "In Transit",
         price: 85000,
         imageUrl: "https://images.unsplash.com/photo-1594502184342-2e12f877aa71?auto=format&fit=crop&q=80&w=1000",
-        details: "V6 Twin Turbo, GR Sport Edition"
+        details: "V6 Twin Turbo, GR Sport Edition",
+        containerNumber: "MSCU7654321",
+        bookingNumber: "BKG-2024-001234",
+        trackingUrl: "https://www.searates.com/container/tracking/"
       },
       {
         userId,
@@ -138,7 +141,10 @@ export async function registerRoutes(
         status: "Purchased",
         price: 120000,
         imageUrl: "https://images.unsplash.com/photo-1678201588691-62057c323a7e?auto=format&fit=crop&q=80&w=1000",
-        details: "VIP Package, 4-Seater"
+        details: "VIP Package, 4-Seater",
+        containerNumber: null,
+        bookingNumber: null,
+        trackingUrl: null
       },
       {
         userId,
@@ -147,10 +153,28 @@ export async function registerRoutes(
         year: 2025,
         vin: "WDB4632761X123456",
         color: "Matte Black",
-        status: "Reserved",
+        status: "In Transit",
         price: 200000,
         imageUrl: "https://images.unsplash.com/photo-1520031441872-265e4e9d96b5?auto=format&fit=crop&q=80&w=1000",
-        details: "Night Package, Red Interior"
+        details: "Night Package, Red Interior",
+        containerNumber: "HLBU9876543",
+        bookingNumber: "BKG-2024-005678",
+        trackingUrl: "https://www.hapag-lloyd.com/en/online-business/track/track-by-container-solution.html"
+      },
+      {
+        userId,
+        make: "Nissan",
+        model: "Patrol",
+        year: 2024,
+        vin: "JN1TBNT30Z0123456",
+        color: "Titanium Grey",
+        status: "In Transit",
+        price: 75000,
+        imageUrl: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80&w=1000",
+        details: "Platinum Edition, V8",
+        containerNumber: "MAEU1234567",
+        bookingNumber: "BKG-2024-009012",
+        trackingUrl: "https://www.maersk.com/tracking/"
       }
     ];
 
@@ -160,6 +184,88 @@ export async function registerRoutes(
     }
 
     res.json({ message: "Seeded demo cars successfully", cars: createdCars });
+  });
+
+  // === Force Reseed Route (Deletes existing and reseeds) ===
+  app.post("/api/reseed", isAuthenticated, async (req: any, res) => {
+    const userId = req.user.claims.sub;
+    
+    // Delete existing cars for this user
+    const existing = await storage.getCars(userId);
+    for (const car of existing) {
+      await storage.deleteCar(car.id);
+    }
+
+    // Reseed with new data
+    const demoCars = [
+      {
+        userId,
+        make: "Toyota",
+        model: "Land Cruiser",
+        year: 2024,
+        vin: "JTMHT05J123456789",
+        color: "Pearl White",
+        status: "In Transit",
+        price: 85000,
+        imageUrl: "https://images.unsplash.com/photo-1594502184342-2e12f877aa71?auto=format&fit=crop&q=80&w=1000",
+        details: "V6 Twin Turbo, GR Sport Edition",
+        containerNumber: "MSCU7654321",
+        bookingNumber: "BKG-2024-001234",
+        trackingUrl: "https://www.searates.com/container/tracking/"
+      },
+      {
+        userId,
+        make: "Lexus",
+        model: "LX 600",
+        year: 2023,
+        vin: "JTJHT00J987654321",
+        color: "Black",
+        status: "Purchased",
+        price: 120000,
+        imageUrl: "https://images.unsplash.com/photo-1678201588691-62057c323a7e?auto=format&fit=crop&q=80&w=1000",
+        details: "VIP Package, 4-Seater",
+        containerNumber: null,
+        bookingNumber: null,
+        trackingUrl: null
+      },
+      {
+        userId,
+        make: "Mercedes-Benz",
+        model: "G 63 AMG",
+        year: 2025,
+        vin: "WDB4632761X123456",
+        color: "Matte Black",
+        status: "In Transit",
+        price: 200000,
+        imageUrl: "https://images.unsplash.com/photo-1520031441872-265e4e9d96b5?auto=format&fit=crop&q=80&w=1000",
+        details: "Night Package, Red Interior",
+        containerNumber: "HLBU9876543",
+        bookingNumber: "BKG-2024-005678",
+        trackingUrl: "https://www.hapag-lloyd.com/en/online-business/track/track-by-container-solution.html"
+      },
+      {
+        userId,
+        make: "Nissan",
+        model: "Patrol",
+        year: 2024,
+        vin: "JN1TBNT30Z0123456",
+        color: "Titanium Grey",
+        status: "In Transit",
+        price: 75000,
+        imageUrl: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80&w=1000",
+        details: "Platinum Edition, V8",
+        containerNumber: "MAEU1234567",
+        bookingNumber: "BKG-2024-009012",
+        trackingUrl: "https://www.maersk.com/tracking/"
+      }
+    ];
+
+    const createdCars = [];
+    for (const car of demoCars) {
+      createdCars.push(await storage.createCar(car));
+    }
+
+    res.json({ message: "Reseeded demo cars successfully", cars: createdCars });
   });
 
   return httpServer;
