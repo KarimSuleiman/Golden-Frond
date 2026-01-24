@@ -122,7 +122,7 @@ export default function Landing() {
                       className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
                       data-testid="button-login-hero"
                     >
-                      {t("landing.myCars")}{" "}
+                      {t("nav.login")}{" "}
                       <ArrowIcon
                         className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
                       />
