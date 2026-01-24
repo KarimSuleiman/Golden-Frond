@@ -256,6 +256,33 @@ export default function CarDetail() {
                 )}
               </div>
             )}
+
+            {car.customUrl && (
+              <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 space-y-4">
+                <div className="flex items-center gap-2 text-primary font-semibold">
+                  <ExternalLink className="w-5 h-5" />
+                  <span>{t("carDetail.customUrl")}</span>
+                </div>
+                
+                {car.customUrlReason && (
+                  <div className="p-3 bg-card rounded-lg">
+                    <span className="text-xs text-muted-foreground block mb-1">{t("carDetail.customUrlReason")}</span>
+                    <p className="text-foreground" data-testid="text-custom-url-reason">{car.customUrlReason}</p>
+                  </div>
+                )}
+
+                <a
+                  href={car.customUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium transition-colors w-full justify-center"
+                  data-testid="link-custom-url"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  {t("carDetail.openLink")}
+                </a>
+              </div>
+            )}
           </motion.div>
         </div>
       </main>

@@ -24,6 +24,8 @@ export const cars = pgTable("cars", {
   containerNumber: text("container_number"), // رقم الكونتينر
   bookingNumber: text("booking_number"), // رقم الحجز
   trackingUrl: text("tracking_url"), // رابط التتبع
+  customUrl: text("custom_url"), // رابط مخصص اختياري
+  customUrlReason: text("custom_url_reason"), // سبب إضافة الرابط المخصص
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -45,6 +45,8 @@ export default function Admin() {
     containerNumber: "",
     bookingNumber: "",
     trackingUrl: "",
+    customUrl: "",
+    customUrlReason: "",
   });
 
   const { data: users = [], isLoading: loadingUsers } = useQuery<AdminUser[]>({
@@ -127,6 +129,8 @@ export default function Admin() {
       containerNumber: "",
       bookingNumber: "",
       trackingUrl: "",
+      customUrl: "",
+      customUrlReason: "",
     });
     setSelectedUserId("");
     setImageFile(null);
@@ -217,6 +221,8 @@ export default function Admin() {
       containerNumber: carForm.containerNumber || null,
       bookingNumber: carForm.bookingNumber || null,
       trackingUrl: carForm.trackingUrl || null,
+      customUrl: carForm.customUrl || null,
+      customUrlReason: carForm.customUrlReason || null,
       details: carForm.details || null,
     };
 
@@ -241,6 +247,8 @@ export default function Admin() {
       containerNumber: car.containerNumber || "",
       bookingNumber: car.bookingNumber || "",
       trackingUrl: car.trackingUrl || "",
+      customUrl: car.customUrl || "",
+      customUrlReason: car.customUrlReason || "",
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
@@ -612,6 +620,27 @@ export default function Admin() {
                       placeholder="https://..."
                       dir="ltr"
                       data-testid="input-tracking"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>رابط مخصص (اختياري)</Label>
+                    <Input
+                      value={carForm.customUrl}
+                      onChange={(e) => setCarForm({ ...carForm, customUrl: e.target.value })}
+                      placeholder="https://..."
+                      dir="ltr"
+                      data-testid="input-custom-url"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>سبب إضافة الرابط</Label>
+                    <Textarea
+                      value={carForm.customUrlReason}
+                      onChange={(e) => setCarForm({ ...carForm, customUrlReason: e.target.value })}
+                      placeholder="اشرح لماذا تمت إضافة هذا الرابط..."
+                      data-testid="input-custom-url-reason"
                     />
                   </div>
 
