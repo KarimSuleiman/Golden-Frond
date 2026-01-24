@@ -201,6 +201,40 @@ const translations: Translations = {
   "admin.filter.clear": { ar: "مسح الفلاتر", en: "Clear Filters" },
   "admin.filter.results": { ar: "نتيجة", en: "results" },
   
+  // Forgot Password
+  "forgot.title": { ar: "نسيت كلمة المرور", en: "Forgot Password" },
+  "forgot.desc": { ar: "أدخل بريدك الإلكتروني لاستلام رمز إعادة التعيين", en: "Enter your email to receive a reset code" },
+  "forgot.email": { ar: "البريد الإلكتروني", en: "Email" },
+  "forgot.emailPlaceholder": { ar: "example@email.com", en: "example@email.com" },
+  "forgot.submit": { ar: "إرسال رمز التعيين", en: "Send Reset Code" },
+  "forgot.sending": { ar: "جاري الإرسال...", en: "Sending..." },
+  "forgot.backToLogin": { ar: "العودة لتسجيل الدخول", en: "Back to Login" },
+  "forgot.tokenSent": { ar: "تم إرسال رمز إعادة التعيين", en: "Reset Code Sent" },
+  "forgot.tokenSentDesc": { ar: "تم إنشاء رمز إعادة التعيين. يرجى استخدامه لتغيير كلمة المرور.", en: "A reset code has been generated. Please use it to change your password." },
+  "forgot.yourCode": { ar: "رمز التعيين الخاص بك", en: "Your Reset Code" },
+  "forgot.codeExpiry": { ar: "صالح لمدة ساعة واحدة", en: "Valid for 1 hour" },
+
+  // Reset Password
+  "reset.title": { ar: "تغيير كلمة المرور", en: "Reset Password" },
+  "reset.desc": { ar: "أدخل رمز إعادة التعيين وكلمة المرور الجديدة", en: "Enter the reset code and your new password" },
+  "reset.code": { ar: "رمز إعادة التعيين", en: "Reset Code" },
+  "reset.codePlaceholder": { ar: "XXXXXX", en: "XXXXXX" },
+  "reset.newPassword": { ar: "كلمة المرور الجديدة", en: "New Password" },
+  "reset.newPasswordPlaceholder": { ar: "أدخل كلمة المرور الجديدة", en: "Enter new password" },
+  "reset.confirmPassword": { ar: "تأكيد كلمة المرور", en: "Confirm Password" },
+  "reset.confirmPlaceholder": { ar: "أعد إدخال كلمة المرور", en: "Re-enter password" },
+  "reset.submit": { ar: "تغيير كلمة المرور", en: "Change Password" },
+  "reset.changing": { ar: "جاري التغيير...", en: "Changing..." },
+  "reset.success": { ar: "تم تغيير كلمة المرور بنجاح", en: "Password changed successfully" },
+  "reset.successDesc": { ar: "يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة", en: "You can now login with your new password" },
+  "reset.passwordMismatch": { ar: "كلمات المرور غير متطابقة", en: "Passwords do not match" },
+  "reset.passwordTooShort": { ar: "كلمة المرور يجب أن تكون 6 أحرف على الأقل", en: "Password must be at least 6 characters" },
+
+  // Admin Password
+  "admin.changePassword": { ar: "تغيير كلمة المرور", en: "Change Password" },
+  "admin.newPassword": { ar: "كلمة المرور الجديدة", en: "New Password" },
+  "admin.passwordChanged": { ar: "تم تغيير كلمة المرور بنجاح", en: "Password changed successfully" },
+
   // Common
   "common.loading": { ar: "جاري التحميل...", en: "Loading..." },
   "common.error": { ar: "خطأ", en: "Error" },

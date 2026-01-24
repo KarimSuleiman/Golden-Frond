@@ -153,6 +153,16 @@ export default function Login() {
                 </>
               )}
             </Button>
+
+            <div className="text-center">
+              <a 
+                href="/forgot-password" 
+                className="text-sm text-primary hover:underline"
+                data-testid="link-forgot-password"
+              >
+                {t("forgot.title")}
+              </a>
+            </div>
           </form>
         </CardContent>
       </Card>

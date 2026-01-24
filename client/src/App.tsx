@@ -8,6 +8,7 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
+import ForgotPassword from "@/pages/ForgotPassword";
 import CarDetail from "@/pages/CarDetail";
 import NotFound from "@/pages/not-found";
 
@@ -16,6 +17,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/login" component={Login} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/car/:id" component={CarDetail} />
       <Route path="/admin" component={Admin} />
