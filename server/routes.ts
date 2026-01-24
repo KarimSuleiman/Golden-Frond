@@ -7,6 +7,7 @@ import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { authStorage } from "./replit_integrations/auth/storage";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -321,6 +322,113 @@ export async function registerRoutes(
       res.json({ isAdmin: user?.isAdmin === "true" });
     } catch (error) {
       res.status(500).json({ isAdmin: false });
+    }
+  });
+
+  // === Forgot Password Routes ===
+
+  // Request password reset - generates a token
+  app.post("/api/auth/forgot-password", async (req: any, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني" });
+      }
+
+      const user = await authStorage.getUserByEmail(email);
+      
+      if (!user) {
+        // Don't reveal if email exists for security
+        return res.json({ 
+          message: "إذا كان البريد الإلكتروني موجوداً، سيتم إرسال رمز إعادة التعيين",
+          success: true 
+        });
+      }
+
+      // Generate reset token (6 characters for easy input)
+      const resetToken = crypto.randomBytes(3).toString("hex").toUpperCase();
+      const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      await authStorage.setResetToken(user.id, resetToken, resetTokenExpiry);
+
+      // In production, you'd send an email here
+      // For this demo, we return the token (admin can also see it)
+      res.json({ 
+        message: "تم إنشاء رمز إعادة التعيين بنجاح",
+        success: true,
+        resetToken, // In production, remove this and send via email
+        expiresAt: resetTokenExpiry
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء إعادة تعيين كلمة المرور" });
+    }
+  });
+
+  // Reset password with token
+  app.post("/api/auth/reset-password", async (req: any, res) => {
+    try {
+      const { email, token, newPassword } = req.body;
+      
+      if (!email || !token || !newPassword) {
+        return res.status(400).json({ message: "يرجى إدخال جميع البيانات المطلوبة" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      }
+
+      const user = await authStorage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(400).json({ message: "البريد الإلكتروني غير موجود" });
+      }
+
+      // Verify token
+      if (!user.resetToken || user.resetToken !== token.toUpperCase()) {
+        return res.status(400).json({ message: "رمز إعادة التعيين غير صحيح" });
+      }
+
+      // Check token expiry
+      if (!user.resetTokenExpiry || new Date() > new Date(user.resetTokenExpiry)) {
+        return res.status(400).json({ message: "انتهت صلاحية رمز إعادة التعيين" });
+      }
+
+      // Hash new password and update
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await authStorage.updateUserPassword(user.id, hashedPassword);
+      await authStorage.clearResetToken(user.id);
+
+      res.json({ message: "تم تغيير كلمة المرور بنجاح", success: true });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء تغيير كلمة المرور" });
+    }
+  });
+
+  // Admin: Change user password directly
+  app.put("/api/admin/users/:id/password", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+
+      if (!newPassword || newPassword.length < 6) {
+        return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      }
+
+      const user = await authStorage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "المستخدم غير موجود" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await authStorage.updateUserPassword(id, hashedPassword);
+
+      res.json({ message: "تم تغيير كلمة المرور بنجاح", success: true });
+    } catch (error) {
+      console.error("Admin change password error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء تغيير كلمة المرور" });
     }
   });
 
