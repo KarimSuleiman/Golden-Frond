@@ -56,6 +56,17 @@ Preferred communication style: Simple, everyday language.
 - Protected routes use `isAuthenticated` middleware
 - Frontend hook `useAuth` manages auth state
 
+### Password Reset Flow
+- Users can request password reset via `/forgot-password` page
+- Reset tokens are 6-character alphanumeric codes stored in `resetToken` column
+- Tokens expire after 1 hour (stored in `resetTokenExpiry`)
+- In demo mode, tokens are displayed to user (in production, send via email)
+- Admin can change any user's password via Admin panel
+- API endpoints:
+  - `POST /api/auth/forgot-password` - Request reset token
+  - `POST /api/auth/reset-password` - Reset password with token
+  - `PUT /api/admin/users/:id/password` - Admin changes user password
+
 ### API Contract Pattern
 - Route definitions in `shared/routes.ts` with Zod schemas
 - Type-safe request/response handling
