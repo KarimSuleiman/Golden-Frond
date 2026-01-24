@@ -61,7 +61,7 @@ export function Navbar() {
           },
         ]
       : []),
-    ...(user && !isAdminCheck?.isAdmin
+    ...(!isAdminCheck?.isAdmin
       ? [
           {
             href: "/#about",
@@ -178,8 +178,8 @@ export function Navbar() {
             ),
           )}
 
-          {/* Contact Dropdown - Only for non-admin users */}
-          {user && !isAdminCheck?.isAdmin && (
+          {/* Contact Dropdown - For all non-admin users including guests */}
+          {!isAdminCheck?.isAdmin && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -323,8 +323,8 @@ export function Navbar() {
                 ),
               )}
 
-              {/* Contact Options Mobile - Only for non-admin users */}
-              {user && !isAdminCheck?.isAdmin && (
+              {/* Contact Options Mobile - For all non-admin users including guests */}
+              {!isAdminCheck?.isAdmin && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground px-3">
                     {t("nav.contactUs")}
