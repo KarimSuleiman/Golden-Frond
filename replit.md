@@ -78,7 +78,23 @@ Preferred communication style: Simple, everyday language.
 ### UI Components
 - **shadcn/ui**: Full component library with Radix UI primitives
 - **Lucide Icons**: Icon library
+- **react-icons/si**: Brand logos (WhatsApp, Facebook)
+- **Framer Motion**: Page transitions and scroll animations
 - **Google Fonts**: Manrope (body) and Playfair Display (display)
+
+### Landing Page Sections
+- Hero with brand logo and CTA buttons
+- Testimonials section with customer quotes and motion animations
+- About Us section with features grid (id="about" for scroll navigation)
+- Contact section with 5 contact methods (phone, WhatsApp, email, Facebook, location)
+- Footer with social links
+
+### Contact Methods
+- Phone: 0798860078
+- WhatsApp: +962798860078
+- Email: amairehkareem@gmail.com
+- Facebook: golden.frond.gallery
+- Location: Amman, Jordan
 
 ### Build & Development
 - **Vite**: Frontend bundling with HMR
