@@ -23,7 +23,7 @@ const translations: Translations = {
   "nav.logout.no": { ar: "لا، إلغاء", en: "No, Cancel" },
   
   // Landing - Hero
-  "landing.tagline": { ar: "السعفة الذهبية لتجارة السيارات", en: "Golden Palm Car Trading" },
+  "landing.tagline": { ar: "السعفة الذهبية لتجارة السيارات", en: "Golden Frond Car Trading" },
   "landing.title1": { ar: "تتبع سياراتك", en: "Track Your Cars" },
   "landing.title2": { ar: "بكل سهولة", en: "With Ease" },
   "landing.description": { 

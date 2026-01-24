@@ -90,8 +90,8 @@ Preferred communication style: Simple, everyday language.
 - Footer with social links
 
 ### Contact Methods
-- Phone: 0798860078
-- WhatsApp: +962798860078
+- Phone: 796796108
+- WhatsApp: +962796796108
 - Email: amairehkareem@gmail.com
 - Facebook: golden.frond.gallery
 - Location: Amman, Jordan
