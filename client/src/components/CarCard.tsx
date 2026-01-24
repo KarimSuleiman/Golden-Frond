@@ -1,6 +1,7 @@
 import { Car } from "@shared/schema";
+import { useLanguage } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { CarFront, Calendar, Palette, Fingerprint, Ship, Package, ExternalLink, ImageIcon } from "lucide-react";
+import { Calendar, Palette, Fingerprint, Ship, Package, ExternalLink, ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -11,17 +12,22 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, index = 0 }: CarCardProps) {
+  const { t, language } = useLanguage();
   const totalImages = 1 + (car.images?.length || 0);
+  
   const statusColors: Record<string, string> = {
     "Purchased": "bg-emerald-100 text-emerald-700 border-emerald-200",
     "Reserved": "bg-amber-100 text-amber-700 border-amber-200",
     "In Transit": "bg-blue-100 text-blue-700 border-blue-200",
   };
 
-  const statusLabels: Record<string, string> = {
-    "Purchased": "تم الشراء",
-    "Reserved": "محجوز",
-    "In Transit": "قيد الشحن",
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "Purchased": return t("car.status.purchased");
+      case "Reserved": return t("car.status.reserved");
+      case "In Transit": return t("car.status.inTransit");
+      default: return status;
+    }
   };
 
   return (
@@ -44,15 +50,15 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
         
         {/* Status Badge floating top right */}
         <Badge 
-          className={`absolute top-4 right-4 border shadow-sm ${statusColors[car.status] || "bg-gray-100 text-gray-700"}`}
+          className={`absolute top-4 ${language === "ar" ? "right-4" : "left-4"} border shadow-sm ${statusColors[car.status] || "bg-gray-100 text-gray-700"}`}
         >
-          {statusLabels[car.status] || car.status}
+          {getStatusLabel(car.status)}
         </Badge>
         
         {/* Image count badge */}
         {totalImages > 1 && (
-          <Badge className="absolute top-4 left-4 bg-black/60 text-white border-none">
-            <ImageIcon className="w-3 h-3 ml-1" />
+          <Badge className={`absolute top-4 ${language === "ar" ? "left-4" : "right-4"} bg-black/60 text-white border-none`}>
+            <ImageIcon className={`w-3 h-3 ${language === "ar" ? "ml-1" : "mr-1"}`} />
             {totalImages}
           </Badge>
         )}
@@ -66,7 +72,7 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
           </h3>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            موديل {car.year}
+            {t("car.model")} {car.year}
           </p>
         </div>
 
@@ -75,14 +81,18 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
           <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
             <Palette className="w-4 h-4 text-primary" />
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">اللون</span>
+              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">
+                {t("car.color")}
+              </span>
               <span className="text-sm font-medium">{car.color}</span>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
             <Fingerprint className="w-4 h-4 text-primary" />
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">رقم الشاصي</span>
+              <span className="text-[10px] uppercase text-muted-foreground tracking-wider">
+                {t("car.vin")}
+              </span>
               <span className="text-sm font-medium font-mono truncate max-w-[100px]" title={car.vin}>{car.vin}</span>
             </div>
           </div>
@@ -95,21 +105,21 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center gap-2 text-blue-600 text-xs font-semibold uppercase tracking-wider">
                 <Ship className="w-4 h-4" />
-                <span>معلومات الشحن</span>
+                <span>{t("car.shippingInfo")}</span>
               </div>
               
               <div className="grid grid-cols-1 gap-2 text-sm">
                 {car.containerNumber && (
                   <div className="flex items-center gap-2">
                     <Package className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">رقم الكونتينر:</span>
+                    <span className="text-muted-foreground">{t("car.container")}:</span>
                     <span className="font-mono font-medium text-foreground">{car.containerNumber}</span>
                   </div>
                 )}
                 {car.bookingNumber && (
                   <div className="flex items-center gap-2">
                     <Fingerprint className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">رقم الحجز:</span>
+                    <span className="text-muted-foreground">{t("car.booking")}:</span>
                     <span className="font-mono font-medium text-foreground">{car.bookingNumber}</span>
                   </div>
                 )}
@@ -120,11 +130,12 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
                   href={car.trackingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors w-full justify-center"
                   data-testid={`link-track-car-${car.id}`}
                 >
                   <ExternalLink className="w-4 h-4" />
-                  تتبع الشحنة
+                  {t("car.track")}
                 </a>
               )}
             </div>
@@ -135,16 +146,16 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent my-2" />
 
         <div className="mt-auto pt-4 flex items-center justify-between text-xs text-muted-foreground font-mono">
-          <span>ID: #{car.id.toString().padStart(4, '0')}</span>
+          <span>{t("common.id")}: #{car.id.toString().padStart(4, '0')}</span>
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-            {new Date(car.createdAt!).toLocaleDateString()}
+            {new Date(car.createdAt!).toLocaleDateString(language === "ar" ? "ar-JO" : "en-US")}
           </span>
         </div>
 
         <div className="mt-4">
           <Button variant="outline" className="w-full" data-testid={`button-view-car-${car.id}`}>
-            عرض التفاصيل
+            {t("car.details")}
           </Button>
         </div>
       </div>

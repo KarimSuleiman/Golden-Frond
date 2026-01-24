@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Car, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
+import { Loader2, Car, Lock, Mail, Eye, EyeOff, Globe } from "lucide-react";
 import logoImage from "@assets/image_1769171762465.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t, language, setLanguage, dir } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +30,7 @@ export default function Login() {
       
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message || "فشل تسجيل الدخول");
+        throw new Error(error.message || t("login.failed"));
       }
       
       return res.json();
@@ -36,14 +38,14 @@ export default function Login() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
-        title: "مرحباً بك",
-        description: "تم تسجيل الدخول بنجاح",
+        title: t("login.welcome"),
+        description: t("login.success"),
       });
       setLocation("/dashboard");
     },
     onError: (error: Error) => {
       toast({
-        title: "خطأ في تسجيل الدخول",
+        title: t("login.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -54,8 +56,8 @@ export default function Login() {
     e.preventDefault();
     if (!email || !password) {
       toast({
-        title: "خطأ",
-        description: "يرجى إدخال البريد الإلكتروني وكلمة المرور",
+        title: t("common.error"),
+        description: t("login.enterCredentials"),
         variant: "destructive",
       });
       return;
@@ -63,31 +65,46 @@ export default function Login() {
     loginMutation.mutate({ email, password });
   };
 
+  const toggleLanguage = () => {
+    setLanguage(language === "ar" ? "en" : "ar");
+  };
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4" dir="rtl">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4" dir={dir}>
       <Card className="w-full max-w-md shadow-xl border-primary/20">
         <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
-            <img src={logoImage} alt="السعفة الذهبية" className="h-20 w-auto" />
+          <div className="flex justify-between items-start">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={toggleLanguage}
+              className="text-muted-foreground hover:text-primary"
+              data-testid="button-language-toggle-login"
+            >
+              <Globe className="w-4 h-4" />
+              <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("common.langToggle")}</span>
+            </Button>
+            <img src={logoImage} alt={t("common.altLogo")} className="h-20 w-auto mx-auto" />
+            <div className="w-16" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">تسجيل الدخول</CardTitle>
+          <CardTitle className="text-2xl font-bold text-foreground">{t("login.title")}</CardTitle>
           <CardDescription className="text-muted-foreground">
-            أدخل بياناتك للوصول إلى حسابك
+            {t("login.desc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">البريد الإلكتروني</Label>
+              <Label htmlFor="email" className="text-foreground">{t("login.email")}</Label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground`} />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="example@email.com"
+                  placeholder={t("login.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pr-10 text-left"
+                  className={language === "ar" ? "pr-10 text-left" : "pl-10 text-left"}
                   dir="ltr"
                   data-testid="input-email"
                 />
@@ -95,22 +112,22 @@ export default function Login() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground">كلمة المرور</Label>
+              <Label htmlFor="password" className="text-foreground">{t("login.password")}</Label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Lock className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground`} />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder={t("login.passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10 pl-10"
+                  className={language === "ar" ? "pr-10 pl-10" : "pl-10 pr-10"}
                   data-testid="input-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className={`absolute ${language === "ar" ? "left-3" : "right-3"} top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors`}
                   data-testid="button-toggle-password"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -126,13 +143,13 @@ export default function Login() {
             >
               {loginMutation.isPending ? (
                 <>
-                  <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                  جاري تسجيل الدخول...
+                  <Loader2 className={`h-5 w-5 animate-spin ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                  {t("login.loading")}
                 </>
               ) : (
                 <>
-                  <Car className="ml-2 h-5 w-5" />
-                  دخول
+                  <Car className={`h-5 w-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                  {t("login.submit")}
                 </>
               )}
             </Button>

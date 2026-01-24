@@ -1,18 +1,17 @@
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCars } from "@/hooks/use-cars";
+import { useLanguage } from "@/lib/i18n";
 import { Navbar } from "@/components/Navbar";
 import { CarCard } from "@/components/CarCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CarFront } from "lucide-react";
-import { Link } from "wouter";
 
 export default function Dashboard() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const { data: cars, isLoading: isCarsLoading, error } = useCars();
+  const { t, dir } = useLanguage();
 
-  // Redirect if not logged in is handled by App router usually, but safe guard here
   if (!isAuthLoading && !user) {
     window.location.href = "/api/login";
     return null;
@@ -23,25 +22,31 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="mb-12">
           <h1 className="text-4xl lg:text-5xl font-display font-bold text-foreground mb-4">
-            سياراتي
+            {t("dashboard.title")}
           </h1>
           <p className="text-muted-foreground text-lg">
-            مرحباً {user?.firstName || 'عزيزي العميل'}، هذه سياراتك الخاصة.
+            {t("dashboard.welcome")} {user?.firstName || t("dashboard.welcomeSuffix")}
           </p>
         </div>
 
         {error ? (
           <div className="flex flex-col items-center justify-center p-12 bg-destructive/5 rounded-3xl border border-destructive/20 text-center">
             <AlertCircle className="w-12 h-12 text-destructive mb-4" />
-            <h3 className="text-xl font-bold text-foreground mb-2">خطأ في تحميل البيانات</h3>
-            <p className="text-muted-foreground mb-6">حدثت مشكلة أثناء جلب بيانات السيارات.</p>
-            <Button variant="outline" onClick={() => window.location.reload()}>إعادة المحاولة</Button>
+            <h3 className="text-xl font-bold text-foreground mb-2">
+              {t("dashboard.errorLoading")}
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              {t("dashboard.errorDesc")}
+            </p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              {t("dashboard.retry")}
+            </Button>
           </div>
         ) : isCarsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -64,13 +69,15 @@ export default function Dashboard() {
             <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-6">
               <CarFront className="w-10 h-10 text-muted-foreground opacity-50" />
             </div>
-            <h3 className="text-2xl font-bold text-foreground mb-2">لا توجد سيارات</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-2">
+              {t("dashboard.noCarsTitle")}
+            </h3>
             <p className="text-muted-foreground max-w-md mx-auto mb-8">
-              لم يتم ربط أي سيارات بحسابك حتى الآن. يرجى التواصل مع فريق المبيعات.
+              {t("dashboard.noCars")} {t("dashboard.contactSupport")}
             </p>
             <div className="flex gap-4">
               <Button variant="outline">
-                تواصل معنا
+                {t("dashboard.contactUs")}
               </Button>
             </div>
           </div>
@@ -79,7 +86,7 @@ export default function Dashboard() {
 
       <footer className="py-8 border-t border-border bg-card text-center">
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} السعفة الذهبية. جميع الحقوق محفوظة.
+          © {new Date().getFullYear()} {t("dashboard.copyright")}
         </p>
       </footer>
     </div>

@@ -1,10 +1,14 @@
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { ArrowRight, ShieldCheck, Gem, Gauge, MapPin, Phone, Mail, Calendar, Facebook, Clock } from "lucide-react";
+import { ArrowRight, ArrowLeft, ShieldCheck, Gem, Gauge, MapPin, Phone, Mail, Calendar, Facebook, Clock } from "lucide-react";
 import logoImage from "@assets/image_1769171762465.png";
 
 export default function Landing() {
+  const { t, language, dir } = useLanguage();
+  const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -21,7 +25,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
       {/* Hero Section */}
@@ -39,25 +43,25 @@ export default function Landing() {
             className="grid lg:grid-cols-2 gap-12 items-center"
           >
             {/* Text Content */}
-            <div className="text-left space-y-8">
+            <div className={`${language === "ar" ? "text-right" : "text-left"} space-y-8`}>
               <motion.div variants={itemVariants}>
                 <span className="inline-block px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold tracking-wide mb-4">
-                  السعفة الذهبية لتجارة السيارات
+                  {t("landing.tagline")}
                 </span>
                 <h1 className="text-5xl lg:text-7xl font-display font-bold leading-tight text-foreground">
-                  تتبع سياراتك<br />
-                  <span className="text-primary">بكل سهولة</span>
+                  {t("landing.title1")}<br />
+                  <span className="text-primary">{t("landing.title2")}</span>
                 </h1>
               </motion.div>
               
               <motion.p variants={itemVariants} className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-                السعفة الذهبية توفر لك منصة رقمية حصرية لمتابعة سياراتك المحجوزة والمشتراة مع جميع تفاصيل الشحن والتتبع.
+                {t("landing.description")}
               </motion.p>
 
               <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
                 <a href="/login">
                   <Button size="lg" className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all" data-testid="button-login-hero">
-                    تسجيل الدخول <ArrowRight className="mr-2 w-5 h-5" />
+                    {t("landing.login")} <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
                   </Button>
                 </a>
               </motion.div>
@@ -65,15 +69,15 @@ export default function Landing() {
               <motion.div variants={itemVariants} className="grid grid-cols-3 gap-6 pt-8 border-t border-border">
                 <div>
                   <h4 className="text-2xl font-bold text-foreground">+13</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">سنة خبرة</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{t("landing.years")}</p>
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold text-foreground">100%</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">آمن وموثوق</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{t("landing.secure")}</p>
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold text-foreground">24/7</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">دعم فني</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{t("landing.support")}</p>
                 </div>
               </motion.div>
             </div>
@@ -85,14 +89,14 @@ export default function Landing() {
             >
               <div className="relative z-10 rounded-3xl overflow-hidden border border-border shadow-2xl animate-float bg-card">
                 <img 
-                  src="https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=2070&auto=format&fit=crop" 
-                  alt="سيارة فاخرة" 
+                  src="https://images.unsplash.com/photo-1563720360172-67b8f3dce741?q=80&w=2070&auto=format&fit=crop" 
+                  alt={t("landing.heroImageAlt")} 
                   className="w-full h-auto object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent" />
-                <div className="absolute bottom-6 left-6 text-white">
-                  <p className="font-display font-bold text-2xl">مجموعة حصرية</p>
-                  <p className="text-sm text-gray-200">للعملاء المميزين</p>
+                <div className={`absolute bottom-6 ${language === "ar" ? "left-6" : "right-6"} text-white`}>
+                  <p className="font-display font-bold text-2xl">{t("landing.exclusive")}</p>
+                  <p className="text-sm text-gray-200">{t("landing.premium")}</p>
                 </div>
               </div>
               
@@ -114,45 +118,45 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">من نحن</h2>
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{t("landing.about")}</h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: language === "ar" ? -30 : 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
               className="space-y-6"
             >
               <p className="text-lg text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">السعفة الذهبية</strong> هي شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست في <strong className="text-primary">29 أكتوبر 2011</strong>، ولدينا أكثر من 13 عاماً من الخبرة في توفير أفضل السيارات لعملائنا الكرام.
+                <strong className="text-foreground">{t("landing.brandName")}</strong> {t("landing.about.text1")}
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                نحن متخصصون في استيراد السيارات من أمريكا وأوروبا وتوفير خدمات التتبع والشحن لعملائنا، مع ضمان الجودة والشفافية في كل خطوة.
+                {t("landing.about.text2")}
               </p>
               
               <div className="grid sm:grid-cols-2 gap-4 pt-4">
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
                   <Calendar className="w-6 h-6 text-primary flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">تأسست في</p>
-                    <p className="font-bold text-foreground">29 أكتوبر 2011</p>
+                    <p className="text-sm text-muted-foreground">{t("landing.founded")}</p>
+                    <p className="font-bold text-foreground">{t("landing.foundedDate")}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
                   <Clock className="w-6 h-6 text-primary flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">سنوات الخبرة</p>
-                    <p className="font-bold text-foreground">+13 سنة</p>
+                    <p className="text-sm text-muted-foreground">{t("landing.experience")}</p>
+                    <p className="font-bold text-foreground">{t("landing.experienceYears")}</p>
                   </div>
                 </div>
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: language === "ar" ? 30 : -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
@@ -161,13 +165,13 @@ export default function Landing() {
               <div className="rounded-2xl overflow-hidden border border-border shadow-xl">
                 <img 
                   src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop" 
-                  alt="معرض السيارات" 
+                  alt={t("landing.showroomImageAlt")} 
                   className="w-full h-80 object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl">
+              <div className={`absolute -bottom-6 ${language === "ar" ? "-right-6" : "-left-6"} bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl`}>
                 <p className="text-3xl font-bold">+13</p>
-                <p className="text-sm">سنة خبرة</p>
+                <p className="text-sm">{t("landing.yearsExp")}</p>
               </div>
             </motion.div>
           </div>
@@ -184,24 +188,24 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">خدماتنا</h2>
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{t("landing.services")}</h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
               icon={ShieldCheck}
-              title="ملكية موثقة"
-              description="كل سيارة في حسابك موثقة برقم الشاصي والسجلات الرسمية."
+              title={t("landing.service1.title")}
+              description={t("landing.service1.desc")}
             />
             <FeatureCard 
               icon={Gem}
-              title="سيارات حصرية"
-              description="الوصول إلى أفخم السيارات من جميع أنحاء العالم."
+              title={t("landing.service2.title")}
+              description={t("landing.service2.desc")}
             />
             <FeatureCard 
               icon={Gauge}
-              title="تتبع مباشر"
-              description="تابع حالة سيارتك من الحجز حتى التسليم بشكل مباشر."
+              title={t("landing.service3.title")}
+              description={t("landing.service3.desc")}
             />
           </div>
         </div>
@@ -217,10 +221,10 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">تواصل معنا</h2>
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{t("landing.contact")}</h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
             <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-              نحن هنا لمساعدتك. تواصل معنا عبر أي من الوسائل التالية
+              {t("landing.contact.desc")}
             </p>
           </motion.div>
 
@@ -237,7 +241,7 @@ export default function Landing() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Phone className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground mb-1">الهاتف</h3>
+              <h3 className="font-bold text-foreground mb-1">{t("landing.phone")}</h3>
               <p className="text-muted-foreground text-center" dir="ltr">0798860078</p>
             </motion.a>
 
@@ -253,7 +257,7 @@ export default function Landing() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Mail className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground mb-1">البريد الإلكتروني</h3>
+              <h3 className="font-bold text-foreground mb-1">{t("landing.email")}</h3>
               <p className="text-muted-foreground text-center text-sm" dir="ltr">amairehkareem@gmail.com</p>
             </motion.a>
 
@@ -267,8 +271,8 @@ export default function Landing() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <MapPin className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground mb-1">الموقع</h3>
-              <p className="text-muted-foreground text-center text-sm">الزرقاء - المنطقة الحرة<br />شارع ١٥ شمال</p>
+              <h3 className="font-bold text-foreground mb-1">{t("landing.location")}</h3>
+              <p className="text-muted-foreground text-center text-sm whitespace-pre-line">{t("landing.address")}</p>
             </motion.div>
 
             <motion.a
@@ -285,7 +289,7 @@ export default function Landing() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Facebook className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground mb-1">فيسبوك</h3>
+              <h3 className="font-bold text-foreground mb-1">{t("landing.facebook")}</h3>
               <p className="text-muted-foreground text-center text-sm">golden.frond.gallery</p>
             </motion.a>
           </div>
@@ -297,11 +301,11 @@ export default function Landing() {
         <div className="container px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img src={logoImage} alt="السعفة الذهبية" className="h-10 w-auto" />
-              <span className="font-display font-bold text-foreground">السعفة الذهبية</span>
+              <img src={logoImage} alt={t("common.altLogo")} className="h-10 w-auto" />
+              <span className="font-display font-bold text-foreground">{t("landing.brandName")}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.
+              © {new Date().getFullYear()} {t("landing.copyright")}
             </p>
             <div className="flex items-center gap-4">
               <a href="tel:0798860078" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-phone">
