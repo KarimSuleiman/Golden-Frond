@@ -79,6 +79,10 @@ const translations: Translations = {
   "landing.testimonial3.role": { ar: "طبيب", en: "Doctor" },
   "landing.testimonial3.text": { ar: "أكثر من ١٣ سنة خبرة تظهر في جودة الخدمة والتعامل الراقي. سأتعامل معهم دائماً.", en: "Over 13 years of experience shows in their service quality and professional treatment. Will always deal with them." },
   
+  // Contact Labels
+  "contact.email": { ar: "البريد الإلكتروني", en: "Email" },
+  "contact.whatsapp": { ar: "واتساب", en: "Whatsapp" },
+  
   // Landing - Contact
   "landing.contact": { ar: "تواصل معنا", en: "Contact Us" },
   "landing.contact.desc": { ar: "نحن هنا لمساعدتك. تواصل معنا عبر أي من الوسائل التالية", en: "We are here to help. Contact us through any of the following methods" },
