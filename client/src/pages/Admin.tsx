@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter } from "lucide-react";
+import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff } from "lucide-react";
 import type { Car as CarType } from "@shared/schema";
 import { useLanguage } from "@/lib/i18n";
 
@@ -41,6 +41,12 @@ export default function Admin() {
   const [filterMake, setFilterMake] = useState<string>("");
   const [filterYear, setFilterYear] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
+  
+  // Password change states
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [selectedUserForPassword, setSelectedUserForPassword] = useState<AdminUser | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const [carForm, setCarForm] = useState({
     make: "",
@@ -81,6 +87,31 @@ export default function Admin() {
       });
       if (!res.ok) throw new Error("فشل رفع الصورة");
       return res.json();
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async ({ userId, password }: { userId: string; password: string }) => {
+      const res = await fetch(`/api/admin/users/${userId}/password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword: password }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: t("admin.passwordChanged") });
+      setShowPasswordModal(false);
+      setSelectedUserForPassword(null);
+      setNewPassword("");
+    },
+    onError: (error: Error) => {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -382,30 +413,48 @@ export default function Admin() {
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                      className={`p-3 rounded-lg border transition-all ${
                         filterByUserId === user.id 
                           ? "bg-primary/10 border-primary" 
                           : "bg-secondary border-border hover:border-primary/50"
                       }`}
-                      onClick={() => setFilterByUserId(filterByUserId === user.id ? "" : user.id)}
                       data-testid={`user-card-${user.id}`}
                     >
-                      <p className="font-bold text-foreground">
-                        {user.firstName} {user.lastName}
-                      </p>
-                      <p className="text-sm text-muted-foreground" dir="ltr">
-                        {user.email}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        {user.isAdmin === "true" && (
-                          <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
-                            {t("admin.isAdmin")}
+                      <div 
+                        className="cursor-pointer"
+                        onClick={() => setFilterByUserId(filterByUserId === user.id ? "" : user.id)}
+                      >
+                        <p className="font-bold text-foreground">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-sm text-muted-foreground" dir="ltr">
+                          {user.email}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          {user.isAdmin === "true" && (
+                            <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
+                              {t("admin.isAdmin")}
+                            </span>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {cars.filter(c => c.userId === user.id).length} {t("admin.cars")}
                           </span>
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          {cars.filter(c => c.userId === user.id).length} {t("admin.cars")}
-                        </span>
+                        </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full mt-2 text-muted-foreground hover:text-primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedUserForPassword(user);
+                          setShowPasswordModal(true);
+                        }}
+                        data-testid={`button-change-password-${user.id}`}
+                      >
+                        <Key className="w-4 h-4" />
+                        <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -815,6 +864,79 @@ export default function Admin() {
                     </Button>
                   </div>
                 </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Password Change Modal */}
+        {showPasswordModal && selectedUserForPassword && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Key className="w-5 h-5" />
+                    {t("admin.changePassword")}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setSelectedUserForPassword(null);
+                      setNewPassword("");
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3 bg-secondary rounded-lg">
+                  <p className="font-bold">{selectedUserForPassword.firstName} {selectedUserForPassword.lastName}</p>
+                  <p className="text-sm text-muted-foreground" dir="ltr">{selectedUserForPassword.email}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">{t("admin.newPassword")}</Label>
+                  <div className="relative">
+                    <Input
+                      id="new-password"
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className={language === "ar" ? "pl-10" : "pr-10"}
+                      data-testid="input-admin-new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className={`absolute ${language === "ar" ? "left-3" : "right-3"} top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors`}
+                    >
+                      {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <Button
+                  className="w-full"
+                  disabled={changePasswordMutation.isPending || newPassword.length < 6}
+                  onClick={() => {
+                    if (selectedUserForPassword && newPassword.length >= 6) {
+                      changePasswordMutation.mutate({
+                        userId: selectedUserForPassword.id,
+                        password: newPassword,
+                      });
+                    }
+                  }}
+                  data-testid="button-submit-password-change"
+                >
+                  {changePasswordMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    t("admin.changePassword")
+                  )}
+                </Button>
               </CardContent>
             </Card>
           </div>
