@@ -31,6 +31,7 @@ const translations: Translations = {
     en: "Golden Palm provides you an exclusive digital platform to track your reserved and purchased cars with all shipping and tracking details." 
   },
   "landing.login": { ar: "تسجيل الدخول", en: "Login" },
+  "landing.myCars": { ar: "سياراتي", en: "My Cars" },
   "landing.years": { ar: "سنة خبرة", en: "Years Experience" },
   "landing.secure": { ar: "آمن وموثوق", en: "Safe & Trusted" },
   "landing.support": { ar: "دعم فني", en: "Technical Support" },
@@ -88,6 +89,18 @@ const translations: Translations = {
   "landing.facebook": { ar: "فيسبوك", en: "Facebook" },
   "landing.whatsapp": { ar: "واتساب", en: "WhatsApp" },
   "landing.copyright": { ar: "السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.", en: "Golden Palm Car Trading. All rights reserved." },
+  "landing.taglineShort": { ar: "مستقبل تجارة السيارات في المنطقة", en: "The Future of Car Trading in MENA" },
+  "landing.taglineDesc": { ar: "منصة سريعة وسهلة لتجارة السيارات مع تغطية جميع دول المنطقة.", en: "A fast and easy car trading platform covering all countries in the region." },
+  
+  // Footer Links
+  "footer.quickLinks": { ar: "روابط سريعة", en: "Quick Links" },
+  "footer.support": { ar: "الدعم", en: "Support" },
+  "footer.contactUs": { ar: "تواصل معنا", en: "Contact us" },
+  "footer.importantNotice": { ar: "إشعار مهم", en: "Important Notice" },
+  "footer.terms": { ar: "الشروط والأحكام", en: "Terms and Conditions" },
+  "footer.home": { ar: "الرئيسية", en: "Home" },
+  "footer.aboutUs": { ar: "من نحن", en: "About us" },
+  "footer.login": { ar: "تسجيل الدخول", en: "Log in" },
   
   // Login
   "login.title": { ar: "تسجيل الدخول", en: "Login" },

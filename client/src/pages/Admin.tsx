@@ -47,6 +47,9 @@ export default function Admin() {
   const [selectedUserForPassword, setSelectedUserForPassword] = useState<AdminUser | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
+  
+  // Expanded user states
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
 
   const [carForm, setCarForm] = useState({
     make: "",
@@ -410,53 +413,119 @@ export default function Admin() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {users.map((user) => (
-                    <div
-                      key={user.id}
-                      className={`p-3 rounded-lg border transition-all ${
-                        filterByUserId === user.id 
-                          ? "bg-primary/10 border-primary" 
-                          : "bg-secondary border-border hover:border-primary/50"
-                      }`}
-                      data-testid={`user-card-${user.id}`}
-                    >
-                      <div 
-                        className="cursor-pointer"
-                        onClick={() => setFilterByUserId(filterByUserId === user.id ? "" : user.id)}
+                  {users.map((user) => {
+                    const userCars = cars.filter(c => c.userId === user.id);
+                    const isExpanded = expandedUserId === user.id;
+                    
+                    return (
+                      <div
+                        key={user.id}
+                        className={`rounded-lg border transition-all ${
+                          filterByUserId === user.id 
+                            ? "bg-primary/10 border-primary" 
+                            : "bg-secondary border-border hover:border-primary/50"
+                        }`}
+                        data-testid={`user-card-${user.id}`}
                       >
-                        <p className="font-bold text-foreground">
-                          {user.firstName} {user.lastName}
-                        </p>
-                        <p className="text-sm text-muted-foreground" dir="ltr">
-                          {user.email}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          {user.isAdmin === "true" && (
-                            <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
-                              {t("admin.isAdmin")}
-                            </span>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            {cars.filter(c => c.userId === user.id).length} {t("admin.cars")}
-                          </span>
+                        <div className="p-3">
+                          <div 
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setExpandedUserId(isExpanded ? null : user.id);
+                              setFilterByUserId(filterByUserId === user.id ? "" : user.id);
+                            }}
+                          >
+                            <p className="font-bold text-foreground">
+                              {user.firstName} {user.lastName}
+                            </p>
+                            <p className="text-sm text-muted-foreground" dir="ltr">
+                              {user.email}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              {user.isAdmin === "true" && (
+                                <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
+                                  {t("admin.isAdmin")}
+                                </span>
+                              )}
+                              <span className="text-xs text-muted-foreground">
+                                {userCars.length} {t("admin.cars")}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full mt-2 text-muted-foreground hover:text-primary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedUserForPassword(user);
+                              setShowPasswordModal(true);
+                            }}
+                            data-testid={`button-change-password-${user.id}`}
+                          >
+                            <Key className="w-4 h-4" />
+                            <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
+                          </Button>
                         </div>
+                        
+                        {/* Expanded Cars Section */}
+                        {isExpanded && userCars.length > 0 && (
+                          <div className="border-t border-border p-3 space-y-2">
+                            {userCars.map((car) => (
+                              <div 
+                                key={car.id} 
+                                className="flex gap-3 p-2 rounded-lg bg-card border border-border"
+                                data-testid={`user-car-${car.id}`}
+                              >
+                                <img
+                                  src={car.imageUrl}
+                                  alt={`${car.make} ${car.model}`}
+                                  className="w-16 h-16 object-cover rounded"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold text-sm text-foreground truncate">
+                                    {car.make} {car.model} {car.year}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">{car.color}</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span
+                                      className={`text-xs px-1.5 py-0.5 rounded ${
+                                        car.status === "In Transit"
+                                          ? "bg-blue-500/20 text-blue-600"
+                                          : car.status === "Purchased"
+                                          ? "bg-green-500/20 text-green-600"
+                                          : "bg-yellow-500/20 text-yellow-600"
+                                      }`}
+                                    >
+                                      {car.status === "In Transit"
+                                        ? t("car.status.inTransit")
+                                        : car.status === "Purchased"
+                                        ? t("car.status.purchased")
+                                        : t("car.status.reserved")}
+                                    </span>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      onClick={() => handleEdit(car)}
+                                      data-testid={`button-edit-user-car-${car.id}`}
+                                    >
+                                      <Edit className="w-3 h-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {isExpanded && userCars.length === 0 && (
+                          <div className="border-t border-border p-3 text-center text-sm text-muted-foreground">
+                            {t("dashboard.noCars")}
+                          </div>
+                        )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full mt-2 text-muted-foreground hover:text-primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedUserForPassword(user);
-                          setShowPasswordModal(true);
-                        }}
-                        data-testid={`button-change-password-${user.id}`}
-                      >
-                        <Key className="w-4 h-4" />
-                        <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>

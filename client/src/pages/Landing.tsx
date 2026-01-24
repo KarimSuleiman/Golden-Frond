@@ -102,6 +102,19 @@ export default function Landing() {
                       {t("admin.title")}
                     </Button>
                   </a>
+                ) : user ? (
+                  <a href="/dashboard">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
+                      data-testid="button-my-cars-hero"
+                    >
+                      {t("landing.myCars")}{" "}
+                      <ArrowIcon
+                        className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
+                      />
+                    </Button>
+                  </a>
                 ) : (
                   <a href="/login">
                     <Button
@@ -109,7 +122,7 @@ export default function Landing() {
                       className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
                       data-testid="button-login-hero"
                     >
-                      {t("landing.login")}{" "}
+                      {t("landing.myCars")}{" "}
                       <ArrowIcon
                         className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
                       />
@@ -472,56 +485,135 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border bg-card">
+      <footer className="py-12 border-t border-border bg-secondary">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <img
-                src={logoImage}
-                alt={t("common.altLogo")}
-                className="h-10 w-auto"
-              />
-              <span className="font-display font-bold text-foreground">
-                {t("landing.brandName")}
-              </span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            {/* Brand Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={logoImage}
+                  alt={t("common.altLogo")}
+                  className="h-12 w-auto"
+                />
+              </div>
+              <p className="text-lg font-display font-bold text-foreground">
+                {t("landing.taglineShort")}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {t("landing.taglineDesc")}
+              </p>
+              <div className="flex items-center gap-3 pt-2">
+                <a
+                  href="tel:0796796108"
+                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover-elevate transition-all"
+                  data-testid="footer-phone"
+                >
+                  <Phone className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://wa.me/962796796108"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover-elevate transition-all"
+                  data-testid="footer-whatsapp"
+                >
+                  <SiWhatsapp className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.facebook.com/golden.frond.gallery"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover-elevate transition-all"
+                  data-testid="footer-facebook"
+                >
+                  <SiFacebook className="w-4 h-4" />
+                </a>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-bold text-foreground mb-4">
+                {t("footer.quickLinks")}
+              </h3>
+              <ul className="space-y-3">
+                <li>
+                  <a href="/" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-home">
+                    {t("footer.home")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-about">
+                    {t("footer.aboutUs")}
+                  </a>
+                </li>
+                <li>
+                  <a href="/login" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-login">
+                    {t("footer.login")}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h3 className="font-bold text-foreground mb-4">
+                {t("footer.support")}
+              </h3>
+              <ul className="space-y-3">
+                <li>
+                  <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-notice">
+                    {t("footer.importantNotice")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-terms">
+                    {t("footer.terms")}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact Us */}
+            <div>
+              <h3 className="font-bold text-foreground mb-4">
+                {t("footer.contactUs")}
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                  <a 
+                    href="mailto:amairehkareem@gmail.com" 
+                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                    dir="ltr"
+                    data-testid="footer-contact-email"
+                  >
+                    amairehkareem@gmail.com
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <SiWhatsapp className="w-4 h-4 text-muted-foreground" />
+                  <a 
+                    href="https://wa.me/962796796108" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                    dir="ltr"
+                    data-testid="footer-contact-whatsapp"
+                  >
+                    +962-796796108
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="pt-8 border-t border-border">
+            <p className="text-center text-sm text-muted-foreground">
               © {new Date().getFullYear()} {t("landing.copyright")}
             </p>
-            <div className="flex items-center gap-4">
-              <a
-                href="tel:0796796108"
-                className="text-muted-foreground hover:text-green-500 transition-colors"
-                data-testid="footer-phone"
-              >
-                <Phone className="w-5 h-5" />
-              </a>
-              <a
-                href="https://wa.me/962796796108"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-green-500 transition-colors"
-                data-testid="footer-whatsapp"
-              >
-                <SiWhatsapp className="w-5 h-5" />
-              </a>
-              <a
-                href="mailto:amairehkareem@gmail.com"
-                className="text-muted-foreground hover:text-red-500 transition-colors"
-                data-testid="footer-email"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.facebook.com/golden.frond.gallery"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-blue-500 transition-colors"
-                data-testid="footer-facebook"
-              >
-                <SiFacebook className="w-5 h-5" />
-              </a>
-            </div>
           </div>
         </div>
       </footer>
