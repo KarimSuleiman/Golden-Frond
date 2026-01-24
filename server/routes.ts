@@ -6,6 +6,51 @@ import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { authStorage } from "./replit_integrations/auth/storage";
 import bcrypt from "bcryptjs";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Configure multer for file uploads
+const uploadDir = "./uploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({
+  storage: multerStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error("Only image files are allowed"));
+  },
+});
+
+// Admin middleware
+const isAdmin = async (req: any, res: any, next: any) => {
+  if (!req.user?.claims?.sub) {
+    return res.status(401).json({ message: "غير مصرح" });
+  }
+  const user = await authStorage.getUser(req.user.claims.sub);
+  if (!user || user.isAdmin !== "true") {
+    return res.status(403).json({ message: "غير مصرح - للمسؤولين فقط" });
+  }
+  next();
+};
 
 export async function registerRoutes(
   httpServer: Server,
@@ -164,6 +209,120 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // === Admin Routes ===
+
+  // Serve uploaded files
+  app.use("/uploads", (req, res, next) => {
+    const express = require("express");
+    express.static(uploadDir)(req, res, next);
+  });
+
+  // Upload image (Admin only)
+  app.post("/api/upload", isAuthenticated, isAdmin, upload.single("image"), (req: any, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ imageUrl });
+  });
+
+  // Get all users (Admin only)
+  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      // Don't send passwords to frontend
+      const safeUsers = users.map(u => ({
+        id: u.id,
+        email: u.email,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        isAdmin: u.isAdmin,
+        createdAt: u.createdAt,
+      }));
+      res.json(safeUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "خطأ في جلب المستخدمين" });
+    }
+  });
+
+  // Get all cars (Admin only)
+  app.get("/api/admin/cars", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const allCars = await storage.getAllCars();
+      res.json(allCars);
+    } catch (error) {
+      console.error("Error fetching all cars:", error);
+      res.status(500).json({ message: "خطأ في جلب السيارات" });
+    }
+  });
+
+  // Create car for any user (Admin only)
+  app.post("/api/admin/cars", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const carData = req.body;
+      if (!carData.userId) {
+        return res.status(400).json({ message: "يجب تحديد المستخدم" });
+      }
+      const input = api.cars.create.input.parse(carData);
+      const car = await storage.createCar(input);
+      res.status(201).json(car);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      console.error("Admin create car error:", err);
+      res.status(500).json({ message: "خطأ في إنشاء السيارة" });
+    }
+  });
+
+  // Update any car (Admin only)
+  app.put("/api/admin/cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      const car = await storage.getCar(id);
+      if (!car) return res.status(404).json({ message: "السيارة غير موجودة" });
+      
+      // Strip userId from update payload to avoid schema validation issues
+      const { userId, ...updateData } = req.body;
+      const input = api.cars.update.input.parse(updateData);
+      const updated = await storage.updateCar(id, input);
+      res.json(updated);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "خطأ في تحديث السيارة" });
+    }
+  });
+
+  // Delete any car (Admin only)
+  app.delete("/api/admin/cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      const car = await storage.getCar(id);
+      if (!car) return res.status(404).json({ message: "السيارة غير موجودة" });
+      
+      await storage.deleteCar(id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في حذف السيارة" });
+    }
+  });
+
+  // Check if current user is admin
+  app.get("/api/auth/is-admin", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await authStorage.getUser(req.user.claims.sub);
+      res.json({ isAdmin: user?.isAdmin === "true" });
+    } catch (error) {
+      res.status(500).json({ isAdmin: false });
     }
   });
 

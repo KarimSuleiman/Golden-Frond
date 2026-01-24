@@ -1,19 +1,24 @@
 import { db } from "./db";
 import {
   cars,
+  users,
   type Car,
   type InsertCar,
-  type UpdateCarRequest
+  type UpdateCarRequest,
+  type User
 } from "@shared/schema";
 import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Car operations
   getCars(userId: string): Promise<Car[]>;
+  getAllCars(): Promise<Car[]>;
   getCar(id: number): Promise<Car | undefined>;
   createCar(car: InsertCar): Promise<Car>;
   updateCar(id: number, updates: UpdateCarRequest): Promise<Car>;
   deleteCar(id: number): Promise<void>;
+  // User operations (admin)
+  getAllUsers(): Promise<User[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -44,6 +49,18 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCar(id: number): Promise<void> {
     await db.delete(cars).where(eq(cars.id, id));
+  }
+
+  async getAllCars(): Promise<Car[]> {
+    return await db.select()
+      .from(cars)
+      .orderBy(desc(cars.createdAt));
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select()
+      .from(users)
+      .orderBy(desc(users.createdAt));
   }
 }
 

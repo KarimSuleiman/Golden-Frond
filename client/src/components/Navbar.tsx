@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Home, Menu, X } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import logoImage from "@assets/image_1769171762465.png";
 
 export function Navbar() {
@@ -11,9 +12,15 @@ export function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
+    queryKey: ["/api/auth/is-admin"],
+    enabled: !!user,
+  });
+
   const navLinks = [
     { href: "/", label: "الرئيسية", icon: Home },
     ...(user ? [{ href: "/dashboard", label: "سياراتي", icon: LayoutDashboard }] : []),
+    ...(isAdminCheck?.isAdmin ? [{ href: "/admin", label: "لوحة التحكم", icon: Settings }] : []),
   ];
 
   return (
