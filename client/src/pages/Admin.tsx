@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X } from "lucide-react";
+import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter } from "lucide-react";
 import type { Car as CarType } from "@shared/schema";
+import { useLanguage } from "@/lib/i18n";
 
 interface AdminUser {
   id: string;
@@ -23,6 +24,7 @@ interface AdminUser {
 
 export default function Admin() {
   const { toast } = useToast();
+  const { t, language, dir } = useLanguage();
   const queryClient = useQueryClient();
   const [showAddCar, setShowAddCar] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
@@ -32,6 +34,13 @@ export default function Admin() {
   const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
   const [existingAdditionalImages, setExistingAdditionalImages] = useState<string[]>([]);
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
+  
+  // Filter states
+  const [filterByUserId, setFilterByUserId] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filterMake, setFilterMake] = useState<string>("");
+  const [filterYear, setFilterYear] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("");
 
   const [carForm, setCarForm] = useState({
     make: "",
@@ -260,6 +269,57 @@ export default function Admin() {
     return user ? `${user.firstName || ""} ${user.lastName || ""} (${user.email})` : userId;
   };
 
+  // Get unique values for filter dropdowns
+  const uniqueMakes = useMemo(() => {
+    const makes = Array.from(new Set(cars.map((car) => car.make)));
+    return makes.sort();
+  }, [cars]);
+
+  const uniqueYears = useMemo(() => {
+    const years = Array.from(new Set(cars.map((car) => car.year)));
+    return years.sort((a, b) => b - a);
+  }, [cars]);
+
+  // Filter cars
+  const filteredCars = useMemo(() => {
+    return cars.filter((car) => {
+      // Filter by user
+      if (filterByUserId && car.userId !== filterByUserId) return false;
+      
+      // Filter by search query (name, model, VIN)
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+          car.make.toLowerCase().includes(query) ||
+          car.model.toLowerCase().includes(query) ||
+          car.vin.toLowerCase().includes(query) ||
+          car.color.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
+      }
+      
+      // Filter by make
+      if (filterMake && filterMake !== "all" && car.make !== filterMake) return false;
+      
+      // Filter by year
+      if (filterYear && filterYear !== "all" && car.year !== parseInt(filterYear)) return false;
+      
+      // Filter by status
+      if (filterStatus && filterStatus !== "all" && car.status !== filterStatus) return false;
+      
+      return true;
+    });
+  }, [cars, filterByUserId, searchQuery, filterMake, filterYear, filterStatus]);
+
+  const clearFilters = () => {
+    setFilterByUserId("");
+    setSearchQuery("");
+    setFilterMake("");
+    setFilterYear("");
+    setFilterStatus("");
+  };
+
+  const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
+
   if (checkingAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
@@ -301,6 +361,18 @@ export default function Admin() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Show All button */}
+              {filterByUserId && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mb-3"
+                  onClick={() => setFilterByUserId("")}
+                  data-testid="button-show-all-users"
+                >
+                  {t("admin.filter.all")}
+                </Button>
+              )}
               {loadingUsers ? (
                 <div className="flex justify-center py-4">
                   <Loader2 className="w-6 h-6 animate-spin" />
@@ -310,7 +382,12 @@ export default function Admin() {
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className="p-3 rounded-lg bg-secondary border border-border"
+                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                        filterByUserId === user.id 
+                          ? "bg-primary/10 border-primary" 
+                          : "bg-secondary border-border hover:border-primary/50"
+                      }`}
+                      onClick={() => setFilterByUserId(filterByUserId === user.id ? "" : user.id)}
                       data-testid={`user-card-${user.id}`}
                     >
                       <p className="font-bold text-foreground">
@@ -319,11 +396,16 @@ export default function Admin() {
                       <p className="text-sm text-muted-foreground" dir="ltr">
                         {user.email}
                       </p>
-                      {user.isAdmin === "true" && (
-                        <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
-                          مسؤول
+                      <div className="flex items-center gap-2 mt-1">
+                        {user.isAdmin === "true" && (
+                          <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
+                            {t("admin.isAdmin")}
+                          </span>
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {cars.filter(c => c.userId === user.id).length} {t("admin.cars")}
                         </span>
-                      )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -333,21 +415,83 @@ export default function Admin() {
 
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Car className="w-5 h-5" />
-                السيارات ({cars.length})
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Car className="w-5 h-5" />
+                  {t("admin.cars")} ({filteredCars.length}{hasActiveFilters ? ` / ${cars.length}` : ""})
+                </div>
+                {hasActiveFilters && (
+                  <Button variant="ghost" size="sm" onClick={clearFilters} data-testid="button-clear-filters">
+                    <X className="w-4 h-4" />
+                    {t("admin.filter.clear")}
+                  </Button>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Filter Controls */}
+              <div className="mb-4 space-y-3">
+                <div className="relative">
+                  <Search className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`} />
+                  <Input
+                    placeholder={t("admin.filter.searchPlaceholder")}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className={language === "ar" ? "pr-10" : "pl-10"}
+                    data-testid="input-search-cars"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2">
+                  <Select value={filterMake} onValueChange={setFilterMake}>
+                    <SelectTrigger data-testid="select-filter-make">
+                      <SelectValue placeholder={t("admin.filter.allMakes")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("admin.filter.allMakes")}</SelectItem>
+                      {uniqueMakes.map((make) => (
+                        <SelectItem key={make} value={make}>{make}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={filterYear} onValueChange={setFilterYear}>
+                    <SelectTrigger data-testid="select-filter-year">
+                      <SelectValue placeholder={t("admin.filter.allYears")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("admin.filter.allYears")}</SelectItem>
+                      {uniqueYears.map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger data-testid="select-filter-status">
+                      <SelectValue placeholder={t("admin.filter.allStatus")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("admin.filter.allStatus")}</SelectItem>
+                      <SelectItem value="Purchased">{t("car.status.purchased")}</SelectItem>
+                      <SelectItem value="Reserved">{t("car.status.reserved")}</SelectItem>
+                      <SelectItem value="In Transit">{t("car.status.inTransit")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               {loadingCars ? (
                 <div className="flex justify-center py-4">
                   <Loader2 className="w-6 h-6 animate-spin" />
                 </div>
-              ) : cars.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">لا توجد سيارات بعد</p>
+              ) : filteredCars.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  {hasActiveFilters ? t("admin.filter.results") + " 0" : "لا توجد سيارات بعد"}
+                </p>
               ) : (
                 <div className="space-y-4">
-                  {cars.map((car) => (
+                  {filteredCars.map((car) => (
                     <div
                       key={car.id}
                       className="flex gap-4 p-4 rounded-lg bg-secondary border border-border"

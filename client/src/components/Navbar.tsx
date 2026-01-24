@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Home, Menu, X, Settings, Globe } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Menu, X, Settings, Globe, Info, Phone } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -33,6 +33,10 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: t("nav.home"), icon: Home },
     ...(user ? [{ href: "/dashboard", label: t("dashboard.title"), icon: LayoutDashboard }] : []),
+    ...(user && !isAdminCheck?.isAdmin ? [
+      { href: "/#about", label: t("nav.aboutUs"), icon: Info },
+      { href: "/#contact", label: t("nav.contactUs"), icon: Phone },
+    ] : []),
     ...(isAdminCheck?.isAdmin ? [{ href: "/admin", label: t("admin.title"), icon: Settings }] : []),
   ];
 

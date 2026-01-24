@@ -14,6 +14,8 @@ const translations: Translations = {
   "nav.home": { ar: "الرئيسية", en: "Home" },
   "nav.dashboard": { ar: "لوحة التحكم", en: "Dashboard" },
   "nav.admin": { ar: "إدارة", en: "Admin" },
+  "nav.aboutUs": { ar: "من نحن", en: "About Us" },
+  "nav.contactUs": { ar: "تواصل معنا", en: "Contact Us" },
   "nav.login": { ar: "تسجيل الدخول", en: "Login" },
   "nav.logout": { ar: "تسجيل الخروج", en: "Logout" },
   "nav.logout.confirm": { ar: "هل أنت متأكد من أنك تريد تسجيل الخروج؟", en: "Are you sure you want to logout?" },
@@ -170,6 +172,20 @@ const translations: Translations = {
   "admin.form.submit": { ar: "إضافة السيارة", en: "Add Car" },
   "admin.form.update": { ar: "تحديث السيارة", en: "Update Car" },
   "admin.form.cancel": { ar: "إلغاء", en: "Cancel" },
+  
+  // Admin Filters
+  "admin.filter.all": { ar: "جميع السيارات", en: "All Cars" },
+  "admin.filter.byUser": { ar: "سيارات المستخدم", en: "User's Cars" },
+  "admin.filter.search": { ar: "بحث...", en: "Search..." },
+  "admin.filter.searchPlaceholder": { ar: "ابحث بالاسم أو الموديل أو VIN...", en: "Search by name, model, or VIN..." },
+  "admin.filter.make": { ar: "الشركة المصنعة", en: "Make" },
+  "admin.filter.allMakes": { ar: "جميع الشركات", en: "All Makes" },
+  "admin.filter.year": { ar: "السنة", en: "Year" },
+  "admin.filter.allYears": { ar: "جميع السنوات", en: "All Years" },
+  "admin.filter.status": { ar: "الحالة", en: "Status" },
+  "admin.filter.allStatus": { ar: "جميع الحالات", en: "All Status" },
+  "admin.filter.clear": { ar: "مسح الفلاتر", en: "Clear Filters" },
+  "admin.filter.results": { ar: "نتيجة", en: "results" },
   
   // Common
   "common.loading": { ar: "جاري التحميل...", en: "Loading..." },

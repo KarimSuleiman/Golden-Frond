@@ -109,7 +109,7 @@ export default function Landing() {
       </section>
 
       {/* About Section */}
-      <section className="py-20 bg-secondary border-t border-border">
+      <section id="about" className="py-20 bg-secondary border-t border-border">
         <div className="container px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -212,7 +212,7 @@ export default function Landing() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 bg-secondary border-t border-border">
+      <section id="contact" className="py-20 bg-secondary border-t border-border">
         <div className="container px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
