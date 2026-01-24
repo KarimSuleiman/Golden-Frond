@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
@@ -215,10 +216,7 @@ export async function registerRoutes(
   // === Admin Routes ===
 
   // Serve uploaded files
-  app.use("/uploads", (req, res, next) => {
-    const express = require("express");
-    express.static(uploadDir)(req, res, next);
-  });
+  app.use("/uploads", express.static(uploadDir));
 
   // Upload image (Admin only)
   app.post("/api/upload", isAuthenticated, isAdmin, upload.single("image"), (req: any, res) => {
