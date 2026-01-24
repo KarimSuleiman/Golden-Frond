@@ -1,6 +1,8 @@
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
+import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -16,13 +18,20 @@ import {
   Clock,
   Quote,
   MessageCircle,
+  Settings,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 
 export default function Landing() {
   const { t, language, dir } = useLanguage();
+  const { user } = useAuth();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
+
+  const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
+    queryKey: ["/api/auth/is-admin"],
+    enabled: !!user,
+  });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -58,9 +67,8 @@ export default function Landing() {
             className="grid lg:grid-cols-2 gap-12 items-center"
           >
             {/* Text Content */}
-            <div
-              className={`${language === "ar" ? "text-right" : "text-left"} space-y-8`}
-            >
+            <div className="text-center lg:text-start space-y-8">
+
               <motion.div variants={itemVariants}>
                 <span className="inline-block px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold tracking-wide mb-4">
                   {t("landing.tagline")}
@@ -74,27 +82,40 @@ export default function Landing() {
 
               <motion.p
                 variants={itemVariants}
-                className="text-lg text-muted-foreground max-w-xl leading-relaxed"
+                className="text-lg text-muted-foreground max-w-xl leading-relaxed mx-auto lg:mx-0"
               >
                 {t("landing.description")}
               </motion.p>
 
               <motion.div
                 variants={itemVariants}
-                className="flex flex-wrap gap-4"
+                className="flex flex-wrap gap-4 justify-center lg:justify-start"
               >
-                <a href="/login">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
-                    data-testid="button-login-hero"
-                  >
-                    {t("landing.login")}{" "}
-                    <ArrowIcon
-                      className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
-                    />
-                  </Button>
-                </a>
+                {isAdminCheck?.isAdmin ? (
+                  <a href="/admin">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
+                      data-testid="button-admin-hero"
+                    >
+                      <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      {t("admin.title")}
+                    </Button>
+                  </a>
+                ) : (
+                  <a href="/login">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
+                      data-testid="button-login-hero"
+                    >
+                      {t("landing.login")}{" "}
+                      <ArrowIcon
+                        className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
+                      />
+                    </Button>
+                  </a>
+                )}
               </motion.div>
 
               <motion.div
