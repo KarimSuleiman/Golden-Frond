@@ -59,7 +59,7 @@ export default function Landing() {
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
         </div>
 
-        <div className="container relative z-10 px-4">
+        <div className="container mx-auto relative z-10 px-4">
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -177,7 +177,7 @@ export default function Landing() {
 
       {/* Testimonials Section */}
       <section className="py-20 bg-card border-t border-border">
-        <div className="container px-4">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -219,7 +219,7 @@ export default function Landing() {
 
       {/* About Section */}
       <section id="about" className="py-20 bg-secondary border-t border-border">
-        <div className="container px-4">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -304,7 +304,7 @@ export default function Landing() {
 
       {/* Features Strip */}
       <section className="py-20 bg-card border-t border-border">
-        <div className="container px-4">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -342,7 +342,7 @@ export default function Landing() {
         id="contact"
         className="py-20 bg-secondary border-t border-border"
       >
-        <div className="container px-4">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -473,7 +473,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-8 border-t border-border bg-card">
-        <div className="container px-4">
+        <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <img
