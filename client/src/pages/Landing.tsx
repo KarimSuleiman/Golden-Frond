@@ -487,7 +487,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-12 border-t border-border bg-secondary">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
             {/* Brand Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -498,19 +498,12 @@ export default function Landing() {
                 />
               </div>
               <p className="text-lg font-display font-bold text-foreground">
-                {t("landing.taglineShort")}
+                {t("footer.trackingTagline")}
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {t("landing.taglineDesc")}
+                {t("footer.trackingDesc")}
               </p>
               <div className="flex items-center gap-3 pt-2">
-                <a
-                  href="tel:0796796108"
-                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover-elevate transition-all"
-                  data-testid="footer-phone"
-                >
-                  <Phone className="w-4 h-4" />
-                </a>
                 <a
                   href="https://wa.me/962796796108"
                   target="_blank"
@@ -556,54 +549,41 @@ export default function Landing() {
               </ul>
             </div>
 
-            {/* Support */}
-            <div>
-              <h3 className="font-bold text-foreground mb-4">
-                {t("footer.support")}
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-notice">
-                    {t("footer.importantNotice")}
-                  </a>
-                </li>
-                <li>
-                  <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-terms">
-                    {t("footer.terms")}
-                  </a>
-                </li>
-              </ul>
-            </div>
-
             {/* Contact Us */}
             <div>
               <h3 className="font-bold text-foreground mb-4">
                 {t("footer.contactUs")}
               </h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <a 
-                    href="mailto:amairehkareem@gmail.com" 
-                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
-                    dir="ltr"
-                    data-testid="footer-contact-email"
-                  >
-                    amairehkareem@gmail.com
-                  </a>
+              <ul className="space-y-4">
+                <li>
+                  <span className="text-xs text-muted-foreground block mb-1">{t("contact.email")}</span>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <a 
+                      href="mailto:amairehkareem@gmail.com" 
+                      className="text-foreground hover:text-primary transition-colors text-sm"
+                      dir="ltr"
+                      data-testid="footer-contact-email"
+                    >
+                      amairehkareem@gmail.com
+                    </a>
+                  </div>
                 </li>
-                <li className="flex items-center gap-2">
-                  <SiWhatsapp className="w-4 h-4 text-muted-foreground" />
-                  <a 
-                    href="https://wa.me/962796796108" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
-                    dir="ltr"
-                    data-testid="footer-contact-whatsapp"
-                  >
-                    +962-796796108
-                  </a>
+                <li>
+                  <span className="text-xs text-muted-foreground block mb-1">{t("contact.whatsapp")}</span>
+                  <div className="flex items-center gap-2">
+                    <SiWhatsapp className="w-4 h-4 text-muted-foreground" />
+                    <a 
+                      href="https://wa.me/962796796108" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-foreground hover:text-primary transition-colors text-sm"
+                      dir="ltr"
+                      data-testid="footer-contact-whatsapp"
+                    >
+                      +962-796796108
+                    </a>
+                  </div>
                 </li>
               </ul>
             </div>

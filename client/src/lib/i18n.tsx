@@ -98,6 +98,8 @@ const translations: Translations = {
   "footer.contactUs": { ar: "تواصل معنا", en: "Contact us" },
   "footer.importantNotice": { ar: "إشعار مهم", en: "Important Notice" },
   "footer.terms": { ar: "الشروط والأحكام", en: "Terms and Conditions" },
+  "footer.trackingTagline": { ar: "تتبع سيارتك بكل سهولة", en: "Track Your Car with Ease" },
+  "footer.trackingDesc": { ar: "منصة السعفة الذهبية توفر لك نظام تتبع متكامل لمتابعة سياراتك من لحظة الشراء حتى وصولها إليك، مع تحديثات مباشرة لحالة الشحن.", en: "Golden Palm platform provides you with a complete tracking system to follow your cars from the moment of purchase until they reach you, with live shipping status updates." },
   "footer.home": { ar: "الرئيسية", en: "Home" },
   "footer.aboutUs": { ar: "من نحن", en: "About us" },
   "footer.login": { ar: "تسجيل الدخول", en: "Log in" },
