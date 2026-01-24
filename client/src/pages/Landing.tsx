@@ -239,7 +239,7 @@ export default function Landing() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-6 text-center"
             >
               <p className="text-lg text-muted-foreground leading-relaxed">
                 <strong className="text-foreground">
@@ -252,9 +252,9 @@ export default function Landing() {
               </p>
 
               <div className="grid sm:grid-cols-2 gap-4 pt-4">
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
+                <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-card border border-border">
                   <Calendar className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
+                  <div className="text-center">
                     <p className="text-sm text-muted-foreground">
                       {t("landing.founded")}
                     </p>
@@ -263,9 +263,9 @@ export default function Landing() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
+                <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-card border border-border">
                   <Clock className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
+                  <div className="text-center">
                     <p className="text-sm text-muted-foreground">
                       {t("landing.experience")}
                     </p>
@@ -539,8 +539,8 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="p-8 rounded-2xl bg-secondary border border-border hover:shadow-lg transition-all group">
-      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+    <div className="p-8 rounded-2xl bg-secondary border border-border hover:shadow-lg transition-all group text-center">
+      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform mx-auto">
         <Icon className="w-6 h-6 text-primary" />
       </div>
       <h3 className="text-xl font-bold font-display text-foreground mb-3">
@@ -568,13 +568,13 @@ function TestimonialCard({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
       viewport={{ once: true }}
-      className="p-6 rounded-2xl bg-secondary border border-border relative"
+      className="p-6 rounded-2xl bg-secondary border border-border relative text-center"
     >
       <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/20" />
       <p className="text-muted-foreground leading-relaxed mb-6 text-lg italic">
         "{text}"
       </p>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-center gap-3">
         <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
           <span className="text-primary font-bold text-lg">
             {name.charAt(0)}
