@@ -1,8 +1,9 @@
 import { Car } from "@shared/schema";
 import { motion } from "framer-motion";
-import { CarFront, Calendar, Palette, Fingerprint, Ship, Package, ExternalLink } from "lucide-react";
+import { CarFront, Calendar, Palette, Fingerprint, Ship, Package, ExternalLink, ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 interface CarCardProps {
   car: Car;
@@ -10,6 +11,7 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, index = 0 }: CarCardProps) {
+  const totalImages = 1 + (car.images?.length || 0);
   const statusColors: Record<string, string> = {
     "Purchased": "bg-emerald-100 text-emerald-700 border-emerald-200",
     "Reserved": "bg-amber-100 text-amber-700 border-amber-200",
@@ -23,11 +25,13 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
   };
 
   return (
+    <Link href={`/car/${car.id}`}>
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl flex flex-col h-full"
+      className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl flex flex-col h-full cursor-pointer"
+      data-testid={`card-car-${car.id}`}
     >
       {/* Image Section */}
       <div className="relative aspect-[16/9] overflow-hidden bg-secondary">
@@ -44,6 +48,14 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
         >
           {statusLabels[car.status] || car.status}
         </Badge>
+        
+        {/* Image count badge */}
+        {totalImages > 1 && (
+          <Badge className="absolute top-4 left-4 bg-black/60 text-white border-none">
+            <ImageIcon className="w-3 h-3 ml-1" />
+            {totalImages}
+          </Badge>
+        )}
       </div>
 
       {/* Content Section */}
@@ -129,7 +141,14 @@ export function CarCard({ car, index = 0 }: CarCardProps) {
             {new Date(car.createdAt!).toLocaleDateString()}
           </span>
         </div>
+
+        <div className="mt-4">
+          <Button variant="outline" className="w-full" data-testid={`button-view-car-${car.id}`}>
+            عرض التفاصيل
+          </Button>
+        </div>
       </div>
     </motion.div>
+    </Link>
   );
 }

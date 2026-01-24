@@ -6,11 +6,22 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import logoImage from "@assets/image_1769171762465.png";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
     queryKey: ["/api/auth/is-admin"],
@@ -54,7 +65,7 @@ export function Navbar() {
             {user ? (
               <Button 
                 variant="ghost" 
-                onClick={() => logout()}
+                onClick={() => setShowLogoutDialog(true)}
                 className="text-foreground/70 hover:text-destructive"
                 data-testid="button-logout"
               >
@@ -105,7 +116,7 @@ export function Navbar() {
                 {user ? (
                   <Button 
                     variant="ghost" 
-                    onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                    onClick={() => { setShowLogoutDialog(true); setIsMobileMenuOpen(false); }}
                     className="w-full justify-start text-destructive"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
@@ -123,6 +134,29 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent className="text-right" dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>تسجيل الخروج</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد تسجيل الخروج؟
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogAction 
+              onClick={() => logout()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-logout"
+            >
+              نعم، خروج
+            </AlertDialogAction>
+            <AlertDialogCancel data-testid="button-cancel-logout">
+              لا، إلغاء
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </nav>
   );
 }

@@ -28,6 +28,9 @@ export default function Admin() {
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [additionalImages, setAdditionalImages] = useState<File[]>([]);
+  const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
+  const [existingAdditionalImages, setExistingAdditionalImages] = useState<string[]>([]);
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
 
   const [carForm, setCarForm] = useState({
@@ -128,6 +131,9 @@ export default function Admin() {
     setSelectedUserId("");
     setImageFile(null);
     setImagePreview("");
+    setAdditionalImages([]);
+    setAdditionalPreviews([]);
+    setExistingAdditionalImages([]);
     setShowAddCar(false);
     setEditingCar(null);
   };
@@ -142,6 +148,29 @@ export default function Admin() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAdditionalImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setAdditionalImages((prev) => [...prev, ...files]);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setAdditionalPreviews((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeAdditionalImage = (index: number) => {
+    setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+    setAdditionalPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingAdditionalImage = (index: number) => {
+    setExistingAdditionalImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -168,10 +197,22 @@ export default function Admin() {
       return;
     }
 
+    // Upload additional images
+    const uploadedAdditionalImages: string[] = [...existingAdditionalImages];
+    for (const file of additionalImages) {
+      try {
+        const result = await uploadMutation.mutateAsync(file);
+        uploadedAdditionalImages.push(result.imageUrl);
+      } catch {
+        return;
+      }
+    }
+
     const carData = {
       ...carForm,
       userId: editingCar ? editingCar.userId : selectedUserId,
       imageUrl,
+      images: uploadedAdditionalImages.length > 0 ? uploadedAdditionalImages : null,
       price: carForm.price || null,
       containerNumber: carForm.containerNumber || null,
       bookingNumber: carForm.bookingNumber || null,
@@ -202,6 +243,7 @@ export default function Admin() {
       trackingUrl: car.trackingUrl || "",
     });
     setImagePreview(car.imageUrl);
+    setExistingAdditionalImages(car.images || []);
     setShowAddCar(true);
   };
 
@@ -391,7 +433,7 @@ export default function Admin() {
                   )}
 
                   <div className="space-y-2">
-                    <Label>صورة السيارة {!editingCar && "*"}</Label>
+                    <Label>الصورة الرئيسية {!editingCar && "*"}</Label>
                     <div className="flex items-center gap-4">
                       {imagePreview && (
                         <img src={imagePreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
@@ -408,6 +450,48 @@ export default function Admin() {
                         />
                       </label>
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>صور إضافية (اختياري)</Label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {existingAdditionalImages.map((img, idx) => (
+                        <div key={`existing-${idx}`} className="relative">
+                          <img src={img} alt="" className="w-16 h-16 object-cover rounded-lg" />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingAdditionalImage(idx)}
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center text-xs"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                      {additionalPreviews.map((preview, idx) => (
+                        <div key={`new-${idx}`} className="relative">
+                          <img src={preview} alt="" className="w-16 h-16 object-cover rounded-lg border-2 border-primary" />
+                          <button
+                            type="button"
+                            onClick={() => removeAdditionalImage(idx)}
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center text-xs"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors w-fit">
+                      <Plus className="w-4 h-4" />
+                      <span>إضافة صور</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleAdditionalImagesChange}
+                        className="hidden"
+                        data-testid="input-additional-images"
+                      />
+                    </label>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
