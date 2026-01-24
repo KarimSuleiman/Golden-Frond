@@ -65,6 +65,19 @@ const translations: Translations = {
   "landing.service3.title": { ar: "تتبع مباشر", en: "Live Tracking" },
   "landing.service3.desc": { ar: "تابع حالة سيارتك من الحجز حتى التسليم بشكل مباشر.", en: "Track your car status from reservation to delivery in real-time." },
   
+  // Landing - Testimonials
+  "landing.testimonials": { ar: "آراء عملائنا", en: "What Our Clients Say" },
+  "landing.testimonials.desc": { ar: "تجارب حقيقية من عملائنا الكرام", en: "Real experiences from our valued customers" },
+  "landing.testimonial1.name": { ar: "أحمد محمود", en: "Ahmed Mahmoud" },
+  "landing.testimonial1.role": { ar: "رجل أعمال", en: "Businessman" },
+  "landing.testimonial1.text": { ar: "تجربة ممتازة مع السعفة الذهبية. استلمت سيارتي في الوقت المحدد وبحالة ممتازة. أنصح بهم بشدة!", en: "Excellent experience with Golden Palm. I received my car on time and in perfect condition. Highly recommend them!" },
+  "landing.testimonial2.name": { ar: "محمد العلي", en: "Mohammed Al-Ali" },
+  "landing.testimonial2.role": { ar: "مهندس", en: "Engineer" },
+  "landing.testimonial2.text": { ar: "خدمة التتبع رائعة جداً. كنت أتابع سيارتي خطوة بخطوة من أمريكا حتى وصلت. شكراً لكم!", en: "The tracking service is amazing. I followed my car step by step from America until it arrived. Thank you!" },
+  "landing.testimonial3.name": { ar: "خالد السعيد", en: "Khaled Al-Saeed" },
+  "landing.testimonial3.role": { ar: "طبيب", en: "Doctor" },
+  "landing.testimonial3.text": { ar: "أكثر من ١٣ سنة خبرة تظهر في جودة الخدمة والتعامل الراقي. سأتعامل معهم دائماً.", en: "Over 13 years of experience shows in their service quality and professional treatment. Will always deal with them." },
+  
   // Landing - Contact
   "landing.contact": { ar: "تواصل معنا", en: "Contact Us" },
   "landing.contact.desc": { ar: "نحن هنا لمساعدتك. تواصل معنا عبر أي من الوسائل التالية", en: "We are here to help. Contact us through any of the following methods" },
@@ -73,6 +86,7 @@ const translations: Translations = {
   "landing.location": { ar: "الموقع", en: "Location" },
   "landing.address": { ar: "الزرقاء - المنطقة الحرة\nشارع ١٥ شمال", en: "Zarqa - Free Zone\nStreet 15 North" },
   "landing.facebook": { ar: "فيسبوك", en: "Facebook" },
+  "landing.whatsapp": { ar: "واتساب", en: "WhatsApp" },
   "landing.copyright": { ar: "السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.", en: "Golden Palm Car Trading. All rights reserved." },
   
   // Login

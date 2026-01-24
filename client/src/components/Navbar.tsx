@@ -2,7 +2,8 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Home, Menu, X, Settings, Globe, Info, Phone } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, Menu, X, Settings, Globe, Info, Phone, Mail, MapPin, ChevronDown } from "lucide-react";
+import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -17,6 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -34,10 +41,53 @@ export function Navbar() {
     { href: "/", label: t("nav.home"), icon: Home },
     ...(user ? [{ href: "/dashboard", label: t("dashboard.title"), icon: LayoutDashboard }] : []),
     ...(user && !isAdminCheck?.isAdmin ? [
-      { href: "/#about", label: t("nav.aboutUs"), icon: Info },
-      { href: "/#contact", label: t("nav.contactUs"), icon: Phone },
+      { href: "/#about", label: t("nav.aboutUs"), icon: Info, isAnchor: true },
     ] : []),
     ...(isAdminCheck?.isAdmin ? [{ href: "/admin", label: t("admin.title"), icon: Settings }] : []),
+  ];
+
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#")) {
+      e.preventDefault();
+      const id = href.substring(2);
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.location.href = href;
+      }
+    }
+  };
+
+  const contactOptions = [
+    { 
+      icon: Phone, 
+      label: t("landing.phone"), 
+      value: "0798860078", 
+      href: "tel:0798860078",
+      color: "text-green-600"
+    },
+    { 
+      icon: SiWhatsapp, 
+      label: t("landing.whatsapp"), 
+      value: "0798860078", 
+      href: "https://wa.me/962798860078",
+      color: "text-green-500"
+    },
+    { 
+      icon: Mail, 
+      label: t("landing.email"), 
+      value: "amairehkareem@gmail.com", 
+      href: "mailto:amairehkareem@gmail.com",
+      color: "text-red-500"
+    },
+    { 
+      icon: SiFacebook, 
+      label: t("landing.facebook"), 
+      value: "golden.frond.gallery", 
+      href: "https://www.facebook.com/golden.frond.gallery",
+      color: "text-blue-600"
+    },
   ];
 
   const toggleLanguage = () => {
@@ -59,17 +109,70 @@ export function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
-              <div
+            link.isAnchor ? (
+              <a 
+                key={link.href} 
+                href={link.href}
+                onClick={(e) => handleAnchorClick(e, link.href)}
                 className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
                   location === link.href ? "text-primary font-semibold" : "text-foreground/70"
                 }`}
               >
                 <link.icon className="w-4 h-4" />
                 <span>{link.label}</span>
-              </div>
-            </Link>
+              </a>
+            ) : (
+              <Link key={link.href} href={link.href}>
+                <div
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                    location === link.href ? "text-primary font-semibold" : "text-foreground/70"
+                  }`}
+                >
+                  <link.icon className="w-4 h-4" />
+                  <span>{link.label}</span>
+                </div>
+              </Link>
+            )
           ))}
+          
+          {/* Contact Dropdown - Only for non-admin users */}
+          {user && !isAdminCheck?.isAdmin && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-foreground/70 hover:text-primary"
+                  data-testid="button-contact-dropdown"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("nav.contactUs")}</span>
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={language === "ar" ? "start" : "end"} className="w-64">
+                {contactOptions.map((option, index) => (
+                  <DropdownMenuItem key={index} asChild>
+                    <a 
+                      href={option.href}
+                      target={option.href.startsWith("http") ? "_blank" : undefined}
+                      rel={option.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="flex items-center gap-3 p-3 cursor-pointer"
+                      data-testid={`contact-option-${index}`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${option.color} bg-current/10`}>
+                        <option.icon className={`w-5 h-5 ${option.color}`} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">{option.label}</p>
+                        <p className="text-xs text-muted-foreground" dir="ltr">{option.value}</p>
+                      </div>
+                    </a>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           
           {/* Language Toggle */}
           <Button 
@@ -80,7 +183,7 @@ export function Navbar() {
             data-testid="button-language-toggle"
           >
             <Globe className="w-4 h-4" />
-            <span className="mr-1">{t("common.langToggle")}</span>
+            <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("common.langToggle")}</span>
           </Button>
           
           <div className={`${language === "ar" ? "pr-4 border-r" : "pl-4 border-l"} border-border`}>
@@ -125,16 +228,53 @@ export function Navbar() {
           >
             <div className="p-4 space-y-4">
               {navLinks.map((link) => (
-                <Link key={link.href} href={link.href}>
-                  <div 
+                link.isAnchor ? (
+                  <a 
+                    key={link.href} 
+                    href={link.href}
+                    onClick={(e) => { handleAnchorClick(e, link.href); setIsMobileMenuOpen(false); }}
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
-                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <link.icon className="w-5 h-5 text-primary" />
                     <span>{link.label}</span>
-                  </div>
-                </Link>
+                  </a>
+                ) : (
+                  <Link key={link.href} href={link.href}>
+                    <div 
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <link.icon className="w-5 h-5 text-primary" />
+                      <span>{link.label}</span>
+                    </div>
+                  </Link>
+                )
               ))}
+              
+              {/* Contact Options Mobile - Only for non-admin users */}
+              {user && !isAdminCheck?.isAdmin && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground px-3">{t("nav.contactUs")}</p>
+                  {contactOptions.map((option, index) => (
+                    <a 
+                      key={index}
+                      href={option.href}
+                      target={option.href.startsWith("http") ? "_blank" : undefined}
+                      rel={option.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${option.color} bg-current/10`}>
+                        <option.icon className={`w-4 h-4 ${option.color}`} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{option.label}</p>
+                        <p className="text-xs text-muted-foreground" dir="ltr">{option.value}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
               
               {/* Language Toggle Mobile */}
               <div 

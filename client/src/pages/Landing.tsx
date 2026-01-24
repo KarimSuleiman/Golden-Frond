@@ -2,7 +2,8 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowLeft, ShieldCheck, Gem, Gauge, MapPin, Phone, Mail, Calendar, Facebook, Clock } from "lucide-react";
+import { ArrowRight, ArrowLeft, ShieldCheck, Gem, Gauge, MapPin, Phone, Mail, Calendar, Facebook, Clock, Quote, MessageCircle } from "lucide-react";
+import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 
 export default function Landing() {
@@ -105,6 +106,46 @@ export default function Landing() {
               <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -z-10" />
             </motion.div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-card border-t border-border">
+        <div className="container px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{t("landing.testimonials")}</h2>
+            <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
+            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+              {t("landing.testimonials.desc")}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <TestimonialCard 
+              name={t("landing.testimonial1.name")}
+              role={t("landing.testimonial1.role")}
+              text={t("landing.testimonial1.text")}
+              delay={0.1}
+            />
+            <TestimonialCard 
+              name={t("landing.testimonial2.name")}
+              role={t("landing.testimonial2.role")}
+              text={t("landing.testimonial2.text")}
+              delay={0.2}
+            />
+            <TestimonialCard 
+              name={t("landing.testimonial3.name")}
+              role={t("landing.testimonial3.role")}
+              text={t("landing.testimonial3.text")}
+              delay={0.3}
+            />
+          </div>
         </div>
       </section>
 
@@ -228,7 +269,7 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             <motion.a
               href="tel:0798860078"
               initial={{ opacity: 0, y: 20 }}
@@ -238,11 +279,29 @@ export default function Landing() {
               className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
               data-testid="link-phone"
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Phone className="w-7 h-7 text-primary" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <Phone className="w-8 h-8 text-white" />
               </div>
               <h3 className="font-bold text-foreground mb-1">{t("landing.phone")}</h3>
               <p className="text-muted-foreground text-center" dir="ltr">0798860078</p>
+            </motion.a>
+
+            <motion.a
+              href="https://wa.me/962798860078"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-green-500/30 transition-all group"
+              data-testid="link-whatsapp"
+            >
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <SiWhatsapp className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">{t("landing.whatsapp")}</h3>
+              <p className="text-muted-foreground text-center text-sm" dir="ltr">0798860078</p>
             </motion.a>
 
             <motion.a
@@ -251,14 +310,32 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               viewport={{ once: true }}
-              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-red-500/30 transition-all group"
               data-testid="link-email"
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Mail className="w-7 h-7 text-primary" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <Mail className="w-8 h-8 text-white" />
               </div>
               <h3 className="font-bold text-foreground mb-1">{t("landing.email")}</h3>
               <p className="text-muted-foreground text-center text-sm" dir="ltr">amairehkareem@gmail.com</p>
+            </motion.a>
+
+            <motion.a
+              href="https://www.facebook.com/golden.frond.gallery"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-blue-500/30 transition-all group"
+              data-testid="link-facebook"
+            >
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <SiFacebook className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">{t("landing.facebook")}</h3>
+              <p className="text-muted-foreground text-center text-sm">golden.frond.gallery</p>
             </motion.a>
 
             <motion.div
@@ -268,30 +345,12 @@ export default function Landing() {
               viewport={{ once: true }}
               className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-all group"
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <MapPin className="w-7 h-7 text-primary" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <MapPin className="w-8 h-8 text-white" />
               </div>
               <h3 className="font-bold text-foreground mb-1">{t("landing.location")}</h3>
               <p className="text-muted-foreground text-center text-sm whitespace-pre-line">{t("landing.address")}</p>
             </motion.div>
-
-            <motion.a
-              href="https://www.facebook.com/golden.frond.gallery"
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
-              data-testid="link-facebook"
-            >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Facebook className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="font-bold text-foreground mb-1">{t("landing.facebook")}</h3>
-              <p className="text-muted-foreground text-center text-sm">golden.frond.gallery</p>
-            </motion.a>
           </div>
         </div>
       </section>
@@ -308,14 +367,17 @@ export default function Landing() {
               © {new Date().getFullYear()} {t("landing.copyright")}
             </p>
             <div className="flex items-center gap-4">
-              <a href="tel:0798860078" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-phone">
+              <a href="tel:0798860078" className="text-muted-foreground hover:text-green-500 transition-colors" data-testid="footer-phone">
                 <Phone className="w-5 h-5" />
               </a>
-              <a href="mailto:amairehkareem@gmail.com" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-email">
+              <a href="https://wa.me/962798860078" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-green-500 transition-colors" data-testid="footer-whatsapp">
+                <SiWhatsapp className="w-5 h-5" />
+              </a>
+              <a href="mailto:amairehkareem@gmail.com" className="text-muted-foreground hover:text-red-500 transition-colors" data-testid="footer-email">
                 <Mail className="w-5 h-5" />
               </a>
-              <a href="https://www.facebook.com/golden.frond.gallery" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-facebook">
-                <Facebook className="w-5 h-5" />
+              <a href="https://www.facebook.com/golden.frond.gallery" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-blue-500 transition-colors" data-testid="footer-facebook">
+                <SiFacebook className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -336,5 +398,31 @@ function FeatureCard({ icon: Icon, title, description }: { icon: any, title: str
         {description}
       </p>
     </div>
+  );
+}
+
+function TestimonialCard({ name, role, text, delay }: { name: string, role: string, text: string, delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay }}
+      viewport={{ once: true }}
+      className="p-6 rounded-2xl bg-secondary border border-border relative"
+    >
+      <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/20" />
+      <p className="text-muted-foreground leading-relaxed mb-6 text-lg italic">
+        "{text}"
+      </p>
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+          <span className="text-primary font-bold text-lg">{name.charAt(0)}</span>
+        </div>
+        <div>
+          <p className="font-bold text-foreground">{name}</p>
+          <p className="text-sm text-muted-foreground">{role}</p>
+        </div>
+      </div>
+    </motion.div>
   );
 }
