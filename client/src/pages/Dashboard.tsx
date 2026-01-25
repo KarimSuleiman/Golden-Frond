@@ -5,7 +5,9 @@ import { Navbar } from "@/components/Navbar";
 import { CarCard } from "@/components/CarCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CarFront } from "lucide-react";
+import { AlertCircle, CarFront, Mail } from "lucide-react";
+import { SiWhatsapp, SiFacebook } from "react-icons/si";
+import logoImage from "@assets/image_1769171762465.png";
 
 export default function Dashboard() {
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -84,10 +86,118 @@ export default function Dashboard() {
         )}
       </main>
 
-      <footer className="py-8 border-t border-border bg-card text-center">
-        <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {t("dashboard.copyright")}
-        </p>
+      {/* Footer */}
+      <footer className="py-12 border-t border-border bg-secondary">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {/* Brand Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={logoImage}
+                  alt={t("common.altLogo")}
+                  className="h-12 w-auto"
+                />
+              </div>
+              <p className="text-lg font-display font-bold text-foreground">
+                {t("footer.trackingTagline")}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {t("footer.trackingDesc")}
+              </p>
+              <div className="flex items-center gap-3 pt-2">
+                <a
+                  href="https://wa.me/962796796108"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover-elevate transition-all"
+                  data-testid="footer-whatsapp"
+                >
+                  <SiWhatsapp className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.facebook.com/golden.frond.gallery"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover-elevate transition-all"
+                  data-testid="footer-facebook"
+                >
+                  <SiFacebook className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-bold text-foreground mb-4">
+                {t("footer.quickLinks")}
+              </h3>
+              <ul className="space-y-3">
+                <li>
+                  <a href="/" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-home">
+                    {t("footer.home")}
+                  </a>
+                </li>
+                <li>
+                  <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-about">
+                    {t("footer.aboutUs")}
+                  </a>
+                </li>
+                <li>
+                  <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-dashboard">
+                    {t("nav.dashboard")}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact Us */}
+            <div>
+              <h3 className="font-bold text-foreground mb-4">
+                {t("footer.contactUs")}
+              </h3>
+              <ul className="space-y-4">
+                <li>
+                  <span className="text-xs text-muted-foreground block mb-1">{t("contact.email")}</span>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <a 
+                      href="mailto:amairehkareem@gmail.com" 
+                      className="text-foreground hover:text-primary transition-colors text-sm"
+                      dir="ltr"
+                      data-testid="footer-contact-email"
+                    >
+                      amairehkareem@gmail.com
+                    </a>
+                  </div>
+                </li>
+                <li>
+                  <span className="text-xs text-muted-foreground block mb-1">{t("contact.whatsapp")}</span>
+                  <div className="flex items-center gap-2">
+                    <SiWhatsapp className="w-4 h-4 text-muted-foreground" />
+                    <a 
+                      href="https://wa.me/962796796108" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-foreground hover:text-primary transition-colors text-sm"
+                      dir="ltr"
+                      data-testid="footer-contact-whatsapp"
+                    >
+                      +962-796796108
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="pt-8 border-t border-border">
+            <p className="text-center text-sm text-muted-foreground">
+              © {new Date().getFullYear()} {t("landing.copyright")}
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

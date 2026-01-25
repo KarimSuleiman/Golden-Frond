@@ -35,13 +35,20 @@ export default function Login() {
       
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: t("login.welcome"),
         description: t("login.success"),
       });
-      setLocation("/dashboard");
+      // Check if user is admin and redirect accordingly
+      const isAdminRes = await fetch("/api/auth/is-admin", { credentials: "include" });
+      const isAdminData = await isAdminRes.json();
+      if (isAdminData.isAdmin) {
+        setLocation("/");
+      } else {
+        setLocation("/dashboard");
+      }
     },
     onError: (error: Error) => {
       toast({
