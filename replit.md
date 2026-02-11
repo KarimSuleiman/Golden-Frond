@@ -76,7 +76,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Database
 - **PostgreSQL**: Primary data store, connection via `DATABASE_URL` environment variable
-- **Tables**: `users`, `sessions` (auth), `cars` (domain)
+- **Tables**: `users`, `sessions` (auth), `cars`, `listings`, `favorites` (domain)
 
 ### Authentication
 - **Replit Auth**: OIDC-based authentication
@@ -92,6 +92,16 @@ Preferred communication style: Simple, everyday language.
 - **react-icons/si**: Brand logos (WhatsApp, Facebook)
 - **Framer Motion**: Page transitions and scroll animations
 - **Google Fonts**: Manrope (body) and Playfair Display (display)
+
+### Marketplace Filter System
+- Full-screen filter panel (FilterPanel component) accessible from CarsForSale page
+- Filter categories: condition, make, model, year range, price range, body type, seats, fuel type, transmission, exterior/interior color, interior/exterior features, regional specs, country of origin, license, insurance, customs
+- Chip-style selection UI with show more/less toggles
+- Color picker with color circles
+- Active filter count badge on filter button
+- Client-side filtering via `applyFilters` function
+- Listings schema includes all filterable columns
+- AddListing form includes all filterable fields for sellers to set
 
 ### Landing Page Sections
 - Hero with brand logo and CTA buttons

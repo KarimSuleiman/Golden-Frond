@@ -7,72 +7,43 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter, Plus, MapPin, Calendar, Gauge, Heart, X, Phone } from "lucide-react";
+import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
+import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
 import type { Listing } from "@shared/schema";
 
 export default function CarsForSale() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterMake, setFilterMake] = useState("");
-  const [filterYear, setFilterYear] = useState("");
-  const [filterCondition, setFilterCondition] = useState("");
-  const [filterPriceRange, setFilterPriceRange] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({ ...emptyFilters });
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   const { data: listings = [], isLoading } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
   });
 
-  const uniqueMakes = useMemo(() => {
-    const makes = Array.from(new Set(listings.map((l) => l.make).filter(Boolean))) as string[];
-    return makes.sort();
-  }, [listings]);
-
-  const uniqueYears = useMemo(() => {
-    const years = Array.from(new Set(listings.map((l) => l.year).filter(Boolean))) as number[];
-    return years.sort((a, b) => b - a);
-  }, [listings]);
-
   const filteredListings = useMemo(() => {
-    return listings.filter((listing) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesSearch =
-          (listing.make || "").toLowerCase().includes(query) ||
-          (listing.model || "").toLowerCase().includes(query) ||
-          (listing.description || "").toLowerCase().includes(query);
-        if (!matchesSearch) return false;
-      }
-      if (filterMake && filterMake !== "all" && listing.make !== filterMake) return false;
-      if (filterYear && filterYear !== "all" && listing.year !== parseInt(filterYear)) return false;
-      if (filterCondition && filterCondition !== "all" && listing.condition !== filterCondition) return false;
-      if (filterPriceRange && filterPriceRange !== "all") {
-        if (!listing.price) return false;
-        const [min, max] = filterPriceRange.split("-").map(Number);
-        if (max) {
-          if (listing.price < min || listing.price > max) return false;
-        } else {
-          if (listing.price < min) return false;
-        }
-      }
-      return true;
-    });
-  }, [listings, searchQuery, filterMake, filterYear, filterCondition, filterPriceRange]);
+    return applyFilters(listings, filters, searchQuery);
+  }, [listings, filters, searchQuery]);
 
-  const hasActiveFilters = searchQuery || filterMake || filterYear || filterCondition || filterPriceRange;
+  const hasActiveFilters = searchQuery || hasActiveFiltersCheck(filters);
 
   const clearFilters = () => {
     setSearchQuery("");
-    setFilterMake("");
-    setFilterYear("");
-    setFilterCondition("");
-    setFilterPriceRange("");
+    setFilters({ ...emptyFilters });
   };
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    for (const [, v] of Object.entries(filters)) {
+      if (Array.isArray(v)) { if (v.length > 0) count++; }
+      else if (v !== "") count++;
+    }
+    return count;
+  }, [filters]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
@@ -112,11 +83,17 @@ export default function CarsForSale() {
             </div>
             <Button
               variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => setShowFilterPanel(true)}
+              className="relative"
               data-testid="button-toggle-filters"
             >
               <Filter className="w-4 h-4" />
               <span className={language === "ar" ? "mr-2" : "ml-2"}>{t("marketplace.filter")}</span>
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
             </Button>
             {hasActiveFilters && (
               <Button variant="ghost" onClick={clearFilters} data-testid="button-clear-filters">
@@ -125,58 +102,6 @@ export default function CarsForSale() {
               </Button>
             )}
           </div>
-
-          {showFilters && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Select value={filterMake} onValueChange={setFilterMake}>
-                <SelectTrigger data-testid="select-filter-make">
-                  <SelectValue placeholder={t("marketplace.allBrands")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("marketplace.allBrands")}</SelectItem>
-                  {uniqueMakes.map((make) => (
-                    <SelectItem key={make} value={make}>{make}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={filterYear} onValueChange={setFilterYear}>
-                <SelectTrigger data-testid="select-filter-year">
-                  <SelectValue placeholder={t("admin.filter.allYears")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("admin.filter.allYears")}</SelectItem>
-                  {uniqueYears.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={filterCondition} onValueChange={setFilterCondition}>
-                <SelectTrigger data-testid="select-filter-condition">
-                  <SelectValue placeholder={t("marketplace.allConditions")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("marketplace.allConditions")}</SelectItem>
-                  <SelectItem value="new">{t("marketplace.conditionNew")}</SelectItem>
-                  <SelectItem value="used">{t("marketplace.conditionUsed")}</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={filterPriceRange} onValueChange={setFilterPriceRange}>
-                <SelectTrigger data-testid="select-filter-price">
-                  <SelectValue placeholder={t("marketplace.allPrices")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("marketplace.allPrices")}</SelectItem>
-                  <SelectItem value="0-10000">{t("marketplace.priceUnder10k")}</SelectItem>
-                  <SelectItem value="10000-25000">{t("marketplace.price10to25k")}</SelectItem>
-                  <SelectItem value="25000-50000">{t("marketplace.price25to50k")}</SelectItem>
-                  <SelectItem value="50000-0">{t("marketplace.priceOver50k")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
         </div>
 
         {isLoading ? (
@@ -236,6 +161,15 @@ export default function CarsForSale() {
           </div>
         </div>
       </footer>
+
+      <FilterPanel
+        open={showFilterPanel}
+        onClose={() => setShowFilterPanel(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        listings={listings}
+        filteredCount={filteredListings.length}
+      />
     </div>
   );
 }
