@@ -27,12 +27,12 @@ export default function CarsForSale() {
   });
 
   const uniqueMakes = useMemo(() => {
-    const makes = Array.from(new Set(listings.map((l) => l.make)));
+    const makes = Array.from(new Set(listings.map((l) => l.make).filter(Boolean))) as string[];
     return makes.sort();
   }, [listings]);
 
   const uniqueYears = useMemo(() => {
-    const years = Array.from(new Set(listings.map((l) => l.year)));
+    const years = Array.from(new Set(listings.map((l) => l.year).filter(Boolean))) as number[];
     return years.sort((a, b) => b - a);
   }, [listings]);
 
@@ -41,8 +41,8 @@ export default function CarsForSale() {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesSearch =
-          listing.make.toLowerCase().includes(query) ||
-          listing.model.toLowerCase().includes(query) ||
+          (listing.make || "").toLowerCase().includes(query) ||
+          (listing.model || "").toLowerCase().includes(query) ||
           (listing.description || "").toLowerCase().includes(query);
         if (!matchesSearch) return false;
       }
@@ -50,6 +50,7 @@ export default function CarsForSale() {
       if (filterYear && filterYear !== "all" && listing.year !== parseInt(filterYear)) return false;
       if (filterCondition && filterCondition !== "all" && listing.condition !== filterCondition) return false;
       if (filterPriceRange && filterPriceRange !== "all") {
+        if (!listing.price) return false;
         const [min, max] = filterPriceRange.split("-").map(Number);
         if (max) {
           if (listing.price < min || listing.price > max) return false;
@@ -246,7 +247,7 @@ function ListingCard({ listing }: { listing: Listing }) {
             </h3>
           </div>
           <p className="text-primary font-bold text-xl mb-3" data-testid={`text-price-${listing.id}`}>
-            {listing.price.toLocaleString()} {t("marketplace.currency")}
+            {listing.price ? `${listing.price.toLocaleString()} ${t("marketplace.currency")}` : t("marketplace.priceOnRequest")}
           </p>
           <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1">

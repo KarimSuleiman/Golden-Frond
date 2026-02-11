@@ -28,11 +28,11 @@ export default function AddListing() {
   const [form, setForm] = useState({
     make: "",
     model: "",
-    year: new Date().getFullYear(),
-    price: 0,
+    year: "",
+    price: "",
     color: "",
     condition: "used",
-    mileage: 0,
+    mileage: "",
     bodyType: "",
     transmission: "",
     fuelType: "",
@@ -111,11 +111,6 @@ export default function AddListing() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.make || !form.model || !form.price || !form.color) {
-      toast({ title: t("common.error"), description: t("marketplace.fillRequired"), variant: "destructive" });
-      return;
-    }
-
     if (!imageFile) {
       toast({ title: t("common.error"), description: t("marketplace.imageRequired"), variant: "destructive" });
       return;
@@ -140,10 +135,15 @@ export default function AddListing() {
     }
 
     createMutation.mutate({
-      ...form,
+      make: form.make || null,
+      model: form.model || null,
+      year: form.year ? parseInt(form.year) : null,
+      price: form.price ? parseInt(form.price) : null,
+      color: form.color || null,
+      condition: form.condition || "used",
       imageUrl,
       images: uploadedAdditional.length > 0 ? uploadedAdditional : null,
-      mileage: form.mileage || null,
+      mileage: form.mileage ? parseInt(form.mileage) : null,
       bodyType: form.bodyType || null,
       transmission: form.transmission || null,
       fuelType: form.fuelType || null,
@@ -204,11 +204,11 @@ export default function AddListing() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>{t("marketplace.yearLabel")}</Label>
-                  <Input type="number" value={form.year} onChange={(e) => setForm({ ...form, year: parseInt(e.target.value) || 0 })} data-testid="input-year" />
+                  <Input type="number" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} placeholder="2025" data-testid="input-year" />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("marketplace.priceLabel")}</Label>
-                  <Input type="number" value={form.price || ""} onChange={(e) => setForm({ ...form, price: parseInt(e.target.value) || 0 })} data-testid="input-price" />
+                  <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} data-testid="input-price" />
                 </div>
               </div>
 
@@ -234,11 +234,25 @@ export default function AddListing() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>{t("marketplace.mileage")}</Label>
-                  <Input type="number" value={form.mileage || ""} onChange={(e) => setForm({ ...form, mileage: parseInt(e.target.value) || 0 })} data-testid="input-mileage" />
+                  <Input type="number" value={form.mileage} onChange={(e) => setForm({ ...form, mileage: e.target.value })} data-testid="input-mileage" />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("marketplace.bodyType")}</Label>
-                  <Input value={form.bodyType} onChange={(e) => setForm({ ...form, bodyType: e.target.value })} data-testid="input-body-type" />
+                  <Select value={form.bodyType} onValueChange={(v) => setForm({ ...form, bodyType: v })}>
+                    <SelectTrigger data-testid="select-body-type">
+                      <SelectValue placeholder={t("marketplace.selectOption")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sedan">{t("marketplace.bodySedan")}</SelectItem>
+                      <SelectItem value="suv">{t("marketplace.bodySUV")}</SelectItem>
+                      <SelectItem value="hatchback">{t("marketplace.bodyHatchback")}</SelectItem>
+                      <SelectItem value="coupe">{t("marketplace.bodyCoupe")}</SelectItem>
+                      <SelectItem value="pickup">{t("marketplace.bodyPickup")}</SelectItem>
+                      <SelectItem value="van">{t("marketplace.bodyVan")}</SelectItem>
+                      <SelectItem value="wagon">{t("marketplace.bodyWagon")}</SelectItem>
+                      <SelectItem value="convertible">{t("marketplace.bodyConvertible")}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

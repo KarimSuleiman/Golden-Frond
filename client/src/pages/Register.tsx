@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/i18n";
-import { Loader2, UserPlus, Lock, Mail, Eye, EyeOff, Globe, User } from "lucide-react";
+import { Loader2, UserPlus, Lock, Mail, Eye, EyeOff, Globe, User, Phone } from "lucide-react";
 import logoImage from "@assets/image_1769171762465.png";
 
 export default function Register() {
@@ -20,10 +20,11 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const registerMutation = useMutation({
-    mutationFn: async (data: { email: string; password: string; firstName: string; lastName: string }) => {
+    mutationFn: async (data: { email: string; password: string; firstName: string; lastName: string; phone: string }) => {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,7 +80,7 @@ export default function Register() {
       });
       return;
     }
-    registerMutation.mutate({ email, password, firstName, lastName });
+    registerMutation.mutate({ email, password, firstName, lastName, phone });
   };
 
   const toggleLanguage = () => {
@@ -149,6 +150,23 @@ export default function Register() {
                   className={language === "ar" ? "pr-10 text-left" : "pl-10 text-left"}
                   dir="ltr"
                   data-testid="input-email"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-foreground">{t("register.phone")}</Label>
+              <div className="relative">
+                <Phone className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground`} />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="07XXXXXXXX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className={language === "ar" ? "pr-10 text-left" : "pl-10 text-left"}
+                  dir="ltr"
+                  data-testid="input-phone"
                 />
               </div>
             </div>

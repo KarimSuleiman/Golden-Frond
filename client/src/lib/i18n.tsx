@@ -330,6 +330,30 @@ const translations: Translations = {
   "marketplace.electric": { ar: "كهربائي", en: "Electric" },
   "marketplace.myListings": { ar: "إعلاناتي", en: "My Listings" },
   "marketplace.favorites": { ar: "المفضلة", en: "Favorites" },
+  "marketplace.priceOnRequest": { ar: "السعر عند الطلب", en: "Price on Request" },
+  "marketplace.suggestedListings": { ar: "إعلانات أخرى قد تعجبك", en: "Other Listings You May Like" },
+  "marketplace.share": { ar: "مشاركة", en: "Share" },
+  "marketplace.copyLink": { ar: "نسخ الرابط", en: "Copy Link" },
+  "marketplace.shareWhatsApp": { ar: "مشاركة عبر واتساب", en: "Share via WhatsApp" },
+  "marketplace.shareFacebook": { ar: "مشاركة عبر فيسبوك", en: "Share via Facebook" },
+  "marketplace.shareEmail": { ar: "مشاركة عبر البريد", en: "Share via Email" },
+  "marketplace.bodySedan": { ar: "سيدان", en: "Sedan" },
+  "marketplace.bodySUV": { ar: "جيب / SUV", en: "SUV" },
+  "marketplace.bodyHatchback": { ar: "هاتشباك", en: "Hatchback" },
+  "marketplace.bodyCoupe": { ar: "كوبيه", en: "Coupe" },
+  "marketplace.bodyPickup": { ar: "بيك أب", en: "Pickup" },
+  "marketplace.bodyVan": { ar: "فان", en: "Van" },
+  "marketplace.bodyWagon": { ar: "ستيشن واغن", en: "Wagon" },
+  "marketplace.bodyConvertible": { ar: "مكشوفة", en: "Convertible" },
+
+  // Register
+  "register.phone": { ar: "رقم الهاتف", en: "Phone Number" },
+
+  // Dashboard
+  "dashboard.favorites": { ar: "المفضلة", en: "Favorites" },
+  "dashboard.noFavoritesTitle": { ar: "لا توجد مفضلات", en: "No Favorites" },
+  "dashboard.noFavorites": { ar: "لم تقم بإضافة أي سيارات إلى المفضلة بعد. تصفح السيارات المعروضة للبيع وأضف ما يعجبك.", en: "You haven't added any cars to your favorites yet. Browse cars for sale and add the ones you like." },
+  "dashboard.browseCars": { ar: "تصفح السيارات", en: "Browse Cars" },
 
   // Admin role filter
   "admin.filter.role": { ar: "الرتبة", en: "Role" },

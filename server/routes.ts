@@ -119,7 +119,7 @@ export async function registerRoutes(
 
   app.post("/api/auth/register", async (req: any, res) => {
     try {
-      const { email, password, firstName, lastName } = req.body;
+      const { email, password, firstName, lastName, phone } = req.body;
 
       if (!email || !password) {
         return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
@@ -143,6 +143,7 @@ export async function registerRoutes(
         password: hashedPassword,
         firstName: firstName || null,
         lastName: lastName || null,
+        phone: phone || null,
         role: "user",
         isAdmin: "false",
       });
@@ -417,13 +418,18 @@ export async function registerRoutes(
   app.get("/api/favorites", isAuthenticated, async (req: any, res) => {
     try {
       const userFavorites = await storage.getUserFavorites(req.user.claims.sub);
-      const listingIds = userFavorites.map(f => f.listingId);
-      const favListings = [];
-      for (const lid of listingIds) {
-        const listing = await storage.getListing(lid);
-        if (listing) favListings.push(listing);
+      const favWithListings = [];
+      for (const fav of userFavorites) {
+        const listing = await storage.getListing(fav.listingId);
+        if (listing) {
+          favWithListings.push({
+            id: fav.id,
+            listingId: fav.listingId,
+            listing,
+          });
+        }
       }
-      res.json(favListings);
+      res.json(favWithListings);
     } catch (error) {
       res.status(500).json({ message: "خطأ في جلب المفضلة" });
     }

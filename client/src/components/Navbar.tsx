@@ -4,7 +4,7 @@ import { useLanguage } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
   LogOut,
-  LayoutDashboard,
+  Heart,
   Home,
   Menu,
   X,
@@ -58,8 +58,8 @@ export function Navbar() {
       ? [
           {
             href: "/dashboard",
-            label: t("dashboard.title"),
-            icon: LayoutDashboard,
+            label: t("dashboard.favorites"),
+            icon: Heart,
           },
         ]
       : []),

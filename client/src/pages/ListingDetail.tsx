@@ -7,10 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Fuel, Settings2, Share2 } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
+import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail } from "lucide-react";
+import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useState } from "react";
 import type { Listing } from "@shared/schema";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ListingWithMeta extends Listing {
   isFavorited: boolean;
@@ -30,6 +36,15 @@ export default function ListingDetail() {
     queryFn: async () => {
       const res = await fetch(`/api/listings/${params.id}`, { credentials: "include" });
       if (!res.ok) throw new Error("Not found");
+      return res.json();
+    },
+  });
+
+  const { data: allListings } = useQuery<Listing[]>({
+    queryKey: ["/api/listings"],
+    queryFn: async () => {
+      const res = await fetch("/api/listings");
+      if (!res.ok) throw new Error("Error");
       return res.json();
     },
   });
@@ -80,19 +95,27 @@ export default function ListingDetail() {
   const allImages = [listing.imageUrl, ...(listing.images || [])];
   const BackArrow = language === "ar" ? ArrowRight : ArrowLeft;
 
+  const listingTitle = [listing.make, listing.model, listing.year].filter(Boolean).join(" ");
+  const shareUrl = window.location.href;
+  const shareText = listingTitle || t("marketplace.title");
+
   const specs = [
-    { label: t("marketplace.condition"), value: listing.condition === "new" ? t("marketplace.conditionNew") : t("marketplace.conditionUsed") },
-    { label: t("marketplace.brand"), value: listing.make },
-    { label: t("marketplace.model"), value: listing.model },
-    { label: t("marketplace.yearLabel"), value: listing.year.toString() },
-    { label: t("marketplace.color"), value: listing.color },
-    ...(listing.bodyType ? [{ label: t("marketplace.bodyType"), value: listing.bodyType }] : []),
-    ...(listing.transmission ? [{ label: t("marketplace.transmission"), value: listing.transmission }] : []),
+    ...(listing.condition ? [{ label: t("marketplace.condition"), value: listing.condition === "new" ? t("marketplace.conditionNew") : t("marketplace.conditionUsed") }] : []),
+    ...(listing.make ? [{ label: t("marketplace.brand"), value: listing.make }] : []),
+    ...(listing.model ? [{ label: t("marketplace.model"), value: listing.model }] : []),
+    ...(listing.year ? [{ label: t("marketplace.yearLabel"), value: listing.year.toString() }] : []),
+    ...(listing.color ? [{ label: t("marketplace.color"), value: listing.color }] : []),
+    ...(listing.bodyType ? [{ label: t("marketplace.bodyType"), value: getBodyTypeLabel(listing.bodyType, t) }] : []),
+    ...(listing.transmission ? [{ label: t("marketplace.transmission"), value: listing.transmission === "automatic" ? t("marketplace.automatic") : t("marketplace.manual") }] : []),
     ...(listing.fuelType ? [{ label: t("marketplace.fuelType"), value: listing.fuelType }] : []),
     ...(listing.engineSize ? [{ label: t("marketplace.engineSize"), value: listing.engineSize }] : []),
     ...(listing.mileage ? [{ label: t("marketplace.mileage"), value: `${listing.mileage.toLocaleString()} ${t("marketplace.km")}` }] : []),
     ...(listing.location ? [{ label: t("marketplace.location"), value: listing.location }] : []),
   ];
+
+  const suggestedListings = (allListings || [])
+    .filter((l) => l.id !== listing.id && l.status === "active")
+    .slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background" dir={dir}>
@@ -108,7 +131,7 @@ export default function ListingDetail() {
         <div className="relative rounded-md overflow-hidden mb-6 bg-black">
           <img
             src={allImages[currentImageIndex]}
-            alt={`${listing.make} ${listing.model}`}
+            alt={listingTitle}
             className="w-full h-[300px] md:h-[450px] object-contain"
             data-testid="img-listing-main"
           />
@@ -135,10 +158,10 @@ export default function ListingDetail() {
           <div className="md:col-span-2 space-y-6">
             <div>
               <p className="text-primary font-bold text-2xl mb-1" data-testid="text-listing-price">
-                {listing.price.toLocaleString()} {t("marketplace.currency")}
+                {listing.price ? `${listing.price.toLocaleString()} ${t("marketplace.currency")}` : t("marketplace.priceOnRequest")}
               </p>
               <h1 className="text-xl font-bold text-foreground" data-testid="text-listing-title">
-                {listing.make} {listing.model} {listing.year}
+                {listingTitle}
               </h1>
               <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
                 {listing.mileage && (
@@ -147,10 +170,12 @@ export default function ListingDetail() {
                     {listing.mileage.toLocaleString()} {t("marketplace.km")}
                   </span>
                 )}
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {listing.year}
-                </span>
+                {listing.year && (
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {listing.year}
+                  </span>
+                )}
                 {listing.location && (
                   <span className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
@@ -160,16 +185,18 @@ export default function ListingDetail() {
               </div>
             </div>
 
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                {specs.map((spec, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b border-border last:border-0" data-testid={`spec-row-${idx}`}>
-                    <span className="text-muted-foreground">{spec.label}</span>
-                    <span className="font-medium text-foreground">{spec.value}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            {specs.length > 0 && (
+              <Card>
+                <CardContent className="p-4 space-y-3">
+                  {specs.map((spec, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-2 border-b border-border last:border-0" data-testid={`spec-row-${idx}`}>
+                      <span className="text-muted-foreground">{spec.label}</span>
+                      <span className="font-medium text-foreground">{spec.value}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
             {listing.description && (
               <Card>
@@ -180,6 +207,39 @@ export default function ListingDetail() {
                   </p>
                 </CardContent>
               </Card>
+            )}
+
+            {suggestedListings.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-lg font-bold text-foreground mb-4" data-testid="text-suggestions-title">
+                  {t("marketplace.suggestedListings")}
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {suggestedListings.map((item) => (
+                    <Link key={item.id} href={`/listing/${item.id}`}>
+                      <Card className="overflow-hidden cursor-pointer hover-elevate transition-all" data-testid={`card-suggested-${item.id}`}>
+                        <div className="aspect-video overflow-hidden">
+                          <img
+                            src={item.imageUrl}
+                            alt={[item.make, item.model].filter(Boolean).join(" ")}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <CardContent className="p-3">
+                          <p className="font-medium text-foreground text-sm truncate">
+                            {[item.make, item.model, item.year].filter(Boolean).join(" ")}
+                          </p>
+                          {item.price && (
+                            <p className="text-primary font-bold text-sm mt-1">
+                              {item.price.toLocaleString()} {t("marketplace.currency")}
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
 
@@ -202,33 +262,76 @@ export default function ListingDetail() {
               </a>
             )}
 
-            <div className="flex gap-2">
-              {user && (
-                <Button
-                  variant="outline"
-                  className={`flex-1 ${listing.isFavorited ? "text-red-500 border-red-500/30" : ""}`}
-                  onClick={() => favMutation.mutate()}
-                  disabled={favMutation.isPending}
-                  data-testid="button-toggle-favorite"
-                >
-                  <Heart className={`w-4 h-4 ${listing.isFavorited ? "fill-current" : ""}`} />
-                  <span className={language === "ar" ? "mr-2" : "ml-2"}>
-                    {listing.isFavorited ? t("marketplace.saved") : t("marketplace.saveListing")}
-                  </span>
-                </Button>
-              )}
+            {user && (
               <Button
                 variant="outline"
-                size="icon"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast({ title: t("marketplace.linkCopied") });
-                }}
-                data-testid="button-share"
+                className={`w-full ${listing.isFavorited ? "text-red-500 border-red-500/30" : ""}`}
+                onClick={() => favMutation.mutate()}
+                disabled={favMutation.isPending}
+                data-testid="button-toggle-favorite"
               >
-                <Share2 className="w-4 h-4" />
+                <Heart className={`w-4 h-4 ${listing.isFavorited ? "fill-current" : ""}`} />
+                <span className={language === "ar" ? "mr-2" : "ml-2"}>
+                  {listing.isFavorited ? t("marketplace.saved") : t("marketplace.saveListing")}
+                </span>
               </Button>
-            </div>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full" data-testid="button-share">
+                  <Share2 className="w-4 h-4" />
+                  <span className={language === "ar" ? "mr-2" : "ml-2"}>{t("marketplace.share")}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={language === "ar" ? "start" : "end"} className="w-56">
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareUrl);
+                    toast({ title: t("marketplace.linkCopied") });
+                  }}
+                  className="cursor-pointer"
+                  data-testid="share-copy-link"
+                >
+                  <Copy className="w-4 h-4" />
+                  <span className={language === "ar" ? "mr-2" : "ml-2"}>{t("marketplace.copyLink")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cursor-pointer"
+                    data-testid="share-whatsapp"
+                  >
+                    <SiWhatsapp className="w-4 h-4" />
+                    <span className={language === "ar" ? "mr-2" : "ml-2"}>{t("marketplace.shareWhatsApp")}</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cursor-pointer"
+                    data-testid="share-facebook"
+                  >
+                    <SiFacebook className="w-4 h-4" />
+                    <span className={language === "ar" ? "mr-2" : "ml-2"}>{t("marketplace.shareFacebook")}</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a
+                    href={`mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareUrl)}`}
+                    className="cursor-pointer"
+                    data-testid="share-email"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span className={language === "ar" ? "mr-2" : "ml-2"}>{t("marketplace.shareEmail")}</span>
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {listing.seller && (
               <Card>
@@ -245,4 +348,18 @@ export default function ListingDetail() {
       </div>
     </div>
   );
+}
+
+function getBodyTypeLabel(bodyType: string, t: (key: string) => string): string {
+  const map: Record<string, string> = {
+    sedan: "marketplace.bodySedan",
+    suv: "marketplace.bodySUV",
+    hatchback: "marketplace.bodyHatchback",
+    coupe: "marketplace.bodyCoupe",
+    pickup: "marketplace.bodyPickup",
+    van: "marketplace.bodyVan",
+    wagon: "marketplace.bodyWagon",
+    convertible: "marketplace.bodyConvertible",
+  };
+  return map[bodyType] ? t(map[bodyType]) : bodyType;
 }
