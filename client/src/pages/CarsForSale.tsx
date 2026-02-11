@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter, Plus, MapPin, Calendar, Gauge, Heart, X } from "lucide-react";
+import { Search, Filter, Plus, MapPin, Calendar, Gauge, Heart, X, Phone } from "lucide-react";
+import { SiWhatsapp, SiFacebook } from "react-icons/si";
+import logoImage from "@assets/image_1769171762465.png";
 import type { Listing } from "@shared/schema";
 
 export default function CarsForSale() {
@@ -209,6 +211,31 @@ export default function CarsForSale() {
           </div>
         )}
       </main>
+
+      <footer className="py-6 border-t border-border bg-secondary">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img src={logoImage} alt={t("common.altLogo")} className="h-8 w-auto" />
+              <span className="text-sm text-muted-foreground">{t("landing.brandName")}</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="https://wa.me/962796796108" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="WhatsApp" data-testid="footer-cfs-whatsapp">
+                <SiWhatsapp className="w-4 h-4" />
+              </a>
+              <a href="https://www.facebook.com/golden.frond.gallery" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Facebook" data-testid="footer-cfs-facebook">
+                <SiFacebook className="w-4 h-4" />
+              </a>
+              <a href="tel:0796796108" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Phone" data-testid="footer-cfs-phone">
+                <Phone className="w-4 h-4" />
+              </a>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              &copy; {new Date().getFullYear()} {t("landing.copyright")}
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

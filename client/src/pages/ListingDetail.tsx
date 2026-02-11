@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
+import logoImage from "@assets/image_1769171762465.png";
 import { useState } from "react";
 import type { Listing } from "@shared/schema";
 import {
@@ -346,6 +347,31 @@ export default function ListingDetail() {
           </div>
         </div>
       </div>
+
+      <footer className="mt-12 py-6 border-t border-border bg-secondary">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img src={logoImage} alt={t("common.altLogo")} className="h-8 w-auto" />
+              <span className="text-sm text-muted-foreground">{t("landing.brandName")}</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="https://wa.me/962796796108" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="WhatsApp" data-testid="footer-detail-whatsapp">
+                <SiWhatsapp className="w-4 h-4" />
+              </a>
+              <a href="https://www.facebook.com/golden.frond.gallery" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Facebook" data-testid="footer-detail-facebook">
+                <SiFacebook className="w-4 h-4" />
+              </a>
+              <a href="tel:0796796108" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Phone" data-testid="footer-detail-phone">
+                <Phone className="w-4 h-4" />
+              </a>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              &copy; {new Date().getFullYear()} {t("landing.copyright")}
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

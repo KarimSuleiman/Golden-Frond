@@ -19,6 +19,7 @@ import {
   Quote,
   MessageCircle,
   Settings,
+  Car,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
@@ -92,37 +93,37 @@ export default function Landing() {
                 className="flex flex-wrap gap-4 justify-center lg:justify-start"
               >
                 {isAdminCheck?.isAdmin ? (
-                  <a href="/admin">
-                    <Button
-                      size="lg"
-                      className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
-                      data-testid="button-admin-hero"
-                    >
-                      <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                      {t("admin.title")}
-                    </Button>
-                  </a>
-                ) : user ? (
-                  <a href="/dashboard">
-                    <Button
-                      size="lg"
-                      className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
-                      data-testid="button-my-cars-hero"
-                    >
-                      {t("landing.myCars")}{" "}
-                      <ArrowIcon
-                        className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
-                      />
-                    </Button>
-                  </a>
+                  <>
+                    <a href="/admin">
+                      <Button
+                        size="lg"
+                        className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
+                        data-testid="button-admin-hero"
+                      >
+                        <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                        {t("admin.title")}
+                      </Button>
+                    </a>
+                    <a href="/cars-for-sale">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="text-lg px-8 py-6 h-auto shadow-md hover:scale-105 transition-all"
+                        data-testid="button-cars-for-sale-hero"
+                      >
+                        <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                        {t("nav.carsForSale")}
+                      </Button>
+                    </a>
+                  </>
                 ) : (
-                  <a href="/login">
+                  <a href="/cars-for-sale">
                     <Button
                       size="lg"
                       className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
-                      data-testid="button-login-hero"
+                      data-testid="button-cars-for-sale-hero"
                     >
-                      {t("nav.login")}{" "}
+                      {t("nav.carsForSale")}{" "}
                       <ArrowIcon
                         className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
                       />

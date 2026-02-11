@@ -18,6 +18,7 @@ interface AdminUser {
   email: string;
   firstName: string | null;
   lastName: string | null;
+  phone: string | null;
   isAdmin: string | null;
   role: string;
   createdAt: Date | null;
@@ -532,59 +533,89 @@ export default function Admin() {
                           )}
                         </div>
                         
-                        {/* Expanded Cars Section */}
-                        {isExpanded && userCars.length > 0 && (
-                          <div className="border-t border-border p-3 space-y-2">
-                            {userCars.map((car) => (
-                              <div 
-                                key={car.id} 
-                                className="flex gap-3 p-2 rounded-lg bg-card border border-border"
-                                data-testid={`user-car-${car.id}`}
-                              >
-                                <img
-                                  src={car.imageUrl}
-                                  alt={`${car.make} ${car.model}`}
-                                  className="w-16 h-16 object-cover rounded"
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-semibold text-sm text-foreground truncate">
-                                    {car.make} {car.model} {car.year}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">{car.color}</p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <span
-                                      className={`text-xs px-1.5 py-0.5 rounded ${
-                                        car.status === "In Transit"
-                                          ? "bg-blue-500/20 text-blue-600"
-                                          : car.status === "Purchased"
-                                          ? "bg-green-500/20 text-green-600"
-                                          : "bg-yellow-500/20 text-yellow-600"
-                                      }`}
-                                    >
-                                      {car.status === "In Transit"
-                                        ? t("car.status.inTransit")
-                                        : car.status === "Purchased"
-                                        ? t("car.status.purchased")
-                                        : t("car.status.reserved")}
-                                    </span>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon"
-                                      onClick={() => handleEdit(car)}
-                                      data-testid={`button-edit-user-car-${car.id}`}
-                                    >
-                                      <Edit className="w-3 h-3" />
-                                    </Button>
-                                  </div>
+                        {isExpanded && (
+                          <div className="border-t border-border p-3 space-y-3">
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">{t("register.phone")}:</span>
+                                <span className="font-medium text-foreground" dir="ltr">{user.phone || "-"}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">{t("login.password")}:</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-muted-foreground">{"••••••••"}</span>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedUserForPassword(user);
+                                      setShowPasswordModal(true);
+                                    }}
+                                    data-testid={`button-inline-change-pw-${user.id}`}
+                                  >
+                                    <Key className="w-3 h-3" />
+                                    <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
+                                  </Button>
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {isExpanded && userCars.length === 0 && (
-                          <div className="border-t border-border p-3 text-center text-sm text-muted-foreground">
-                            {t("dashboard.noCars")}
+                            </div>
+
+                            {userCars.length > 0 ? (
+                              <div className="space-y-2">
+                                <p className="text-xs font-medium text-muted-foreground">
+                                  {t("admin.cars")} ({userCars.length})
+                                </p>
+                                {userCars.map((car) => (
+                                  <div 
+                                    key={car.id} 
+                                    className="flex gap-3 p-2 rounded-lg bg-card border border-border"
+                                    data-testid={`user-car-${car.id}`}
+                                  >
+                                    <img
+                                      src={car.imageUrl}
+                                      alt={`${car.make} ${car.model}`}
+                                      className="w-16 h-16 object-cover rounded"
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-semibold text-sm text-foreground truncate">
+                                        {car.make} {car.model} {car.year}
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">{car.color}</p>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <span
+                                          className={`text-xs px-1.5 py-0.5 rounded ${
+                                            car.status === "In Transit"
+                                              ? "bg-blue-500/20 text-blue-600"
+                                              : car.status === "Purchased"
+                                              ? "bg-green-500/20 text-green-600"
+                                              : "bg-yellow-500/20 text-yellow-600"
+                                          }`}
+                                        >
+                                          {car.status === "In Transit"
+                                            ? t("car.status.inTransit")
+                                            : car.status === "Purchased"
+                                            ? t("car.status.purchased")
+                                            : t("car.status.reserved")}
+                                        </span>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="icon"
+                                          onClick={() => handleEdit(car)}
+                                          data-testid={`button-edit-user-car-${car.id}`}
+                                        >
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-center text-sm text-muted-foreground">
+                                {t("dashboard.noCars")}
+                              </p>
+                            )}
                           </div>
                         )}
                       </div>

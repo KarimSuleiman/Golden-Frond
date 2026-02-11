@@ -125,6 +125,10 @@ export async function registerRoutes(
         return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
       }
 
+      if (phone && (!/^\d{10}$/.test(phone))) {
+        return res.status(400).json({ message: "رقم الهاتف يجب أن يتكون من 10 أرقام" });
+      }
+
       if (password.length < 6) {
         return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
       }
@@ -469,6 +473,7 @@ export async function registerRoutes(
         email: u.email,
         firstName: u.firstName,
         lastName: u.lastName,
+        phone: u.phone || null,
         isAdmin: u.isAdmin,
         role: u.role || "user",
         createdAt: u.createdAt,

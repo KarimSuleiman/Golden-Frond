@@ -80,6 +80,14 @@ export default function Register() {
       });
       return;
     }
+    if (phone && phone.length !== 10) {
+      toast({
+        title: t("common.error"),
+        description: t("register.phoneInvalid"),
+        variant: "destructive",
+      });
+      return;
+    }
     registerMutation.mutate({ email, password, firstName, lastName, phone });
   };
 
@@ -163,7 +171,11 @@ export default function Register() {
                   type="tel"
                   placeholder="07XXXXXXXX"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "");
+                    if (val.length <= 10) setPhone(val);
+                  }}
+                  maxLength={10}
                   className={language === "ar" ? "pr-10 text-left" : "pl-10 text-left"}
                   dir="ltr"
                   data-testid="input-phone"

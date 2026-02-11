@@ -348,6 +348,7 @@ const translations: Translations = {
 
   // Register
   "register.phone": { ar: "رقم الهاتف", en: "Phone Number" },
+  "register.phoneInvalid": { ar: "رقم الهاتف يجب أن يتكون من 10 أرقام", en: "Phone number must be exactly 10 digits" },
 
   // Dashboard
   "dashboard.favorites": { ar: "المفضلة", en: "Favorites" },
