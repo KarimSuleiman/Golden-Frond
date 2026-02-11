@@ -11,4 +11,4 @@ fontFamily: {
 }
 Authentication uses Replit Auth (use-auth hook)
 Images are static or external URLs (Unsplash)
-Theme is "Golden Palm" - Luxury Gold/Black aesthetic
+Theme is "Golden Frond" - Luxury Gold/Black aesthetic

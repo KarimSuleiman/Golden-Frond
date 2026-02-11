@@ -28,7 +28,7 @@ const translations: Translations = {
   "landing.title2": { ar: "بكل سهولة", en: "With Ease" },
   "landing.description": { 
     ar: "السعفة الذهبية توفر لك منصة رقمية حصرية لمتابعة سياراتك المحجوزة والمشتراة مع جميع تفاصيل الشحن والتتبع.", 
-    en: "Golden Palm provides you an exclusive digital platform to track your reserved and purchased cars with all shipping and tracking details." 
+    en: "Golden Frond provides you an exclusive digital platform to track your reserved and purchased cars with all shipping and tracking details." 
   },
   "landing.login": { ar: "تسجيل الدخول", en: "Login" },
   "landing.myCars": { ar: "سياراتي", en: "My Cars" },
@@ -44,7 +44,7 @@ const translations: Translations = {
   "landing.about": { ar: "من نحن", en: "About Us" },
   "landing.about.text1": { 
     ar: "السعفة الذهبية هي شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست في 29 أكتوبر 2011، ولدينا أكثر من 13 عاماً من الخبرة في توفير أفضل السيارات لعملائنا الكرام.", 
-    en: "Golden Palm is a leading company in car trading and importing, established on October 29, 2011. We have over 13 years of experience providing the best cars for our valued customers." 
+    en: "Golden Frond is a leading company in car trading and importing, established on October 29, 2011. We have over 13 years of experience providing the best cars for our valued customers." 
   },
   "landing.about.text2": { 
     ar: "نحن متخصصون في استيراد السيارات من أمريكا وأوروبا وتوفير خدمات التتبع والشحن لعملائنا، مع ضمان الجودة والشفافية في كل خطوة.", 
@@ -55,7 +55,7 @@ const translations: Translations = {
   "landing.experience": { ar: "سنوات الخبرة", en: "Years of Experience" },
   "landing.experienceYears": { ar: "+13 سنة", en: "13+ Years" },
   "landing.yearsExp": { ar: "سنة خبرة", en: "Years Exp." },
-  "landing.brandName": { ar: "السعفة الذهبية", en: "Golden Palm" },
+  "landing.brandName": { ar: "السعفة الذهبية", en: "Golden Frond" },
   
   // Landing - Services
   "landing.services": { ar: "خدماتنا", en: "Our Services" },
@@ -71,7 +71,7 @@ const translations: Translations = {
   "landing.testimonials.desc": { ar: "تجارب حقيقية من عملائنا الكرام", en: "Real experiences from our valued customers" },
   "landing.testimonial1.name": { ar: "أحمد محمود", en: "Ahmed Mahmoud" },
   "landing.testimonial1.role": { ar: "رجل أعمال", en: "Businessman" },
-  "landing.testimonial1.text": { ar: "تجربة ممتازة مع السعفة الذهبية. استلمت سيارتي في الوقت المحدد وبحالة ممتازة. أنصح بهم بشدة!", en: "Excellent experience with Golden Palm. I received my car on time and in perfect condition. Highly recommend them!" },
+  "landing.testimonial1.text": { ar: "تجربة ممتازة مع السعفة الذهبية. استلمت سيارتي في الوقت المحدد وبحالة ممتازة. أنصح بهم بشدة!", en: "Excellent experience with Golden Frond. I received my car on time and in perfect condition. Highly recommend them!" },
   "landing.testimonial2.name": { ar: "محمد العلي", en: "Mohammed Al-Ali" },
   "landing.testimonial2.role": { ar: "مهندس", en: "Engineer" },
   "landing.testimonial2.text": { ar: "خدمة التتبع رائعة جداً. كنت أتابع سيارتي خطوة بخطوة من أمريكا حتى وصلت. شكراً لكم!", en: "The tracking service is amazing. I followed my car step by step from America until it arrived. Thank you!" },
@@ -92,7 +92,7 @@ const translations: Translations = {
   "landing.address": { ar: "الزرقاء - المنطقة الحرة\nشارع ١٥ شمال", en: "Zarqa - Free Zone\nStreet 15 North" },
   "landing.facebook": { ar: "فيسبوك", en: "Facebook" },
   "landing.whatsapp": { ar: "واتساب", en: "WhatsApp" },
-  "landing.copyright": { ar: "السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.", en: "Golden Palm Car Trading. All rights reserved." },
+  "landing.copyright": { ar: "السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.", en: "Golden Frond Car Trading. All rights reserved." },
   "landing.taglineShort": { ar: "مستقبل تجارة السيارات في المنطقة", en: "The Future of Car Trading in MENA" },
   "landing.taglineDesc": { ar: "منصة سريعة وسهلة لتجارة السيارات مع تغطية جميع دول المنطقة.", en: "A fast and easy car trading platform covering all countries in the region." },
   
@@ -103,7 +103,7 @@ const translations: Translations = {
   "footer.importantNotice": { ar: "إشعار مهم", en: "Important Notice" },
   "footer.terms": { ar: "الشروط والأحكام", en: "Terms and Conditions" },
   "footer.trackingTagline": { ar: "تتبع سيارتك بكل سهولة", en: "Track Your Car with Ease" },
-  "footer.trackingDesc": { ar: "منصة السعفة الذهبية توفر لك نظام تتبع متكامل لمتابعة سياراتك من لحظة الشراء حتى وصولها إليك، مع تحديثات مباشرة لحالة الشحن.", en: "Golden Palm platform provides you with a complete tracking system to follow your cars from the moment of purchase until they reach you, with live shipping status updates." },
+  "footer.trackingDesc": { ar: "منصة السعفة الذهبية توفر لك نظام تتبع متكامل لمتابعة سياراتك من لحظة الشراء حتى وصولها إليك، مع تحديثات مباشرة لحالة الشحن.", en: "Golden Frond platform provides you with a complete tracking system to follow your cars from the moment of purchase until they reach you, with live shipping status updates." },
   "footer.home": { ar: "الرئيسية", en: "Home" },
   "footer.aboutUs": { ar: "من نحن", en: "About us" },
   "footer.login": { ar: "تسجيل الدخول", en: "Log in" },
@@ -134,7 +134,7 @@ const translations: Translations = {
   "dashboard.errorDesc": { ar: "حدثت مشكلة أثناء جلب بيانات السيارات.", en: "An error occurred while fetching car data." },
   "dashboard.retry": { ar: "إعادة المحاولة", en: "Retry" },
   "dashboard.contactUs": { ar: "تواصل معنا", en: "Contact Us" },
-  "dashboard.copyright": { ar: "السعفة الذهبية. جميع الحقوق محفوظة.", en: "Golden Palm. All rights reserved." },
+  "dashboard.copyright": { ar: "السعفة الذهبية. جميع الحقوق محفوظة.", en: "Golden Frond. All rights reserved." },
   
   // Car Card
   "car.vin": { ar: "رقم الشاصي", en: "VIN" },
@@ -263,7 +263,7 @@ const translations: Translations = {
   "common.id": { ar: "رقم", en: "ID" },
   "common.langToggle": { ar: "EN", en: "عربي" },
   "common.langToggleFull": { ar: "English", en: "العربية" },
-  "common.altLogo": { ar: "السعفة الذهبية", en: "Golden Palm" },
+  "common.altLogo": { ar: "السعفة الذهبية", en: "Golden Frond" },
 };
 
 interface LanguageContextType {
