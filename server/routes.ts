@@ -108,12 +108,24 @@ const optionalAuth = async (req: any, res: any, next: any) => {
   next();
 };
 
+const trackLastActive = async (req: any, _res: any, next: any) => {
+  try {
+    const userId = req.user?.claims?.sub || req.session?.user?.claims?.sub;
+    if (userId) {
+      storage.updateLastActive(userId).catch(() => {});
+    }
+  } catch {}
+  next();
+};
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   await setupAuth(app);
   registerAuthRoutes(app);
+
+  app.use(trackLastActive);
 
   // === Auth Routes ===
 
@@ -467,21 +479,48 @@ export async function registerRoutes(
 
   app.get("/api/admin/users", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const users = await storage.getAllUsers();
-      const safeUsers = users.map(u => ({
-        id: u.id,
-        email: u.email,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        phone: u.phone || null,
-        isAdmin: u.isAdmin,
-        role: u.role || "user",
-        createdAt: u.createdAt,
+      const allUsers = await storage.getAllUsers();
+      const safeUsers = await Promise.all(allUsers.map(async (u) => {
+        const favCount = await storage.getFavoritesCountByUser(u.id);
+        return {
+          id: u.id,
+          email: u.email,
+          firstName: u.firstName,
+          lastName: u.lastName,
+          phone: u.phone || null,
+          isAdmin: u.isAdmin,
+          role: u.role || "user",
+          createdAt: u.createdAt,
+          lastActiveAt: u.lastActiveAt || null,
+          favoritesCount: favCount,
+        };
       }));
       res.json(safeUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({ message: "خطأ في جلب المستخدمين" });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const targetUser = await authStorage.getUser(id);
+      if (!targetUser) {
+        return res.status(404).json({ message: "المستخدم غير موجود" });
+      }
+      if (targetUser.role === "main_admin") {
+        return res.status(403).json({ message: "لا يمكن حذف المسؤول الرئيسي" });
+      }
+      const currentUserId = req.user?.claims?.sub;
+      if (id === currentUserId) {
+        return res.status(403).json({ message: "لا يمكنك حذف حسابك" });
+      }
+      await storage.deleteUser(id);
+      res.json({ message: "تم حذف المستخدم بنجاح" });
+    } catch (error) {
+      console.error("Delete user error:", error);
+      res.status(500).json({ message: "خطأ في حذف المستخدم" });
     }
   });
 

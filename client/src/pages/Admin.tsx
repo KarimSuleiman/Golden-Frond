@@ -9,9 +9,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff } from "lucide-react";
+import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock } from "lucide-react";
 import type { Car as CarType } from "@shared/schema";
 import { useLanguage } from "@/lib/i18n";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface AdminUser {
   id: string;
@@ -22,6 +33,8 @@ interface AdminUser {
   isAdmin: string | null;
   role: string;
   createdAt: Date | null;
+  lastActiveAt: string | null;
+  favoritesCount: number;
 }
 
 export default function Admin() {
@@ -142,6 +155,22 @@ export default function Admin() {
       setShowPasswordModal(false);
       setSelectedUserForPassword(null);
       setNewPassword("");
+    },
+    onError: (error: Error) => {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      return apiRequest("DELETE", `/api/admin/users/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/cars"] });
+      toast({ title: t("admin.userDeleted") });
+      setExpandedUserId(null);
+      setFilterByUserId("");
     },
     onError: (error: Error) => {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
@@ -496,6 +525,10 @@ export default function Admin() {
                               <span className="text-xs text-muted-foreground">
                                 {userCars.length} {t("admin.cars")}
                               </span>
+                              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                <Heart className="w-3 h-3" />
+                                {user.favoritesCount}
+                              </span>
                             </div>
                           </div>
                           <div className="flex gap-1 mt-2">
@@ -539,6 +572,21 @@ export default function Admin() {
                               <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">{t("register.phone")}:</span>
                                 <span className="font-medium text-foreground" dir="ltr">{user.phone || "-"}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">{t("admin.favorites")}:</span>
+                                <span className="font-medium text-foreground flex items-center gap-1">
+                                  <Heart className="w-3 h-3" />
+                                  {user.favoritesCount}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">{t("admin.lastActive")}:</span>
+                                <span className="font-medium text-foreground text-xs" dir="ltr" data-testid={`text-last-active-${user.id}`}>
+                                  {user.lastActiveAt
+                                    ? new Date(user.lastActiveAt).toLocaleString(language === "ar" ? "ar-JO" : "en-US", { dateStyle: "short", timeStyle: "short" })
+                                    : t("admin.neverActive")}
+                                </span>
                               </div>
                               <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">{t("login.password")}:</span>
@@ -615,6 +663,40 @@ export default function Admin() {
                               <p className="text-center text-sm text-muted-foreground">
                                 {t("dashboard.noCars")}
                               </p>
+                            )}
+
+                            {user.role !== "main_admin" && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full mt-2 text-red-500 border-red-500/30"
+                                    data-testid={`button-delete-user-${user.id}`}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                    <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.deleteUser")}</span>
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>{t("admin.deleteUser")}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      {t("admin.deleteUserConfirm")}
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>{t("admin.form.cancel")}</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteUserMutation.mutate(user.id)}
+                                      className="bg-red-500 text-white"
+                                      data-testid={`button-confirm-delete-user-${user.id}`}
+                                    >
+                                      {t("admin.deleteUser")}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
                           </div>
                         )}

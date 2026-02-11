@@ -360,6 +360,14 @@ const translations: Translations = {
   "admin.filter.role": { ar: "الرتبة", en: "Role" },
   "admin.filter.allRoles": { ar: "جميع الرتب", en: "All Roles" },
 
+  // Admin user management
+  "admin.deleteUser": { ar: "حذف الحساب", en: "Delete Account" },
+  "admin.deleteUserConfirm": { ar: "هل أنت متأكد من حذف هذا الحساب؟ سيتم حذف جميع بياناته.", en: "Are you sure you want to delete this account? All data will be removed." },
+  "admin.userDeleted": { ar: "تم حذف الحساب بنجاح", en: "Account deleted successfully" },
+  "admin.favorites": { ar: "المفضلة", en: "Favorites" },
+  "admin.lastActive": { ar: "آخر نشاط", en: "Last Active" },
+  "admin.neverActive": { ar: "لم يسجل دخول بعد", en: "Never logged in" },
+
   // Common
   "common.loading": { ar: "جاري التحميل...", en: "Loading..." },
   "common.error": { ar: "خطأ", en: "Error" },

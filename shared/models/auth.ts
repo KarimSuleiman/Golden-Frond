@@ -27,6 +27,7 @@ export const users = pgTable("users", {
   role: varchar("role").default("user"), // user, trader, backup_admin, main_admin
   resetToken: varchar("reset_token"),
   resetTokenExpiry: timestamp("reset_token_expiry"),
+  lastActiveAt: timestamp("last_active_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

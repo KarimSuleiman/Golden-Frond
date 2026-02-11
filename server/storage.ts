@@ -14,7 +14,7 @@ import {
   type Favorite,
   type InsertFavorite,
 } from "@shared/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql, count } from "drizzle-orm";
 
 export interface IStorage {
   getCars(userId: string): Promise<Car[]>;
@@ -34,6 +34,9 @@ export interface IStorage {
   addFavorite(userId: string, listingId: number): Promise<Favorite>;
   removeFavorite(userId: string, listingId: number): Promise<void>;
   isFavorited(userId: string, listingId: number): Promise<boolean>;
+  deleteUser(userId: string): Promise<void>;
+  getFavoritesCountByUser(userId: string): Promise<number>;
+  updateLastActive(userId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -138,6 +141,32 @@ export class DatabaseStorage implements IStorage {
       .from(favorites)
       .where(and(eq(favorites.userId, userId), eq(favorites.listingId, listingId)));
     return !!fav;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await db.delete(favorites).where(eq(favorites.userId, userId));
+    const userListings = await db.select({ id: listings.id })
+      .from(listings)
+      .where(eq(listings.sellerId, userId));
+    for (const listing of userListings) {
+      await db.delete(favorites).where(eq(favorites.listingId, listing.id));
+    }
+    await db.delete(listings).where(eq(listings.sellerId, userId));
+    await db.delete(cars).where(eq(cars.userId, userId));
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
+  async getFavoritesCountByUser(userId: string): Promise<number> {
+    const [result] = await db.select({ count: count() })
+      .from(favorites)
+      .where(eq(favorites.userId, userId));
+    return result?.count ?? 0;
+  }
+
+  async updateLastActive(userId: string): Promise<void> {
+    await db.update(users)
+      .set({ lastActiveAt: new Date() })
+      .where(eq(users.id, userId));
   }
 }
 
