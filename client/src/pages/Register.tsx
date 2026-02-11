@@ -7,52 +7,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/i18n";
-import { Loader2, Car, Lock, Mail, Eye, EyeOff, Globe } from "lucide-react";
+import { Loader2, UserPlus, Lock, Mail, Eye, EyeOff, Globe, User } from "lucide-react";
 import logoImage from "@assets/image_1769171762465.png";
 
-export default function Login() {
+export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { t, language, setLanguage, dir } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: { email: string; password: string }) => {
-      const res = await fetch("/api/auth/login", {
+  const registerMutation = useMutation({
+    mutationFn: async (data: { email: string; password: string; firstName: string; lastName: string }) => {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(data),
         credentials: "include",
       });
-      
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message || t("login.failed"));
+        throw new Error(error.message || t("register.failed"));
       }
-      
       return res.json();
     },
-    onSuccess: async (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
-        title: t("login.welcome"),
-        description: t("login.success"),
+        title: t("register.welcome"),
+        description: t("register.success"),
       });
-      // Check if user is admin and redirect accordingly
-      const isAdminRes = await fetch("/api/auth/is-admin", { credentials: "include" });
-      const isAdminData = await isAdminRes.json();
-      if (isAdminData.isAdmin) {
-        setLocation("/");
-      } else {
-        setLocation("/dashboard");
-      }
+      setLocation("/dashboard");
     },
     onError: (error: Error) => {
       toast({
-        title: t("login.error"),
+        title: t("common.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -61,15 +55,31 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    if (!email || !password || !firstName) {
       toast({
         title: t("common.error"),
-        description: t("login.enterCredentials"),
+        description: t("register.fillRequired"),
         variant: "destructive",
       });
       return;
     }
-    loginMutation.mutate({ email, password });
+    if (password.length < 6) {
+      toast({
+        title: t("common.error"),
+        description: t("reset.passwordTooShort"),
+        variant: "destructive",
+      });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({
+        title: t("common.error"),
+        description: t("reset.passwordMismatch"),
+        variant: "destructive",
+      });
+      return;
+    }
+    registerMutation.mutate({ email, password, firstName, lastName });
   };
 
   const toggleLanguage = () => {
@@ -81,12 +91,12 @@ export default function Login() {
       <Card className="w-full max-w-md shadow-xl border-primary/20">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-between items-start">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={toggleLanguage}
               className="text-muted-foreground hover:text-primary"
-              data-testid="button-language-toggle-login"
+              data-testid="button-language-toggle-register"
             >
               <Globe className="w-4 h-4" />
               <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("common.langToggle")}</span>
@@ -94,13 +104,38 @@ export default function Login() {
             <img src={logoImage} alt={t("common.altLogo")} className="h-20 w-auto mx-auto" />
             <div className="w-16" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">{t("login.title")}</CardTitle>
+          <CardTitle className="text-2xl font-bold text-foreground">{t("register.title")}</CardTitle>
           <CardDescription className="text-muted-foreground">
-            {t("login.desc")}
+            {t("register.desc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-foreground">{t("register.firstName")}</Label>
+                <div className="relative">
+                  <User className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground`} />
+                  <Input
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className={language === "ar" ? "pr-10" : "pl-10"}
+                    data-testid="input-first-name"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-foreground">{t("register.lastName")}</Label>
+                <Input
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  data-testid="input-last-name"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-foreground">{t("login.email")}</Label>
               <div className="relative">
@@ -117,7 +152,7 @@ export default function Login() {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-foreground">{t("login.password")}</Label>
               <div className="relative">
@@ -142,43 +177,50 @@ export default function Login() {
               </div>
             </div>
 
-            <Button 
-              type="submit" 
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-foreground">{t("reset.confirmPassword")}</Label>
+              <div className="relative">
+                <Lock className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground`} />
+                <Input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("reset.confirmPlaceholder")}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={language === "ar" ? "pr-10" : "pl-10"}
+                  data-testid="input-confirm-password"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
               className="w-full bg-primary text-primary-foreground font-bold text-lg py-6"
-              disabled={loginMutation.isPending}
-              data-testid="button-login"
+              disabled={registerMutation.isPending}
+              data-testid="button-register"
             >
-              {loginMutation.isPending ? (
+              {registerMutation.isPending ? (
                 <>
                   <Loader2 className={`h-5 w-5 animate-spin ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                  {t("login.loading")}
+                  {t("register.loading")}
                 </>
               ) : (
                 <>
-                  <Car className={`h-5 w-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                  {t("login.submit")}
+                  <UserPlus className={`h-5 w-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                  {t("register.submit")}
                 </>
               )}
             </Button>
 
-            <div className="text-center space-y-2">
-              <a 
-                href="/forgot-password" 
+            <div className="text-center">
+              <span className="text-sm text-muted-foreground">{t("register.haveAccount")} </span>
+              <a
+                href="/login"
                 className="text-sm text-primary hover:underline"
-                data-testid="link-forgot-password"
+                data-testid="link-login"
               >
-                {t("forgot.title")}
+                {t("nav.login")}
               </a>
-              <div>
-                <span className="text-sm text-muted-foreground">{t("login.noAccount")} </span>
-                <a
-                  href="/register"
-                  className="text-sm text-primary hover:underline"
-                  data-testid="link-register"
-                >
-                  {t("login.register")}
-                </a>
-              </div>
             </div>
           </form>
         </CardContent>

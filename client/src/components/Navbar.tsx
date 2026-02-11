@@ -15,6 +15,7 @@ import {
   Mail,
   MapPin,
   ChevronDown,
+  Car,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useState } from "react";
@@ -52,6 +53,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: t("nav.home"), icon: Home },
+    { href: "/cars-for-sale", label: t("nav.carsForSale"), icon: Car },
     ...(user
       ? [
           {

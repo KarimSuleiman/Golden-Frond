@@ -38,6 +38,7 @@ export default function Admin() {
   
   // Filter states
   const [filterByUserId, setFilterByUserId] = useState<string>("");
+  const [filterByRole, setFilterByRole] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filterMake, setFilterMake] = useState<string>("");
   const [filterYear, setFilterYear] = useState<string>("");
@@ -423,7 +424,20 @@ export default function Admin() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Show All button */}
+              <div className="mb-3">
+                <Select value={filterByRole} onValueChange={setFilterByRole}>
+                  <SelectTrigger data-testid="select-filter-role">
+                    <SelectValue placeholder={t("admin.filter.allRoles")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("admin.filter.allRoles")}</SelectItem>
+                    <SelectItem value="user">{t("admin.role.user")}</SelectItem>
+                    <SelectItem value="trader">{t("admin.role.trader")}</SelectItem>
+                    <SelectItem value="backup_admin">{t("admin.role.backup_admin")}</SelectItem>
+                    <SelectItem value="main_admin">{t("admin.role.main_admin")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {filterByUserId && (
                 <Button 
                   variant="outline" 
@@ -441,7 +455,7 @@ export default function Admin() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {users.map((user) => {
+                  {users.filter((u) => !filterByRole || filterByRole === "all" || u.role === filterByRole).map((user) => {
                     const userCars = cars.filter(c => c.userId === user.id);
                     const isExpanded = expandedUserId === user.id;
                     

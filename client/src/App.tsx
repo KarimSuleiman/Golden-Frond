@@ -8,8 +8,12 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import CarDetail from "@/pages/CarDetail";
+import CarsForSale from "@/pages/CarsForSale";
+import ListingDetail from "@/pages/ListingDetail";
+import AddListing from "@/pages/AddListing";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -17,11 +21,14 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/car/:id" component={CarDetail} />
+      <Route path="/cars-for-sale" component={CarsForSale} />
+      <Route path="/listing/:id" component={ListingDetail} />
+      <Route path="/add-listing" component={AddListing} />
       <Route path="/admin" component={Admin} />
-      {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
   );

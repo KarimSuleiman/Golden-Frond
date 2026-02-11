@@ -101,12 +101,70 @@ const isMainAdmin = async (req: any, res: any, next: any) => {
   next();
 };
 
+const optionalAuth = async (req: any, res: any, next: any) => {
+  if (req.session?.user) {
+    req.user = req.session.user;
+  }
+  next();
+};
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   await setupAuth(app);
   registerAuthRoutes(app);
+
+  // === Auth Routes ===
+
+  app.post("/api/auth/register", async (req: any, res) => {
+    try {
+      const { email, password, firstName, lastName } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
+      }
+
+      if (password.length < 6) {
+        return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      }
+
+      const existing = await authStorage.getUserByEmail(email);
+      if (existing) {
+        return res.status(400).json({ message: "هذا البريد الإلكتروني مسجل بالفعل" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userId = crypto.randomUUID();
+
+      await authStorage.upsertUser({
+        id: userId,
+        email,
+        password: hashedPassword,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        role: "user",
+        isAdmin: "false",
+      });
+
+      req.session.user = {
+        claims: {
+          sub: userId,
+          email,
+          first_name: firstName || null,
+          last_name: lastName || null,
+        }
+      };
+
+      res.status(201).json({
+        message: "تم إنشاء الحساب بنجاح",
+        user: { id: userId, email, firstName, lastName }
+      });
+    } catch (error) {
+      console.error("Register error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء إنشاء الحساب" });
+    }
+  });
 
   app.post("/api/auth/login", async (req: any, res) => {
     try {
@@ -166,7 +224,7 @@ export async function registerRoutes(
     });
   });
 
-  // === Car Routes ===
+  // === Car Routes (Tracking) ===
 
   app.get(api.cars.list.path, isAuthenticated, async (req: any, res) => {
     try {
@@ -250,17 +308,152 @@ export async function registerRoutes(
     }
   });
 
-  // === Admin Routes ===
-
+  // === Upload Route ===
   app.use("/uploads", express.static(uploadDir));
 
-  app.post("/api/upload", isAuthenticated, isAdmin, upload.single("image"), (req: any, res) => {
+  app.post("/api/upload", isAuthenticated, upload.single("image"), (req: any, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
     const imageUrl = `/uploads/${req.file.filename}`;
     res.json({ imageUrl });
   });
+
+  // === Listings (Cars for Sale) Routes ===
+
+  app.get("/api/listings", optionalAuth, async (req: any, res) => {
+    try {
+      const allListings = await storage.getListings();
+      res.json(allListings);
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+      res.status(500).json({ message: "خطأ في جلب الإعلانات" });
+    }
+  });
+
+  app.get("/api/listings/:id", optionalAuth, async (req: any, res) => {
+    try {
+      const listing = await storage.getListing(Number(req.params.id));
+      if (!listing) {
+        return res.status(404).json({ message: "الإعلان غير موجود" });
+      }
+
+      let isFavorited = false;
+      let sellerInfo = null;
+      if (req.user?.claims?.sub) {
+        isFavorited = await storage.isFavorited(req.user.claims.sub, listing.id);
+      }
+
+      const seller = await authStorage.getUser(listing.sellerId);
+      if (seller) {
+        sellerInfo = {
+          firstName: seller.firstName,
+          lastName: seller.lastName,
+        };
+      }
+
+      res.json({ ...listing, isFavorited, seller: sellerInfo });
+    } catch (error) {
+      console.error("Error fetching listing:", error);
+      res.status(500).json({ message: "خطأ في جلب الإعلان" });
+    }
+  });
+
+  app.get("/api/my-listings", isAuthenticated, async (req: any, res) => {
+    try {
+      const myListings = await storage.getUserListings(req.user.claims.sub);
+      res.json(myListings);
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في جلب إعلاناتك" });
+    }
+  });
+
+  app.post("/api/listings", isAuthenticated, async (req: any, res) => {
+    try {
+      const listingData = {
+        ...req.body,
+        sellerId: req.user.claims.sub,
+        status: "active",
+      };
+
+      const listing = await storage.createListing(listingData);
+      res.status(201).json(listing);
+    } catch (error) {
+      console.error("Create listing error:", error);
+      res.status(500).json({ message: "خطأ في إنشاء الإعلان" });
+    }
+  });
+
+  app.put("/api/listings/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      const listing = await storage.getListing(id);
+      if (!listing) return res.status(404).json({ message: "الإعلان غير موجود" });
+      if (listing.sellerId !== req.user.claims.sub) return res.status(403).json({ message: "غير مصرح" });
+
+      const updated = await storage.updateListing(id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في تحديث الإعلان" });
+    }
+  });
+
+  app.delete("/api/listings/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      const listing = await storage.getListing(id);
+      if (!listing) return res.status(404).json({ message: "الإعلان غير موجود" });
+      if (listing.sellerId !== req.user.claims.sub) return res.status(403).json({ message: "غير مصرح" });
+
+      await storage.deleteListing(id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في حذف الإعلان" });
+    }
+  });
+
+  // === Favorites Routes ===
+
+  app.get("/api/favorites", isAuthenticated, async (req: any, res) => {
+    try {
+      const userFavorites = await storage.getUserFavorites(req.user.claims.sub);
+      const listingIds = userFavorites.map(f => f.listingId);
+      const favListings = [];
+      for (const lid of listingIds) {
+        const listing = await storage.getListing(lid);
+        if (listing) favListings.push(listing);
+      }
+      res.json(favListings);
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في جلب المفضلة" });
+    }
+  });
+
+  app.post("/api/favorites/:listingId", isAuthenticated, async (req: any, res) => {
+    try {
+      const listingId = Number(req.params.listingId);
+      const already = await storage.isFavorited(req.user.claims.sub, listingId);
+      if (already) {
+        return res.json({ message: "موجود بالفعل في المفضلة" });
+      }
+      await storage.addFavorite(req.user.claims.sub, listingId);
+      res.status(201).json({ message: "تمت الإضافة إلى المفضلة" });
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في إضافة المفضلة" });
+    }
+  });
+
+  app.delete("/api/favorites/:listingId", isAuthenticated, async (req: any, res) => {
+    try {
+      const listingId = Number(req.params.listingId);
+      await storage.removeFavorite(req.user.claims.sub, listingId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "خطأ في إزالة المفضلة" });
+    }
+  });
+
+  // === Admin Routes ===
 
   app.get("/api/admin/users", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
@@ -490,41 +683,6 @@ export async function registerRoutes(
       console.error("Admin change password error:", error);
       res.status(500).json({ message: "حدث خطأ أثناء تغيير كلمة المرور" });
     }
-  });
-
-  // === Seed Route (For Demo Purposes) ===
-  app.post("/api/seed", isAuthenticated, async (req: any, res) => {
-    const userId = req.user.claims.sub;
-    const existing = await storage.getCars(userId);
-    
-    if (existing.length > 0) {
-      return res.json({ message: "Data already seeded for this user", cars: existing });
-    }
-
-    const demoCars = [
-      {
-        userId,
-        make: "Toyota",
-        model: "Land Cruiser",
-        year: 2024,
-        vin: "JTMHT05J123456789",
-        color: "Pearl White",
-        status: "In Transit",
-        price: 85000,
-        imageUrl: "https://images.unsplash.com/photo-1594502184342-2e12f877aa71?auto=format&fit=crop&q=80&w=1000",
-        details: "V6 Twin Turbo, GR Sport Edition",
-        containerNumber: "MSCU7654321",
-        bookingNumber: "BKG-2024-001234",
-        trackingUrl: "https://www.searates.com/container/tracking/"
-      },
-    ];
-
-    const createdCars = [];
-    for (const car of demoCars) {
-      createdCars.push(await storage.createCar(car));
-    }
-
-    res.json({ message: "Seeded demo cars successfully", cars: createdCars });
   });
 
   return httpServer;
