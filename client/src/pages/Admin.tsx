@@ -19,6 +19,7 @@ interface AdminUser {
   firstName: string | null;
   lastName: string | null;
   isAdmin: string | null;
+  role: string;
   createdAt: Date | null;
 }
 
@@ -90,6 +91,33 @@ export default function Admin() {
       });
       if (!res.ok) throw new Error("فشل رفع الصورة");
       return res.json();
+    },
+  });
+
+  const { data: adminInfo } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
+    queryKey: ["/api/auth/is-admin"],
+  });
+
+  const changeRoleMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
+      const res = await fetch(`/api/admin/users/${userId}/role`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: t("admin.roleUpdated") });
+    },
+    onError: (error: Error) => {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     },
   });
 
@@ -441,31 +469,53 @@ export default function Admin() {
                             <p className="text-sm text-muted-foreground" dir="ltr">
                               {user.email}
                             </p>
-                            <div className="flex items-center gap-2 mt-1">
-                              {user.isAdmin === "true" && (
-                                <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
-                                  {t("admin.isAdmin")}
-                                </span>
-                              )}
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                user.role === "main_admin" ? "bg-red-500/20 text-red-600" :
+                                user.role === "backup_admin" ? "bg-orange-500/20 text-orange-600" :
+                                user.role === "trader" ? "bg-blue-500/20 text-blue-600" :
+                                "bg-green-500/20 text-green-600"
+                              }`}>
+                                {t(`admin.role.${user.role}`)}
+                              </span>
                               <span className="text-xs text-muted-foreground">
                                 {userCars.length} {t("admin.cars")}
                               </span>
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full mt-2 text-muted-foreground hover:text-primary"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedUserForPassword(user);
-                              setShowPasswordModal(true);
-                            }}
-                            data-testid={`button-change-password-${user.id}`}
-                          >
-                            <Key className="w-4 h-4" />
-                            <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
-                          </Button>
+                          <div className="flex gap-1 mt-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="flex-1 text-muted-foreground"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedUserForPassword(user);
+                                setShowPasswordModal(true);
+                              }}
+                              data-testid={`button-change-password-${user.id}`}
+                            >
+                              <Key className="w-4 h-4" />
+                              <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
+                            </Button>
+                          </div>
+                          {adminInfo?.isMainAdmin && user.role !== "main_admin" && (
+                            <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+                              <Select 
+                                value={user.role} 
+                                onValueChange={(role) => changeRoleMutation.mutate({ userId: user.id, role })}
+                              >
+                                <SelectTrigger data-testid={`select-role-${user.id}`}>
+                                  <SelectValue placeholder={t("admin.selectRole")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="user">{t("admin.role.user")}</SelectItem>
+                                  <SelectItem value="trader">{t("admin.role.trader")}</SelectItem>
+                                  <SelectItem value="backup_admin">{t("admin.role.backup_admin")}</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
                         </div>
                         
                         {/* Expanded Cars Section */}

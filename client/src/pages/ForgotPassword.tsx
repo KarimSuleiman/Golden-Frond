@@ -16,7 +16,6 @@ export default function ForgotPassword() {
   const { t, language, setLanguage, dir } = useLanguage();
   const [email, setEmail] = useState("");
   const [step, setStep] = useState<"request" | "reset" | "success">("request");
-  const [resetToken, setResetToken] = useState("");
   const [tokenInput, setTokenInput] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -39,9 +38,6 @@ export default function ForgotPassword() {
       return res.json();
     },
     onSuccess: (data) => {
-      if (data.resetToken) {
-        setResetToken(data.resetToken);
-      }
       setStep("reset");
       toast({
         title: t("forgot.tokenSent"),
@@ -124,7 +120,7 @@ export default function ForgotPassword() {
 
     resetPasswordMutation.mutate({
       email,
-      token: tokenInput || resetToken,
+      token: tokenInput,
       newPassword,
     });
   };
@@ -215,15 +211,10 @@ export default function ForgotPassword() {
 
           {step === "reset" && (
             <form onSubmit={handleResetPassword} className="space-y-6">
-              {resetToken && (
-                <div className="p-4 bg-primary/10 rounded-lg text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">{t("forgot.yourCode")}</p>
-                  <p className="text-3xl font-mono font-bold text-primary tracking-widest" data-testid="text-reset-token">
-                    {resetToken}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{t("forgot.codeExpiry")}</p>
-                </div>
-              )}
+              <div className="p-4 bg-primary/10 rounded-lg text-center space-y-2">
+                <p className="text-sm text-foreground font-bold">{t("forgot.checkEmail")}</p>
+                <p className="text-xs text-muted-foreground">{t("forgot.codeExpiry")}</p>
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="token" className="text-foreground">{t("reset.code")}</Label>
@@ -233,7 +224,7 @@ export default function ForgotPassword() {
                     id="token"
                     type="text"
                     placeholder={t("reset.codePlaceholder")}
-                    value={tokenInput || resetToken}
+                    value={tokenInput}
                     onChange={(e) => setTokenInput(e.target.value.toUpperCase())}
                     className={`${language === "ar" ? "pr-10" : "pl-10"} text-center font-mono tracking-widest uppercase`}
                     maxLength={6}

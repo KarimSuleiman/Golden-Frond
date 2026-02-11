@@ -13,6 +13,7 @@ export interface IAuthStorage {
   updateUserPassword(id: string, hashedPassword: string): Promise<User | undefined>;
   setResetToken(id: string, token: string, expiry: Date): Promise<User | undefined>;
   clearResetToken(id: string): Promise<User | undefined>;
+  updateUserRole(id: string, role: string): Promise<User | undefined>;
 }
 
 class AuthStorage implements IAuthStorage {
@@ -76,6 +77,16 @@ class AuthStorage implements IAuthStorage {
     const [user] = await db
       .update(users)
       .set({ resetToken: null, resetTokenExpiry: null, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserRole(id: string, role: string): Promise<User | undefined> {
+    const isAdminValue = (role === "main_admin" || role === "backup_admin") ? "true" : "false";
+    const [user] = await db
+      .update(users)
+      .set({ role, isAdmin: isAdminValue, updatedAt: new Date() })
       .where(eq(users.id, id))
       .returning();
     return user;

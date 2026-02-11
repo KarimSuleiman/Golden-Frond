@@ -173,6 +173,12 @@ const translations: Translations = {
   "admin.users": { ar: "المستخدمين", en: "Users" },
   "admin.cars": { ar: "السيارات", en: "Cars" },
   "admin.isAdmin": { ar: "مسؤول", en: "Admin" },
+  "admin.role.user": { ar: "مستخدم شخصي", en: "Personal User" },
+  "admin.role.trader": { ar: "تاجر", en: "Trader" },
+  "admin.role.backup_admin": { ar: "أدمن احتياطي", en: "Backup Admin" },
+  "admin.role.main_admin": { ar: "المسؤول الرئيسي", en: "Main Admin" },
+  "admin.selectRole": { ar: "اختر الرتبة", en: "Select Role" },
+  "admin.roleUpdated": { ar: "تم تحديث الرتبة بنجاح", en: "Role updated successfully" },
   "admin.owner": { ar: "المالك", en: "Owner" },
   "admin.edit": { ar: "تعديل", en: "Edit" },
   "admin.delete": { ar: "حذف", en: "Delete" },
@@ -229,8 +235,8 @@ const translations: Translations = {
   "forgot.sending": { ar: "جاري الإرسال...", en: "Sending..." },
   "forgot.backToLogin": { ar: "العودة لتسجيل الدخول", en: "Back to Login" },
   "forgot.tokenSent": { ar: "تم إرسال رمز إعادة التعيين", en: "Reset Code Sent" },
-  "forgot.tokenSentDesc": { ar: "تم إنشاء رمز إعادة التعيين. يرجى استخدامه لتغيير كلمة المرور.", en: "A reset code has been generated. Please use it to change your password." },
-  "forgot.yourCode": { ar: "رمز التعيين الخاص بك", en: "Your Reset Code" },
+  "forgot.tokenSentDesc": { ar: "تم إرسال رمز إعادة التعيين إلى بريدك الإلكتروني", en: "A reset code has been sent to your email" },
+  "forgot.checkEmail": { ar: "تم إرسال الرمز إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد", en: "The code has been sent to your email. Please check your inbox" },
   "forgot.codeExpiry": { ar: "صالح لمدة ساعة واحدة", en: "Valid for 1 hour" },
 
   // Reset Password

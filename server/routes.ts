@@ -11,8 +11,8 @@ import crypto from "crypto";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import nodemailer from "nodemailer";
 
-// Configure multer for file uploads
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -30,7 +30,7 @@ const multerStorage = multer.diskStorage({
 
 const upload = multer({
   storage: multerStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -42,7 +42,43 @@ const upload = multer({
   },
 });
 
-// Admin middleware
+const emailTransporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "amairehkareem@gmail.com",
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+async function sendResetEmail(toEmail: string, resetCode: string) {
+  const mailOptions = {
+    from: '"السعفة الذهبية - Golden Palm" <amairehkareem@gmail.com>',
+    to: toEmail,
+    subject: "رمز إعادة تعيين كلمة المرور - Password Reset Code",
+    html: `
+      <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f5e8; border-radius: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #b8860b; margin: 0;">السعفة الذهبية</h1>
+          <p style="color: #666; margin: 5px 0;">Golden Palm Car Trading</p>
+        </div>
+        <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+          <h2 style="color: #333; margin-bottom: 10px;">إعادة تعيين كلمة المرور</h2>
+          <p style="color: #666; margin-bottom: 20px;">لقد طلبت إعادة تعيين كلمة المرور. استخدم الرمز التالي:</p>
+          <div style="background: #f0e6c8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #b8860b; font-family: monospace;">${resetCode}</span>
+          </div>
+          <p style="color: #999; font-size: 14px;">هذا الرمز صالح لمدة ساعة واحدة فقط</p>
+          <p style="color: #999; font-size: 14px;">This code is valid for 1 hour only</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+          <p style="color: #999; font-size: 12px;">إذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد</p>
+        </div>
+      </div>
+    `,
+  };
+
+  await emailTransporter.sendMail(mailOptions);
+}
+
 const isAdmin = async (req: any, res: any, next: any) => {
   if (!req.user?.claims?.sub) {
     return res.status(401).json({ message: "غير مصرح" });
@@ -54,15 +90,24 @@ const isAdmin = async (req: any, res: any, next: any) => {
   next();
 };
 
+const isMainAdmin = async (req: any, res: any, next: any) => {
+  if (!req.user?.claims?.sub) {
+    return res.status(401).json({ message: "غير مصرح" });
+  }
+  const user = await authStorage.getUser(req.user.claims.sub);
+  if (!user || user.role !== "main_admin") {
+    return res.status(403).json({ message: "غير مصرح - للمسؤول الرئيسي فقط" });
+  }
+  next();
+};
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup Authentication
   await setupAuth(app);
   registerAuthRoutes(app);
 
-  // Custom Email/Password Login Route
   app.post("/api/auth/login", async (req: any, res) => {
     try {
       const { email, password } = req.body;
@@ -87,7 +132,6 @@ export async function registerRoutes(
         return res.status(401).json({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
       }
 
-      // Set session user (compatible with existing isAuthenticated middleware)
       req.session.user = {
         claims: {
           sub: user.id,
@@ -112,7 +156,6 @@ export async function registerRoutes(
     }
   });
 
-  // Custom Logout Route
   app.post("/api/auth/logout", (req: any, res) => {
     req.session.destroy((err: any) => {
       if (err) {
@@ -125,10 +168,9 @@ export async function registerRoutes(
 
   // === Car Routes ===
 
-  // List Cars (Protected - only shows user's cars)
   app.get(api.cars.list.path, isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub; // Get authenticated user ID
+      const userId = req.user.claims.sub;
       const cars = await storage.getCars(userId);
       res.json(cars);
     } catch (error) {
@@ -137,14 +179,12 @@ export async function registerRoutes(
     }
   });
 
-  // Get Single Car (Protected)
   app.get(api.cars.get.path, isAuthenticated, async (req: any, res) => {
     try {
       const car = await storage.getCar(Number(req.params.id));
       if (!car) {
         return res.status(404).json({ message: "Car not found" });
       }
-      // Security check: Ensure car belongs to user
       if (car.userId !== req.user.claims.sub) {
         return res.status(401).json({ message: "Unauthorized access to this car" });
       }
@@ -154,10 +194,8 @@ export async function registerRoutes(
     }
   });
 
-  // Create Car (Protected - Admin or User for demo)
   app.post(api.cars.create.path, isAuthenticated, async (req: any, res) => {
     try {
-      // Force userId to match authenticated user
       const carData = {
         ...req.body,
         userId: req.user.claims.sub
@@ -178,7 +216,6 @@ export async function registerRoutes(
     }
   });
 
-  // Update Car
   app.put(api.cars.update.path, isAuthenticated, async (req: any, res) => {
     try {
       const id = Number(req.params.id);
@@ -198,7 +235,6 @@ export async function registerRoutes(
     }
   });
 
-  // Delete Car
   app.delete(api.cars.delete.path, isAuthenticated, async (req: any, res) => {
     try {
       const id = Number(req.params.id);
@@ -216,10 +252,8 @@ export async function registerRoutes(
 
   // === Admin Routes ===
 
-  // Serve uploaded files
   app.use("/uploads", express.static(uploadDir));
 
-  // Upload image (Admin only)
   app.post("/api/upload", isAuthenticated, isAdmin, upload.single("image"), (req: any, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -228,17 +262,16 @@ export async function registerRoutes(
     res.json({ imageUrl });
   });
 
-  // Get all users (Admin only)
   app.get("/api/admin/users", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const users = await storage.getAllUsers();
-      // Don't send passwords to frontend
       const safeUsers = users.map(u => ({
         id: u.id,
         email: u.email,
         firstName: u.firstName,
         lastName: u.lastName,
         isAdmin: u.isAdmin,
+        role: u.role || "user",
         createdAt: u.createdAt,
       }));
       res.json(safeUsers);
@@ -248,7 +281,36 @@ export async function registerRoutes(
     }
   });
 
-  // Get all cars (Admin only)
+  app.put("/api/admin/users/:id/role", isAuthenticated, isMainAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+
+      const validRoles = ["user", "trader", "backup_admin"];
+      if (!validRoles.includes(role)) {
+        return res.status(400).json({ message: "رتبة غير صالحة" });
+      }
+
+      const targetUser = await authStorage.getUser(id);
+      if (!targetUser) {
+        return res.status(404).json({ message: "المستخدم غير موجود" });
+      }
+
+      if (targetUser.role === "main_admin") {
+        return res.status(403).json({ message: "لا يمكن تغيير رتبة المسؤول الرئيسي" });
+      }
+
+      const updated = await authStorage.updateUserRole(id, role);
+      res.json({ 
+        message: "تم تحديث الرتبة بنجاح", 
+        user: { id: updated?.id, role: updated?.role, isAdmin: updated?.isAdmin }
+      });
+    } catch (error) {
+      console.error("Update role error:", error);
+      res.status(500).json({ message: "خطأ في تحديث الرتبة" });
+    }
+  });
+
   app.get("/api/admin/cars", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const allCars = await storage.getAllCars();
@@ -259,7 +321,6 @@ export async function registerRoutes(
     }
   });
 
-  // Create car for any user (Admin only)
   app.post("/api/admin/cars", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const carData = req.body;
@@ -281,14 +342,12 @@ export async function registerRoutes(
     }
   });
 
-  // Update any car (Admin only)
   app.put("/api/admin/cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const id = Number(req.params.id);
       const car = await storage.getCar(id);
       if (!car) return res.status(404).json({ message: "السيارة غير موجودة" });
       
-      // Strip userId from update payload to avoid schema validation issues
       const { userId, ...updateData } = req.body;
       const input = api.cars.update.input.parse(updateData);
       const updated = await storage.updateCar(id, input);
@@ -301,7 +360,6 @@ export async function registerRoutes(
     }
   });
 
-  // Delete any car (Admin only)
   app.delete("/api/admin/cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const id = Number(req.params.id);
@@ -315,19 +373,21 @@ export async function registerRoutes(
     }
   });
 
-  // Check if current user is admin
   app.get("/api/auth/is-admin", isAuthenticated, async (req: any, res) => {
     try {
       const user = await authStorage.getUser(req.user.claims.sub);
-      res.json({ isAdmin: user?.isAdmin === "true" });
+      res.json({ 
+        isAdmin: user?.isAdmin === "true",
+        role: user?.role || "user",
+        isMainAdmin: user?.role === "main_admin"
+      });
     } catch (error) {
-      res.status(500).json({ isAdmin: false });
+      res.status(500).json({ isAdmin: false, role: "user", isMainAdmin: false });
     }
   });
 
   // === Forgot Password Routes ===
 
-  // Request password reset - generates a token
   app.post("/api/auth/forgot-password", async (req: any, res) => {
     try {
       const { email } = req.body;
@@ -339,26 +399,31 @@ export async function registerRoutes(
       const user = await authStorage.getUserByEmail(email);
       
       if (!user) {
-        // Don't reveal if email exists for security
         return res.json({ 
           message: "إذا كان البريد الإلكتروني موجوداً، سيتم إرسال رمز إعادة التعيين",
           success: true 
         });
       }
 
-      // Generate reset token (6 characters for easy input)
       const resetToken = crypto.randomBytes(3).toString("hex").toUpperCase();
-      const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+      const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
 
       await authStorage.setResetToken(user.id, resetToken, resetTokenExpiry);
 
-      // In production, you'd send an email here
-      // For this demo, we return the token (admin can also see it)
+      try {
+        await sendResetEmail(email, resetToken);
+        console.log(`Reset email sent to ${email}`);
+      } catch (emailError) {
+        console.error("Failed to send reset email:", emailError);
+        return res.status(500).json({ 
+          message: "حدث خطأ أثناء إرسال البريد الإلكتروني. يرجى المحاولة لاحقاً",
+          success: false 
+        });
+      }
+
       res.json({ 
-        message: "تم إنشاء رمز إعادة التعيين بنجاح",
-        success: true,
-        resetToken, // In production, remove this and send via email
-        expiresAt: resetTokenExpiry
+        message: "تم إرسال رمز إعادة التعيين إلى بريدك الإلكتروني",
+        success: true
       });
     } catch (error) {
       console.error("Forgot password error:", error);
@@ -366,7 +431,6 @@ export async function registerRoutes(
     }
   });
 
-  // Reset password with token
   app.post("/api/auth/reset-password", async (req: any, res) => {
     try {
       const { email, token, newPassword } = req.body;
@@ -385,17 +449,14 @@ export async function registerRoutes(
         return res.status(400).json({ message: "البريد الإلكتروني غير موجود" });
       }
 
-      // Verify token
       if (!user.resetToken || user.resetToken !== token.toUpperCase()) {
         return res.status(400).json({ message: "رمز إعادة التعيين غير صحيح" });
       }
 
-      // Check token expiry
       if (!user.resetTokenExpiry || new Date() > new Date(user.resetTokenExpiry)) {
         return res.status(400).json({ message: "انتهت صلاحية رمز إعادة التعيين" });
       }
 
-      // Hash new password and update
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await authStorage.updateUserPassword(user.id, hashedPassword);
       await authStorage.clearResetToken(user.id);
@@ -407,7 +468,6 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Change user password directly
   app.put("/api/admin/users/:id/password", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const { id } = req.params;
@@ -441,7 +501,6 @@ export async function registerRoutes(
       return res.json({ message: "Data already seeded for this user", cars: existing });
     }
 
-    // Seed Data
     const demoCars = [
       {
         userId,
@@ -458,51 +517,6 @@ export async function registerRoutes(
         bookingNumber: "BKG-2024-001234",
         trackingUrl: "https://www.searates.com/container/tracking/"
       },
-      {
-        userId,
-        make: "Lexus",
-        model: "LX 600",
-        year: 2023,
-        vin: "JTJHT00J987654321",
-        color: "Black",
-        status: "Purchased",
-        price: 120000,
-        imageUrl: "https://images.unsplash.com/photo-1678201588691-62057c323a7e?auto=format&fit=crop&q=80&w=1000",
-        details: "VIP Package, 4-Seater",
-        containerNumber: null,
-        bookingNumber: null,
-        trackingUrl: null
-      },
-      {
-        userId,
-        make: "Mercedes-Benz",
-        model: "G 63 AMG",
-        year: 2025,
-        vin: "WDB4632761X123456",
-        color: "Matte Black",
-        status: "In Transit",
-        price: 200000,
-        imageUrl: "https://images.unsplash.com/photo-1520031441872-265e4e9d96b5?auto=format&fit=crop&q=80&w=1000",
-        details: "Night Package, Red Interior",
-        containerNumber: "HLBU9876543",
-        bookingNumber: "BKG-2024-005678",
-        trackingUrl: "https://www.hapag-lloyd.com/en/online-business/track/track-by-container-solution.html"
-      },
-      {
-        userId,
-        make: "Nissan",
-        model: "Patrol",
-        year: 2024,
-        vin: "JN1TBNT30Z0123456",
-        color: "Titanium Grey",
-        status: "In Transit",
-        price: 75000,
-        imageUrl: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80&w=1000",
-        details: "Platinum Edition, V8",
-        containerNumber: "MAEU1234567",
-        bookingNumber: "BKG-2024-009012",
-        trackingUrl: "https://www.maersk.com/tracking/"
-      }
     ];
 
     const createdCars = [];
@@ -511,88 +525,6 @@ export async function registerRoutes(
     }
 
     res.json({ message: "Seeded demo cars successfully", cars: createdCars });
-  });
-
-  // === Force Reseed Route (Deletes existing and reseeds) ===
-  app.post("/api/reseed", isAuthenticated, async (req: any, res) => {
-    const userId = req.user.claims.sub;
-    
-    // Delete existing cars for this user
-    const existing = await storage.getCars(userId);
-    for (const car of existing) {
-      await storage.deleteCar(car.id);
-    }
-
-    // Reseed with new data
-    const demoCars = [
-      {
-        userId,
-        make: "Toyota",
-        model: "Land Cruiser",
-        year: 2024,
-        vin: "JTMHT05J123456789",
-        color: "Pearl White",
-        status: "In Transit",
-        price: 85000,
-        imageUrl: "https://images.unsplash.com/photo-1594502184342-2e12f877aa71?auto=format&fit=crop&q=80&w=1000",
-        details: "V6 Twin Turbo, GR Sport Edition",
-        containerNumber: "MSCU7654321",
-        bookingNumber: "BKG-2024-001234",
-        trackingUrl: "https://www.searates.com/container/tracking/"
-      },
-      {
-        userId,
-        make: "Lexus",
-        model: "LX 600",
-        year: 2023,
-        vin: "JTJHT00J987654321",
-        color: "Black",
-        status: "Purchased",
-        price: 120000,
-        imageUrl: "https://images.unsplash.com/photo-1678201588691-62057c323a7e?auto=format&fit=crop&q=80&w=1000",
-        details: "VIP Package, 4-Seater",
-        containerNumber: null,
-        bookingNumber: null,
-        trackingUrl: null
-      },
-      {
-        userId,
-        make: "Mercedes-Benz",
-        model: "G 63 AMG",
-        year: 2025,
-        vin: "WDB4632761X123456",
-        color: "Matte Black",
-        status: "In Transit",
-        price: 200000,
-        imageUrl: "https://images.unsplash.com/photo-1520031441872-265e4e9d96b5?auto=format&fit=crop&q=80&w=1000",
-        details: "Night Package, Red Interior",
-        containerNumber: "HLBU9876543",
-        bookingNumber: "BKG-2024-005678",
-        trackingUrl: "https://www.hapag-lloyd.com/en/online-business/track/track-by-container-solution.html"
-      },
-      {
-        userId,
-        make: "Nissan",
-        model: "Patrol",
-        year: 2024,
-        vin: "JN1TBNT30Z0123456",
-        color: "Titanium Grey",
-        status: "In Transit",
-        price: 75000,
-        imageUrl: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80&w=1000",
-        details: "Platinum Edition, V8",
-        containerNumber: "MAEU1234567",
-        bookingNumber: "BKG-2024-009012",
-        trackingUrl: "https://www.maersk.com/tracking/"
-      }
-    ];
-
-    const createdCars = [];
-    for (const car of demoCars) {
-      createdCars.push(await storage.createCar(car));
-    }
-
-    res.json({ message: "Reseeded demo cars successfully", cars: createdCars });
   });
 
   return httpServer;

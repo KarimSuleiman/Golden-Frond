@@ -18,13 +18,14 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: varchar("email").unique(),
-  password: varchar("password"), // For custom login (hashed)
+  password: varchar("password"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  isAdmin: varchar("is_admin").default("false"), // Admin flag
-  resetToken: varchar("reset_token"), // Password reset token
-  resetTokenExpiry: timestamp("reset_token_expiry"), // Reset token expiry
+  isAdmin: varchar("is_admin").default("false"),
+  role: varchar("role").default("user"), // user, trader, backup_admin, main_admin
+  resetToken: varchar("reset_token"),
+  resetTokenExpiry: timestamp("reset_token_expiry"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
