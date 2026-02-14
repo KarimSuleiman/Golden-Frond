@@ -81,6 +81,7 @@ export function Navbar() {
             label: t("nav.aboutUs"),
             icon: Info,
             isAnchor: true,
+            iconOnly: true,
           },
         ]
       : []),
@@ -162,19 +163,32 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) =>
             link.isAnchor ? (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleAnchorClick(e, link.href)}
-                className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
-                  location === link.href
-                    ? "text-primary font-semibold"
-                    : "text-foreground/70"
-                }`}
-              >
-                <link.icon className="w-4 h-4" />
-                <span>{link.label}</span>
-              </a>
+              link.iconOnly ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleAnchorClick(e, link.href)}
+                  title={link.label}
+                  className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+                  data-testid="link-about-icon"
+                >
+                  <link.icon className="w-5 h-5" />
+                </a>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleAnchorClick(e, link.href)}
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                    location === link.href
+                      ? "text-primary font-semibold"
+                      : "text-foreground/70"
+                  }`}
+                >
+                  <link.icon className="w-4 h-4" />
+                  <span>{link.label}</span>
+                </a>
+              )
             ) : (
               <Link key={link.href} href={link.href}>
                 <div
@@ -191,22 +205,17 @@ export function Navbar() {
             ),
           )}
 
-          {/* Contact Dropdown - For all non-admin users including guests */}
+          {/* Contact Dropdown - Icon only */}
           {!isAdminCheck?.isAdmin && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-foreground/70 hover:text-primary"
+                <button
+                  className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+                  title={t("nav.contactUs")}
                   data-testid="button-contact-dropdown"
                 >
-                  <Phone className="w-4 h-4" />
-                  <span className={language === "ar" ? "mr-1" : "ml-1"}>
-                    {t("nav.contactUs")}
-                  </span>
-                  <ChevronDown className="w-3 h-3" />
-                </Button>
+                  <Phone className="w-5 h-5" />
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align={language === "ar" ? "start" : "end"}
