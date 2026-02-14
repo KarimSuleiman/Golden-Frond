@@ -146,49 +146,115 @@ export function Navbar() {
       className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-xl shadow-sm"
       dir={dir}
     >
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Logo Area */}
-        <Link
-          href="/"
-          className="flex items-center space-x-3 group cursor-pointer"
-        >
-          <img
-            src={logoImage}
-            alt={t("common.altLogo")}
-            className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
-          />
-        </Link>
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
+        {/* Left side: Logo + utility icons (About, Contact, Language) */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="flex items-center group cursor-pointer"
+          >
+            <img
+              src={logoImage}
+              alt={t("common.altLogo")}
+              className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+          </Link>
 
-        {/* Desktop Nav */}
+          {/* Utility icons beside logo - desktop only */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* About Us icon */}
+            {!isAdminCheck?.isAdmin && (
+              <a
+                href="/#about"
+                onClick={(e) => handleAnchorClick(e, "/#about")}
+                title={t("nav.aboutUs")}
+                className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+                data-testid="link-about-icon"
+              >
+                <Info className="w-5 h-5" />
+              </a>
+            )}
+
+            {/* Contact Dropdown icon */}
+            {!isAdminCheck?.isAdmin && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+                    title={t("nav.contactUs")}
+                    data-testid="button-contact-dropdown"
+                  >
+                    <Phone className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align={language === "ar" ? "end" : "start"}
+                  className="w-64"
+                >
+                  {contactOptions.map((option, index) => (
+                    <DropdownMenuItem key={index} asChild>
+                      <a
+                        href={option.href}
+                        target={
+                          option.href.startsWith("http") ? "_blank" : undefined
+                        }
+                        rel={
+                          option.href.startsWith("http")
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                        className="flex items-center gap-3 p-3 cursor-pointer"
+                        data-testid={`contact-option-${index}`}
+                      >
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center ${option.color} bg-current/10`}
+                        >
+                          <option.icon className={`w-5 h-5 ${option.color}`} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            {option.label}
+                          </p>
+                          <p className="text-xs text-muted-foreground" dir="ltr">
+                            {option.value}
+                          </p>
+                        </div>
+                      </a>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Language Toggle icon */}
+            <button
+              onClick={toggleLanguage}
+              title={t("common.langToggleFull")}
+              className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+              data-testid="button-language-toggle"
+            >
+              <Globe className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Right side: Main nav links + login/logout */}
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) =>
+          {navLinks.filter((link) => !link.iconOnly).map((link) =>
             link.isAnchor ? (
-              link.iconOnly ? (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleAnchorClick(e, link.href)}
-                  title={link.label}
-                  className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
-                  data-testid="link-about-icon"
-                >
-                  <link.icon className="w-5 h-5" />
-                </a>
-              ) : (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleAnchorClick(e, link.href)}
-                  className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
-                    location === link.href
-                      ? "text-primary font-semibold"
-                      : "text-foreground/70"
-                  }`}
-                >
-                  <link.icon className="w-4 h-4" />
-                  <span>{link.label}</span>
-                </a>
-              )
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleAnchorClick(e, link.href)}
+                className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                  location === link.href
+                    ? "text-primary font-semibold"
+                    : "text-foreground/70"
+                }`}
+              >
+                <link.icon className="w-4 h-4" />
+                <span>{link.label}</span>
+              </a>
             ) : (
               <Link key={link.href} href={link.href}>
                 <div
@@ -204,71 +270,6 @@ export function Navbar() {
               </Link>
             ),
           )}
-
-          {/* Contact Dropdown - Icon only */}
-          {!isAdminCheck?.isAdmin && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
-                  title={t("nav.contactUs")}
-                  data-testid="button-contact-dropdown"
-                >
-                  <Phone className="w-5 h-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align={language === "ar" ? "start" : "end"}
-                className="w-64"
-              >
-                {contactOptions.map((option, index) => (
-                  <DropdownMenuItem key={index} asChild>
-                    <a
-                      href={option.href}
-                      target={
-                        option.href.startsWith("http") ? "_blank" : undefined
-                      }
-                      rel={
-                        option.href.startsWith("http")
-                          ? "noopener noreferrer"
-                          : undefined
-                      }
-                      className="flex items-center gap-3 p-3 cursor-pointer"
-                      data-testid={`contact-option-${index}`}
-                    >
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center ${option.color} bg-current/10`}
-                      >
-                        <option.icon className={`w-5 h-5 ${option.color}`} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">
-                          {option.label}
-                        </p>
-                        <p className="text-xs text-muted-foreground" dir="ltr">
-                          {option.value}
-                        </p>
-                      </div>
-                    </a>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
-          {/* Language Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleLanguage}
-            className="text-foreground/70 hover:text-primary"
-            data-testid="button-language-toggle"
-          >
-            <Globe className="w-4 h-4" />
-            <span className={language === "ar" ? "mr-1" : "ml-1"}>
-              {t("common.langToggle")}
-            </span>
-          </Button>
 
           <div
             className={`${language === "ar" ? "pr-4 border-r" : "pl-4 border-l"} border-border`}
