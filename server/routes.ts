@@ -108,11 +108,19 @@ const optionalAuth = async (req: any, res: any, next: any) => {
   next();
 };
 
+const lastActiveCache = new Map<string, number>();
+const LAST_ACTIVE_THROTTLE = 5 * 60 * 1000;
+
 const trackLastActive = async (req: any, _res: any, next: any) => {
   try {
     const userId = req.user?.claims?.sub || req.session?.user?.claims?.sub;
     if (userId) {
-      storage.updateLastActive(userId).catch(() => {});
+      const now = Date.now();
+      const lastUpdated = lastActiveCache.get(userId) || 0;
+      if (now - lastUpdated > LAST_ACTIVE_THROTTLE) {
+        lastActiveCache.set(userId, now);
+        storage.updateLastActive(userId).catch(() => {});
+      }
     }
   } catch {}
   next();
@@ -173,6 +181,9 @@ export async function registerRoutes(
         }
       };
 
+      storage.updateLastActive(userId).catch(() => {});
+      lastActiveCache.set(userId, Date.now());
+
       res.status(201).json({
         message: "تم إنشاء الحساب بنجاح",
         user: { id: userId, email, firstName, lastName }
@@ -215,6 +226,9 @@ export async function registerRoutes(
           last_name: user.lastName,
         }
       };
+
+      storage.updateLastActive(user.id).catch(() => {});
+      lastActiveCache.set(user.id, Date.now());
 
       res.json({ 
         message: "تم تسجيل الدخول بنجاح",
