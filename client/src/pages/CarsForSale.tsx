@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone } from "lucide-react";
+import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone, ArrowUpDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
@@ -20,14 +21,43 @@ export default function CarsForSale() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({ ...emptyFilters });
   const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
 
   const { data: listings = [], isLoading } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
   });
 
   const filteredListings = useMemo(() => {
-    return applyFilters(listings, filters, searchQuery);
-  }, [listings, filters, searchQuery]);
+    const filtered = applyFilters(listings, filters, searchQuery);
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case "newest":
+        sorted.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+        break;
+      case "oldest":
+        sorted.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+        break;
+      case "priceLow":
+        sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+        break;
+      case "priceHigh":
+        sorted.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+        break;
+      case "yearNew":
+        sorted.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+        break;
+      case "yearOld":
+        sorted.sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
+        break;
+      case "mileageLow":
+        sorted.sort((a, b) => (a.mileage ?? Infinity) - (b.mileage ?? Infinity));
+        break;
+      case "mileageHigh":
+        sorted.sort((a, b) => (b.mileage ?? 0) - (a.mileage ?? 0));
+        break;
+    }
+    return sorted;
+  }, [listings, filters, searchQuery, sortBy]);
 
   const hasActiveFilters = searchQuery || hasActiveFiltersCheck(filters);
 
@@ -81,6 +111,22 @@ export default function CarsForSale() {
                 data-testid="input-search-listings"
               />
             </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-auto min-w-[160px]" data-testid="select-sort">
+                <ArrowUpDown className="w-4 h-4 shrink-0" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">{t("marketplace.sortNewest")}</SelectItem>
+                <SelectItem value="oldest">{t("marketplace.sortOldest")}</SelectItem>
+                <SelectItem value="priceLow">{t("marketplace.sortPriceLow")}</SelectItem>
+                <SelectItem value="priceHigh">{t("marketplace.sortPriceHigh")}</SelectItem>
+                <SelectItem value="yearNew">{t("marketplace.sortYearNew")}</SelectItem>
+                <SelectItem value="yearOld">{t("marketplace.sortYearOld")}</SelectItem>
+                <SelectItem value="mileageLow">{t("marketplace.sortMileageLow")}</SelectItem>
+                <SelectItem value="mileageHigh">{t("marketplace.sortMileageHigh")}</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               variant="outline"
               onClick={() => setShowFilterPanel(true)}
