@@ -8,14 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Car as CarIcon, Package, Ship, ExternalLink, Mail } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useLocation } from "wouter";
+import { Link, Redirect } from "wouter";
 import logoImage from "@assets/image_1769171762465.png";
 import type { Car } from "@shared/schema";
 
 export default function MyCars() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const { t, language, dir } = useLanguage();
-  const [, setLocation] = useLocation();
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string; isTrader: boolean }>({
     queryKey: ["/api/auth/is-admin"],
@@ -28,13 +27,11 @@ export default function MyCars() {
   });
 
   if (!isAuthLoading && !user) {
-    setLocation("/login");
-    return null;
+    return <Redirect to="/login" />;
   }
 
   if (authInfo && !authInfo.isTrader) {
-    setLocation("/");
-    return null;
+    return <Redirect to="/" />;
   }
 
   if (isAuthLoading || isLoading || !authInfo) {
