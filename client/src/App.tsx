@@ -14,6 +14,7 @@ import CarDetail from "@/pages/CarDetail";
 import CarsForSale from "@/pages/CarsForSale";
 import ListingDetail from "@/pages/ListingDetail";
 import AddListing from "@/pages/AddListing";
+import MyCars from "@/pages/MyCars";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/my-cars" component={MyCars} />
       <Route path="/car/:id" component={CarDetail} />
       <Route path="/cars-for-sale" component={CarsForSale} />
       <Route path="/listing/:id" component={ListingDetail} />

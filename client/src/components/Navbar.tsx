@@ -46,14 +46,25 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
+  const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean; isTrader: boolean }>({
     queryKey: ["/api/auth/is-admin"],
     enabled: !!user,
   });
 
+  const isAdminCheck = authInfo;
+
   const navLinks = [
     { href: "/", label: t("nav.home"), icon: Home },
     { href: "/cars-for-sale", label: t("nav.carsForSale"), icon: Car },
+    ...(authInfo?.isTrader
+      ? [
+          {
+            href: "/my-cars",
+            label: t("dashboard.title"),
+            icon: Car,
+          },
+        ]
+      : []),
     ...(user
       ? [
           {

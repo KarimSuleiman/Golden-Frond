@@ -8,34 +8,34 @@
   --font-body: 'Manrope', sans-serif;
   --font-display: 'Playfair Display', serif;
 
-  /* Light Golden Theme - السعفة الذهبية */
-  --background: 45 30% 97%;        /* Warm off-white */
-  --foreground: 20 15% 15%;        /* Dark brown/black text */
+  /* Darker Golden Theme - السعفة الذهبية */
+  --background: 40 18% 90%;        /* Warm darker beige */
+  --foreground: 20 20% 12%;        /* Deep brown/black text */
 
-  --card: 0 0% 100%;               /* Pure white cards */
-  --card-foreground: 20 15% 15%;
+  --card: 42 20% 95%;              /* Warm off-white cards */
+  --card-foreground: 20 20% 12%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 20 15% 15%;
+  --popover: 42 20% 95%;
+  --popover-foreground: 20 20% 12%;
 
-  --primary: 46 80% 50%;           /* Golden yellow #D4A017 */
-  --primary-foreground: 20 15% 10%;
+  --primary: 42 75% 42%;           /* Deeper gold #B8860B */
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 45 20% 92%;         /* Light cream */
-  --secondary-foreground: 20 15% 25%;
+  --secondary: 40 15% 85%;         /* Darker cream */
+  --secondary-foreground: 20 18% 22%;
 
-  --muted: 45 15% 90%;
-  --muted-foreground: 20 10% 45%;
+  --muted: 40 12% 82%;
+  --muted-foreground: 20 12% 40%;
 
-  --accent: 46 80% 50%;
-  --accent-foreground: 20 15% 10%;
+  --accent: 42 75% 42%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 65% 50%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 45 20% 85%;
-  --input: 45 20% 85%;
-  --ring: 46 80% 50%;
+  --border: 40 15% 78%;
+  --input: 40 15% 78%;
+  --ring: 42 75% 42%;
 
   --radius: 0.75rem;
 }

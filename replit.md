@@ -49,6 +49,15 @@ Preferred communication style: Simple, everyday language.
 └── migrations/       # Database migrations
 ```
 
+### Role-Based Access Control
+- **Roles**: `user` (personal), `trader` (car tracking access), `backup_admin`, `main_admin`
+- Admin sets user roles via Admin panel
+- **Traders** see "My Cars" (سياراتي) in navbar — shows their tracked/assigned vehicles
+- **Personal users** do NOT see "My Cars" — only favorites and marketplace
+- `/api/auth/is-admin` returns `isAdmin`, `role`, `isMainAdmin`, `isTrader` flags
+- `/api/trader/cars` endpoint returns cars assigned to the logged-in trader
+- MyCars page at `/my-cars` route, CarDetail at `/car/:id`
+
 ### Authentication Flow
 - Uses Replit's OIDC provider for authentication
 - Sessions stored in PostgreSQL `sessions` table

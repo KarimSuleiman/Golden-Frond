@@ -69,7 +69,7 @@ export default function CarDetail() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">{t("carDetail.notFound")}</h1>
             <p className="text-muted-foreground mb-6">{t("carDetail.notFoundDesc")}</p>
-            <Link href="/dashboard">
+            <Link href="/my-cars">
               <Button data-testid="button-back-dashboard">
                 <BackArrow className={`w-4 h-4 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                 {t("carDetail.back")}
@@ -102,7 +102,7 @@ export default function CarDetail() {
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        <Link href="/dashboard">
+        <Link href="/my-cars">
           <Button variant="ghost" className="mb-6" data-testid="button-back">
             <BackArrow className={`w-4 h-4 ${language === "ar" ? "ml-2" : "mr-2"}`} />
             {t("carDetail.back")}
@@ -402,7 +402,7 @@ export default function CarDetail() {
                   </a>
                 </li>
                 <li>
-                  <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-dashboard">
+                  <a href="/my-cars" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="footer-link-dashboard">
                     {t("nav.dashboard")}
                   </a>
                 </li>

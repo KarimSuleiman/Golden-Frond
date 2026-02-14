@@ -636,10 +636,26 @@ export async function registerRoutes(
       res.json({ 
         isAdmin: user?.isAdmin === "true",
         role: user?.role || "user",
-        isMainAdmin: user?.role === "main_admin"
+        isMainAdmin: user?.role === "main_admin",
+        isTrader: user?.role === "trader"
       });
     } catch (error) {
-      res.status(500).json({ isAdmin: false, role: "user", isMainAdmin: false });
+      res.status(500).json({ isAdmin: false, role: "user", isMainAdmin: false, isTrader: false });
+    }
+  });
+
+  app.get("/api/trader/cars", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await authStorage.getUser(userId);
+      if (!user || user.role !== "trader") {
+        return res.status(403).json({ message: "غير مصرح" });
+      }
+      const traderCars = await storage.getCars(userId);
+      res.json(traderCars);
+    } catch (error) {
+      console.error("Error fetching trader cars:", error);
+      res.status(500).json({ message: "خطأ في جلب السيارات" });
     }
   });
 
