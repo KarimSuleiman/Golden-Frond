@@ -13,6 +13,8 @@ import path from "path";
 import fs from "fs";
 import nodemailer from "nodemailer";
 
+const MAIN_ADMIN_EMAIL = "amairehkareem@gmail.com";
+
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -216,6 +218,10 @@ export async function registerRoutes(
       
       if (!isValidPassword) {
         return res.status(401).json({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
+      }
+
+      if (user.email === MAIN_ADMIN_EMAIL && user.role !== "main_admin") {
+        await authStorage.updateUserRole(user.id, "main_admin");
       }
 
       req.session.user = {
