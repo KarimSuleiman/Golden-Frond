@@ -777,5 +777,59 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/sync-data", isAuthenticated, isMainAdmin, async (req: any, res) => {
+    try {
+      const { users: syncUsers, cars: syncCars, listings: syncListings } = req.body;
+      const results = { usersAdded: 0, usersUpdated: 0, carsAdded: 0, listingsAdded: 0 };
+
+      if (syncUsers) {
+        for (const u of syncUsers) {
+          const existing = await authStorage.getUserByEmail(u.email);
+          if (existing) {
+            await authStorage.updateUserRole(existing.id, u.role);
+            results.usersUpdated++;
+          } else {
+            await authStorage.upsertUser({
+              id: u.id,
+              email: u.email,
+              password: u.password,
+              firstName: u.firstName || null,
+              lastName: u.lastName || null,
+              phone: u.phone || null,
+              role: u.role || "user",
+              isAdmin: u.isAdmin || "false",
+            });
+            results.usersAdded++;
+          }
+        }
+      }
+
+      if (syncCars) {
+        for (const c of syncCars) {
+          const existingCar = await storage.getCar(c.id);
+          if (!existingCar) {
+            await storage.createCar(c);
+            results.carsAdded++;
+          }
+        }
+      }
+
+      if (syncListings) {
+        for (const l of syncListings) {
+          const existingListing = await storage.getListing(l.id);
+          if (!existingListing) {
+            await storage.createListing(l);
+            results.listingsAdded++;
+          }
+        }
+      }
+
+      res.json({ message: "تمت مزامنة البيانات بنجاح", results });
+    } catch (error) {
+      console.error("Sync data error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء مزامنة البيانات" });
+    }
+  });
+
   return httpServer;
 }
