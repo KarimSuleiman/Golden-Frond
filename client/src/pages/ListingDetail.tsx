@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail } from "lucide-react";
+import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import type { Listing } from "@shared/schema";
 import {
   DropdownMenu,
@@ -18,6 +19,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ListingWithMeta extends Listing {
   isFavorited: boolean;
@@ -31,6 +43,13 @@ export default function ListingDetail() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [, setLocation] = useLocation();
+
+  const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
+    queryKey: ["/api/auth/is-admin"],
+    enabled: !!user,
+  });
 
   const { data: listing, isLoading } = useQuery<ListingWithMeta>({
     queryKey: ["/api/listings", params.id],
@@ -63,6 +82,19 @@ export default function ListingDetail() {
       queryClient.invalidateQueries({ queryKey: ["/api/favorites"] });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", `/api/listings/${params.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/listings"] });
+      toast({ title: t("marketplace.listingDeleted") });
+      setLocation("/cars-for-sale");
+    },
+  });
+
+  const canDelete = authInfo?.isAdmin || (user && listing && listing.sellerId === user.id);
 
   if (isLoading) {
     return (
@@ -344,9 +376,47 @@ export default function ListingDetail() {
                 </CardContent>
               </Card>
             )}
+
+            {canDelete && (
+              <Button
+                variant="outline"
+                className="w-full text-destructive border-destructive/30"
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={deleteMutation.isPending}
+                data-testid="button-delete-listing"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className={language === "ar" ? "mr-2" : "ml-2"}>
+                  {t("marketplace.deleteListing")}
+                </span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className={language === "ar" ? "text-right" : "text-left"} dir={dir}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("marketplace.deleteListing")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("marketplace.deleteConfirm")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className={language === "ar" ? "flex-row-reverse gap-2" : "gap-2"}>
+            <AlertDialogAction
+              onClick={() => deleteMutation.mutate()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              {t("admin.delete")}
+            </AlertDialogAction>
+            <AlertDialogCancel data-testid="button-cancel-delete">
+              {t("nav.logout.no")}
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <footer className="mt-12 py-6 border-t border-border bg-secondary">
         <div className="container mx-auto px-4">

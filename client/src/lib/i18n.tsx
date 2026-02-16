@@ -182,6 +182,9 @@ const translations: Translations = {
   "admin.owner": { ar: "المالك", en: "Owner" },
   "admin.edit": { ar: "تعديل", en: "Edit" },
   "admin.delete": { ar: "حذف", en: "Delete" },
+  "marketplace.deleteListing": { ar: "حذف الإعلان", en: "Delete Listing" },
+  "marketplace.deleteConfirm": { ar: "هل أنت متأكد من حذف هذا الإعلان؟", en: "Are you sure you want to delete this listing?" },
+  "marketplace.listingDeleted": { ar: "تم حذف الإعلان بنجاح", en: "Listing deleted successfully" },
   "admin.unauthorized": { ar: "غير مصرح لك بالوصول لهذه الصفحة", en: "You are not authorized to access this page" },
   "admin.adminOnly": { ar: "هذه الصفحة للمسؤولين فقط", en: "This page is for administrators only" },
   

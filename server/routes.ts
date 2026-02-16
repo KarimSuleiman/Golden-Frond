@@ -440,7 +440,13 @@ export async function registerRoutes(
       const id = Number(req.params.id);
       const listing = await storage.getListing(id);
       if (!listing) return res.status(404).json({ message: "الإعلان غير موجود" });
-      if (listing.sellerId !== req.user.claims.sub) return res.status(403).json({ message: "غير مصرح" });
+
+      const user = await authStorage.getUser(req.user.claims.sub);
+      const isAdminUser = user && user.isAdmin === "true";
+
+      if (listing.sellerId !== req.user.claims.sub && !isAdminUser) {
+        return res.status(403).json({ message: "غير مصرح" });
+      }
 
       await storage.deleteListing(id);
       res.status(204).send();
