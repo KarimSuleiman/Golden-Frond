@@ -171,7 +171,9 @@ export default function ListingDetail() {
       uploadedNew.push(data.imageUrl);
     }
     const allImages = [...editExistingImages, ...uploadedNew];
-    updateMutation.mutate({ ...editForm, imageUrl, images: allImages.length > 0 ? allImages : null });
+    // Strip non-DB fields (isFavorited, seller) before sending
+    const { isFavorited: _f, seller: _s, ...cleanForm } = editForm as any;
+    updateMutation.mutate({ ...cleanForm, imageUrl, images: allImages.length > 0 ? allImages : null });
   };
 
   const canDelete = authInfo?.isAdmin || (user && listing && listing.sellerId === user.id);

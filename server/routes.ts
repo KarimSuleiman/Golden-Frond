@@ -454,7 +454,9 @@ export async function registerRoutes(
         return res.status(403).json({ message: "غير مصرح" });
       }
 
-      const updated = await storage.updateListing(id, req.body);
+      // Strip any non-schema fields (e.g. isFavorited, seller) before passing to DB
+      const { isFavorited: _f, seller: _s, createdAt: _c, id: _id, sellerId: _sel, ...safeBody } = req.body;
+      const updated = await storage.updateListing(id, safeBody);
       res.json(updated);
     } catch (error) {
       res.status(500).json({ message: "خطأ في تحديث الإعلان" });
