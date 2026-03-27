@@ -7,12 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import type { Listing } from "@shared/schema";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +49,10 @@ export default function ListingDetail() {
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState<Partial<Listing>>({});
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState<string>("");
   const [, setLocation] = useLocation();
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
@@ -93,6 +102,50 @@ export default function ListingDetail() {
       setLocation("/cars-for-sale");
     },
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: Partial<Listing>) => {
+      const res = await fetch(`/api/listings/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("فشل تحديث الإعلان");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/listings", params.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/listings"] });
+      setShowEditModal(false);
+      toast({ title: "تم تحديث الإعلان" });
+    },
+    onError: () => {
+      toast({ title: t("common.error"), description: "فشل تحديث الإعلان", variant: "destructive" });
+    },
+  });
+
+  const openEdit = () => {
+    if (!listing) return;
+    setEditForm({ ...listing });
+    setEditImageFile(null);
+    setEditImagePreview("");
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!listing) return;
+    let imageUrl = editForm.imageUrl || listing.imageUrl;
+    if (editImageFile) {
+      const formData = new FormData();
+      formData.append("image", editImageFile);
+      const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+      if (!res.ok) { toast({ title: t("common.error"), description: "فشل رفع الصورة", variant: "destructive" }); return; }
+      const data = await res.json();
+      imageUrl = data.imageUrl;
+    }
+    updateMutation.mutate({ ...editForm, imageUrl });
+  };
 
   const canDelete = authInfo?.isAdmin || (user && listing && listing.sellerId === user.id);
 
@@ -377,6 +430,18 @@ export default function ListingDetail() {
               </Card>
             )}
 
+            {authInfo?.isAdmin && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={openEdit}
+                data-testid="button-edit-listing"
+              >
+                <Edit className="w-4 h-4" />
+                <span className={language === "ar" ? "mr-2" : "ml-2"}>تعديل الإعلان</span>
+              </Button>
+            )}
+
             {canDelete && (
               <Button
                 variant="outline"
@@ -417,6 +482,97 @@ export default function ListingDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Listing Modal — admin only */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" dir={dir}>
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-center justify-between gap-2">
+              <CardTitle>تعديل الإعلان</CardTitle>
+              <Button size="icon" variant="ghost" onClick={() => setShowEditModal(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>الصورة الرئيسية</Label>
+                <div className="flex items-center gap-3">
+                  <img src={editImagePreview || (editForm.imageUrl ?? listing?.imageUrl ?? "")} alt="" className="w-20 h-20 object-cover rounded-lg" />
+                  <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors text-sm">
+                    <Upload className="w-4 h-4" />
+                    تغيير الصورة
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setEditImageFile(file);
+                        const reader = new FileReader();
+                        reader.onloadend = () => setEditImagePreview(reader.result as string);
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                  </label>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label>الماركة</Label>
+                  <Input value={editForm.make || ""} onChange={(e) => setEditForm(f => ({ ...f, make: e.target.value }))} />
+                </div>
+                <div className="space-y-1">
+                  <Label>الموديل</Label>
+                  <Input value={editForm.model || ""} onChange={(e) => setEditForm(f => ({ ...f, model: e.target.value }))} />
+                </div>
+                <div className="space-y-1">
+                  <Label>السنة</Label>
+                  <Input type="number" value={editForm.year || ""} onChange={(e) => setEditForm(f => ({ ...f, year: parseInt(e.target.value) || undefined }))} />
+                </div>
+                <div className="space-y-1">
+                  <Label>السعر (د.أ)</Label>
+                  <Input type="number" value={editForm.price || ""} onChange={(e) => setEditForm(f => ({ ...f, price: parseInt(e.target.value) || undefined }))} />
+                </div>
+                <div className="space-y-1">
+                  <Label>اللون</Label>
+                  <Input value={editForm.color || ""} onChange={(e) => setEditForm(f => ({ ...f, color: e.target.value }))} />
+                </div>
+                <div className="space-y-1">
+                  <Label>الكيلومترات</Label>
+                  <Input type="number" value={editForm.mileage || ""} onChange={(e) => setEditForm(f => ({ ...f, mileage: parseInt(e.target.value) || undefined }))} />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label>الوصف</Label>
+                <Textarea rows={3} value={editForm.description || ""} onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))} />
+              </div>
+
+              <div className="space-y-1">
+                <Label>رقم التواصل</Label>
+                <Input value={editForm.contactPhone || ""} onChange={(e) => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} />
+              </div>
+
+              <div className="space-y-1">
+                <Label>الحالة</Label>
+                <Select value={editForm.status || "active"} onValueChange={(v) => setEditForm(f => ({ ...f, status: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">نشط</SelectItem>
+                    <SelectItem value="hidden">مخفي</SelectItem>
+                    <SelectItem value="sold">مباع</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button className="flex-1" onClick={handleSaveEdit} disabled={updateMutation.isPending}>
+                  {updateMutation.isPending ? "جاري الحفظ..." : "حفظ التعديلات"}
+                </Button>
+                <Button variant="outline" onClick={() => setShowEditModal(false)}>إلغاء</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <footer className="mt-12 py-6 border-t border-border bg-secondary">
         <div className="container mx-auto px-4">
