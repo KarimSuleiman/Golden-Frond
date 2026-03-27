@@ -43,17 +43,17 @@ const translations: Translations = {
   // Landing - About
   "landing.about": { ar: "من نحن", en: "About Us" },
   "landing.about.text1": { 
-    ar: "السعفة الذهبية هي شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست في 29 أكتوبر 2011، ولدينا أكثر من 13 عاماً من الخبرة في توفير أفضل السيارات لعملائنا الكرام.", 
-    en: "Golden Frond is a leading company in car trading and importing, established on October 29, 2011. We have over 13 years of experience providing the best cars for our valued customers." 
+    ar: "السعفة الذهبية شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست عام 2004، مع أكثر من 21 عاماً من الخبرة في توفير أفضل السيارات للعملاء الكرام.", 
+    en: "Golden Frond is a leading company in car trading and importing, established in 2004, with over 21 years of experience providing the best cars for valued customers." 
   },
   "landing.about.text2": { 
-    ar: "نحن متخصصون في استيراد السيارات من أمريكا وأوروبا وتوفير خدمات التتبع والشحن لعملائنا، مع ضمان الجودة والشفافية في كل خطوة.", 
-    en: "We specialize in importing cars from America and Europe, providing tracking and shipping services for our customers, with guaranteed quality and transparency at every step." 
+    ar: "متخصصون في استيراد السيارات من أمريكا وأوروبا والصين وكوريا، مع تقديم خدمات التتبع والشحن لعملائنا وضمان الجودة والشفافية في كل خطوة.", 
+    en: "Specialized in importing cars from America, Europe, China and Korea, providing tracking and shipping services for customers with guaranteed quality and transparency at every step." 
   },
   "landing.founded": { ar: "تأسست في", en: "Founded" },
-  "landing.foundedDate": { ar: "29 أكتوبر 2011", en: "Oct 29, 2011" },
+  "landing.foundedDate": { ar: "2004", en: "2004" },
   "landing.experience": { ar: "سنوات الخبرة", en: "Years of Experience" },
-  "landing.experienceYears": { ar: "+13 سنة", en: "13+ Years" },
+  "landing.experienceYears": { ar: "+21 سنة", en: "21+ Years" },
   "landing.yearsExp": { ar: "سنة خبرة", en: "Years Exp." },
   "landing.brandName": { ar: "السعفة الذهبية", en: "Golden Frond" },
   

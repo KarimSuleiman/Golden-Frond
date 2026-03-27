@@ -520,9 +520,23 @@ export default function AddListing() {
                       </button>
                     </div>
                   ))}
-                  <label className="w-20 h-20 border-2 border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:border-primary/50">
+                  <label
+                    className="w-20 h-20 border-2 border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:border-primary/50"
+                    data-testid="label-additional-images"
+                    onClick={(e) => {
+                      const input = e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
+                      if (input) input.click();
+                    }}
+                  >
                     <Upload className="w-5 h-5 text-muted-foreground" />
-                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleAdditionalImages} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}
+                      onChange={handleAdditionalImages}
+                      data-testid="input-additional-images"
+                    />
                   </label>
                 </div>
               </div>

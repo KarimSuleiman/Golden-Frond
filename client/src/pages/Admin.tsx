@@ -927,7 +927,13 @@ export default function Admin() {
                         </div>
                       ))}
                     </div>
-                    <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors w-fit">
+                    <label
+                      className="flex items-center gap-2 px-4 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors w-fit"
+                      onClick={(e) => {
+                        const input = e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
+                        if (input) input.click();
+                      }}
+                    >
                       <Plus className="w-4 h-4" />
                       <span>إضافة صور</span>
                       <input
@@ -935,7 +941,7 @@ export default function Admin() {
                         accept="image/*"
                         multiple
                         onChange={handleAdditionalImagesChange}
-                        className="hidden"
+                        style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}
                         data-testid="input-additional-images"
                       />
                     </label>

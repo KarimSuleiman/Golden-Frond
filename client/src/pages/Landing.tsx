@@ -14,15 +14,14 @@ import {
   Phone,
   Mail,
   Calendar,
-  Facebook,
   Clock,
-  Quote,
   MessageCircle,
   Settings,
   Car,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
+import heroCarImage from "@assets/1fe806ff-fb76-4c76-bb40-24697774b8e9_1774627254576.JPG";
 
 export default function Landing() {
   const { t, language, dir } = useLanguage();
@@ -137,7 +136,7 @@ export default function Landing() {
                 className="grid grid-cols-3 gap-6 pt-8 border-t border-border"
               >
                 <div>
-                  <h4 className="text-2xl font-bold text-foreground">+13</h4>
+                  <h4 className="text-2xl font-bold text-foreground">+21</h4>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                     {t("landing.years")}
                   </p>
@@ -164,7 +163,7 @@ export default function Landing() {
             >
               <div className="relative z-10 rounded-3xl overflow-hidden border border-border shadow-2xl animate-float bg-card">
                 <img
-                  src="https://images.unsplash.com/photo-1563720360172-67b8f3dce741?q=80&w=2070&auto=format&fit=crop"
+                  src={heroCarImage}
                   alt={t("landing.heroImageAlt")}
                   className="w-full h-auto object-cover"
                 />
@@ -186,48 +185,6 @@ export default function Landing() {
               <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -z-10" />
             </motion.div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-card border-t border-border">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">
-              {t("landing.testimonials")}
-            </h2>
-            <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-              {t("landing.testimonials.desc")}
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <TestimonialCard
-              name={t("landing.testimonial1.name")}
-              role={t("landing.testimonial1.role")}
-              text={t("landing.testimonial1.text")}
-              delay={0.1}
-            />
-            <TestimonialCard
-              name={t("landing.testimonial2.name")}
-              role={t("landing.testimonial2.role")}
-              text={t("landing.testimonial2.text")}
-              delay={0.2}
-            />
-            <TestimonialCard
-              name={t("landing.testimonial3.name")}
-              role={t("landing.testimonial3.role")}
-              text={t("landing.testimonial3.text")}
-              delay={0.3}
-            />
-          </div>
         </div>
       </section>
 
@@ -308,7 +265,7 @@ export default function Landing() {
               <div
                 className={`absolute -bottom-6 ${language === "ar" ? "-right-6" : "-left-6"} bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl`}
               >
-                <p className="text-3xl font-bold">+13</p>
+                <p className="text-3xl font-bold">+21</p>
                 <p className="text-sm">{t("landing.yearsExp")}</p>
               </div>
             </motion.div>
@@ -624,40 +581,3 @@ function FeatureCard({
   );
 }
 
-function TestimonialCard({
-  name,
-  role,
-  text,
-  delay,
-}: {
-  name: string;
-  role: string;
-  text: string;
-  delay: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      viewport={{ once: true }}
-      className="p-6 rounded-2xl bg-secondary border border-border relative text-center"
-    >
-      <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/20" />
-      <p className="text-muted-foreground leading-relaxed mb-6 text-lg italic">
-        "{text}"
-      </p>
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-          <span className="text-primary font-bold text-lg">
-            {name.charAt(0)}
-          </span>
-        </div>
-        <div>
-          <p className="font-bold text-foreground">{name}</p>
-          <p className="text-sm text-muted-foreground">{role}</p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
