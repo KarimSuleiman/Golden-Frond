@@ -53,6 +53,9 @@ export default function ListingDetail() {
   const [editForm, setEditForm] = useState<Partial<Listing>>({});
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
   const [editImagePreview, setEditImagePreview] = useState<string>("");
+  const [editExistingImages, setEditExistingImages] = useState<string[]>([]);
+  const [editNewImageFiles, setEditNewImageFiles] = useState<File[]>([]);
+  const [editNewImagePreviews, setEditNewImagePreviews] = useState<string[]>([]);
   const [, setLocation] = useLocation();
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
@@ -130,7 +133,21 @@ export default function ListingDetail() {
     setEditForm({ ...listing });
     setEditImageFile(null);
     setEditImagePreview("");
+    setEditExistingImages(listing.images ?? []);
+    setEditNewImageFiles([]);
+    setEditNewImagePreviews([]);
     setShowEditModal(true);
+  };
+
+  const handleAddEditImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setEditNewImageFiles(prev => [...prev, ...files]);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => setEditNewImagePreviews(prev => [...prev, reader.result as string]);
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
   };
 
   const handleSaveEdit = async () => {
@@ -144,7 +161,17 @@ export default function ListingDetail() {
       const data = await res.json();
       imageUrl = data.imageUrl;
     }
-    updateMutation.mutate({ ...editForm, imageUrl });
+    const uploadedNew: string[] = [];
+    for (const file of editNewImageFiles) {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+      if (!res.ok) { toast({ title: t("common.error"), description: "فشل رفع إحدى الصور الإضافية", variant: "destructive" }); return; }
+      const data = await res.json();
+      uploadedNew.push(data.imageUrl);
+    }
+    const allImages = [...editExistingImages, ...uploadedNew];
+    updateMutation.mutate({ ...editForm, imageUrl, images: allImages.length > 0 ? allImages : null });
   };
 
   const canDelete = authInfo?.isAdmin || (user && listing && listing.sellerId === user.id);
@@ -510,6 +537,44 @@ export default function ListingDetail() {
                         reader.readAsDataURL(file);
                       }
                     }} />
+                  </label>
+                </div>
+              </div>
+
+              {/* Additional photos */}
+              <div className="space-y-2">
+                <Label>صور إضافية</Label>
+                <div className="flex flex-wrap gap-2">
+                  {editExistingImages.map((img, idx) => (
+                    <div key={`existing-${idx}`} className="relative">
+                      <img src={img} alt="" className="w-16 h-16 object-cover rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => setEditExistingImages(prev => prev.filter((_, i) => i !== idx))}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {editNewImagePreviews.map((preview, idx) => (
+                    <div key={`new-${idx}`} className="relative">
+                      <img src={preview} alt="" className="w-16 h-16 object-cover rounded-lg border-2 border-primary" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditNewImageFiles(prev => prev.filter((_, i) => i !== idx));
+                          setEditNewImagePreviews(prev => prev.filter((_, i) => i !== idx));
+                        }}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary transition-colors">
+                    <Upload className="w-5 h-5 text-muted-foreground" />
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleAddEditImages} />
                   </label>
                 </div>
               </div>
