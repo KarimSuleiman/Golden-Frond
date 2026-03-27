@@ -24,6 +24,7 @@ export default function AddListing() {
   const [imagePreview, setImagePreview] = useState("");
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
   const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [form, setForm] = useState({
     make: "",
@@ -69,6 +70,22 @@ export default function AddListing() {
       return res.json();
     },
   });
+
+  const uploadImageDirect = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", file);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || "فشل رفع الصورة");
+    }
+    const data = await res.json();
+    return data.imageUrl;
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -125,23 +142,30 @@ export default function AddListing() {
       return;
     }
 
+    setIsUploading(true);
+
     let imageUrl = "";
     try {
-      const result = await uploadMutation.mutateAsync(imageFile);
-      imageUrl = result.imageUrl;
-    } catch {
+      imageUrl = await uploadImageDirect(imageFile);
+    } catch (err: any) {
+      toast({ title: t("common.error"), description: err.message || "فشل رفع الصورة الرئيسية", variant: "destructive" });
+      setIsUploading(false);
       return;
     }
 
     const uploadedAdditional: string[] = [];
     for (const file of additionalImages) {
       try {
-        const result = await uploadMutation.mutateAsync(file);
-        uploadedAdditional.push(result.imageUrl);
-      } catch {
+        const url = await uploadImageDirect(file);
+        uploadedAdditional.push(url);
+      } catch (err: any) {
+        toast({ title: t("common.error"), description: `فشل رفع إحدى الصور الإضافية: ${err.message || ""}`, variant: "destructive" });
+        setIsUploading(false);
         return;
       }
     }
+
+    setIsUploading(false);
 
     createMutation.mutate({
       make: form.make || null,
@@ -173,7 +197,7 @@ export default function AddListing() {
   };
 
   const BackArrow = language === "ar" ? ArrowRight : ArrowLeft;
-  const isSubmitting = uploadMutation.isPending || createMutation.isPending;
+  const isSubmitting = isUploading || createMutation.isPending;
 
   return (
     <div className="min-h-screen bg-background" dir={dir}>
