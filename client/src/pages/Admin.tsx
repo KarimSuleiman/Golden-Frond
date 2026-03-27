@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock, FileText } from "lucide-react";
-import type { Car as CarType } from "@shared/schema";
+import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock, FileText, ShoppingCart } from "lucide-react";
+import type { Car as CarType, Listing } from "@shared/schema";
 import { useLanguage } from "@/lib/i18n";
 import {
   AlertDialog,
@@ -49,7 +49,11 @@ export default function Admin() {
   const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
   const [existingAdditionalImages, setExistingAdditionalImages] = useState<string[]>([]);
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
-  
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [listingForm, setListingForm] = useState<Partial<Listing>>({});
+  const [listingImageFile, setListingImageFile] = useState<File | null>(null);
+  const [listingImagePreview, setListingImagePreview] = useState<string>("");
+
   // Filter states
   const [filterByUserId, setFilterByUserId] = useState<string>("");
   const [filterByRole, setFilterByRole] = useState<string>("");
@@ -93,6 +97,10 @@ export default function Admin() {
 
   const { data: cars = [], isLoading: loadingCars } = useQuery<CarType[]>({
     queryKey: ["/api/admin/cars"],
+  });
+
+  const { data: allListings = [], isLoading: loadingListings } = useQuery<Listing[]>({
+    queryKey: ["/api/listings"],
   });
 
   const { data: isAdminCheck, isLoading: checkingAdmin } = useQuery<{ isAdmin: boolean }>({
@@ -235,6 +243,68 @@ export default function Admin() {
       toast({ title: "خطأ", description: error.message, variant: "destructive" });
     },
   });
+
+  const updateListingMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<Listing> }) => {
+      const res = await fetch(`/api/listings/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("فشل تحديث الإعلان");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/listings"] });
+      setEditingListing(null);
+      toast({ title: "تم تحديث الإعلان" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "خطأ", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteListingMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/listings/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("فشل حذف الإعلان");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/listings"] });
+      toast({ title: "تم حذف الإعلان" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "خطأ", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const openEditListing = (listing: Listing) => {
+    setEditingListing(listing);
+    setListingForm({ ...listing });
+    setListingImageFile(null);
+    setListingImagePreview("");
+  };
+
+  const handleSaveListing = async () => {
+    if (!editingListing) return;
+    let imageUrl = listingForm.imageUrl || editingListing.imageUrl;
+    if (listingImageFile) {
+      const formData = new FormData();
+      formData.append("image", listingImageFile);
+      const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+      if (!res.ok) {
+        toast({ title: "خطأ", description: "فشل رفع الصورة", variant: "destructive" });
+        return;
+      }
+      const data = await res.json();
+      imageUrl = data.imageUrl;
+    }
+    updateListingMutation.mutate({ id: editingListing.id, data: { ...listingForm, imageUrl } });
+  };
 
   const resetForm = () => {
     setCarForm({
@@ -885,6 +955,165 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Marketplace Listings Section */}
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5" />
+                إعلانات السوق ({allListings.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingListings ? (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+              ) : allListings.length === 0 ? (
+                <p className="text-center text-muted-foreground py-6">لا توجد إعلانات</p>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {allListings.map((listing) => (
+                    <div key={listing.id} className="border border-border rounded-lg overflow-hidden">
+                      <div className="relative h-36">
+                        <img
+                          src={listing.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                        <span className={`absolute top-2 right-2 text-xs px-2 py-0.5 rounded-full ${listing.status === "active" ? "bg-green-500/20 text-green-700" : "bg-gray-400/20 text-gray-600"}`}>
+                          {listing.status === "active" ? "نشط" : "مخفي"}
+                        </span>
+                      </div>
+                      <div className="p-3 space-y-1">
+                        <p className="font-semibold text-sm truncate">{listing.make} {listing.model} {listing.year}</p>
+                        <p className="text-xs text-muted-foreground">{listing.price ? `${listing.price.toLocaleString()} د.أ` : "-"}</p>
+                        <div className="flex gap-2 pt-1">
+                          <Button size="sm" variant="outline" className="flex-1 h-7 text-xs" onClick={() => openEditListing(listing)} data-testid={`button-edit-listing-${listing.id}`}>
+                            <Edit className="w-3 h-3 ml-1" />
+                            تعديل
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-7 text-xs text-red-500 border-red-500/30" data-testid={`button-delete-listing-${listing.id}`}>
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>حذف الإعلان</AlertDialogTitle>
+                                <AlertDialogDescription>هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع.</AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteListingMutation.mutate(listing.id)} className="bg-red-500 text-white">
+                                  حذف
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Edit Listing Modal */}
+        {editingListing && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle>تعديل الإعلان</CardTitle>
+                <Button size="icon" variant="ghost" onClick={() => setEditingListing(null)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Image */}
+                <div className="space-y-2">
+                  <Label>الصورة الرئيسية</Label>
+                  <div className="flex items-center gap-3">
+                    <img src={listingImagePreview || editingListing.imageUrl} alt="" className="w-20 h-20 object-cover rounded-lg" />
+                    <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors text-sm">
+                      <Upload className="w-4 h-4" />
+                      تغيير الصورة
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setListingImageFile(file);
+                          const reader = new FileReader();
+                          reader.onloadend = () => setListingImagePreview(reader.result as string);
+                          reader.readAsDataURL(file);
+                        }
+                      }} />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label>الماركة</Label>
+                    <Input value={listingForm.make || ""} onChange={(e) => setListingForm(f => ({ ...f, make: e.target.value }))} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>الموديل</Label>
+                    <Input value={listingForm.model || ""} onChange={(e) => setListingForm(f => ({ ...f, model: e.target.value }))} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>السنة</Label>
+                    <Input type="number" value={listingForm.year || ""} onChange={(e) => setListingForm(f => ({ ...f, year: parseInt(e.target.value) || null }))} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>السعر (د.أ)</Label>
+                    <Input type="number" value={listingForm.price || ""} onChange={(e) => setListingForm(f => ({ ...f, price: parseInt(e.target.value) || null }))} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>اللون</Label>
+                    <Input value={listingForm.color || ""} onChange={(e) => setListingForm(f => ({ ...f, color: e.target.value }))} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>الكيلومترات</Label>
+                    <Input type="number" value={listingForm.mileage || ""} onChange={(e) => setListingForm(f => ({ ...f, mileage: parseInt(e.target.value) || null }))} />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label>الوصف</Label>
+                  <Textarea rows={3} value={listingForm.description || ""} onChange={(e) => setListingForm(f => ({ ...f, description: e.target.value }))} />
+                </div>
+
+                <div className="space-y-1">
+                  <Label>رقم التواصل</Label>
+                  <Input value={listingForm.contactPhone || ""} onChange={(e) => setListingForm(f => ({ ...f, contactPhone: e.target.value }))} />
+                </div>
+
+                <div className="space-y-1">
+                  <Label>الحالة</Label>
+                  <Select value={listingForm.status || "active"} onValueChange={(v) => setListingForm(f => ({ ...f, status: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">نشط</SelectItem>
+                      <SelectItem value="hidden">مخفي</SelectItem>
+                      <SelectItem value="sold">مباع</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button className="flex-1" onClick={handleSaveListing} disabled={updateListingMutation.isPending}>
+                    {updateListingMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "حفظ التعديلات"}
+                  </Button>
+                  <Button variant="outline" onClick={() => setEditingListing(null)}>إلغاء</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {showAddCar && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
