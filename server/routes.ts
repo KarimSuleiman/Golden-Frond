@@ -44,6 +44,19 @@ const upload = multer({
   },
 });
 
+const uploadPdf = multer({
+  storage: multerStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const extname = path.extname(file.originalname).toLowerCase() === ".pdf";
+    const mimetype = file.mimetype === "application/pdf";
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error("Only PDF files are allowed"));
+  },
+});
+
 const emailTransporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -354,6 +367,14 @@ export async function registerRoutes(
     }
     const imageUrl = `/uploads/${req.file.filename}`;
     res.json({ imageUrl });
+  });
+
+  app.post("/api/upload-pdf", isAuthenticated, uploadPdf.single("pdf"), (req: any, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const pdfUrl = `/uploads/${req.file.filename}`;
+    res.json({ pdfUrl });
   });
 
   // === Listings (Cars for Sale) Routes ===

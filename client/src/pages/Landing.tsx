@@ -219,7 +219,25 @@ export default function Landing() {
                 {t("landing.about.text1")}
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                {t("landing.about.text2")}
+                {language === "ar" ? (
+                  <>
+                    متخصصون في استيراد السيارات من{" "}
+                    <strong className="text-foreground">أمريكا</strong>{" "}
+                    و<strong className="text-foreground">أوروبا</strong>{" "}
+                    و<strong className="text-foreground">الصين</strong>{" "}
+                    و<strong className="text-foreground">كوريا</strong>
+                    ، مع تقديم خدمات التتبع والشحن لعملائنا وضمان الجودة والشفافية في كل خطوة.
+                  </>
+                ) : (
+                  <>
+                    Specialized in importing cars from{" "}
+                    <strong className="text-foreground">America</strong>,{" "}
+                    <strong className="text-foreground">Europe</strong>,{" "}
+                    <strong className="text-foreground">China</strong> and{" "}
+                    <strong className="text-foreground">Korea</strong>,{" "}
+                    providing tracking and shipping services for customers with guaranteed quality and transparency at every step.
+                  </>
+                )}
               </p>
 
               <div className="grid sm:grid-cols-2 gap-4 pt-4">

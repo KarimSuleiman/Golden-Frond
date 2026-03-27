@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock } from "lucide-react";
+import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock, FileText } from "lucide-react";
 import type { Car as CarType } from "@shared/schema";
 import { useLanguage } from "@/lib/i18n";
 import {
@@ -83,6 +83,10 @@ export default function Admin() {
     customUrlReason: "",
   });
 
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfFileName, setPdfFileName] = useState<string>("");
+  const [existingPdfUrl, setExistingPdfUrl] = useState<string>("");
+
   const { data: users = [], isLoading: loadingUsers } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
   });
@@ -105,6 +109,20 @@ export default function Admin() {
         credentials: "include",
       });
       if (!res.ok) throw new Error("فشل رفع الصورة");
+      return res.json();
+    },
+  });
+
+  const uploadPdfMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("pdf", file);
+      const res = await fetch("/api/upload-pdf", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("فشل رفع ملف PDF");
       return res.json();
     },
   });
@@ -240,6 +258,9 @@ export default function Admin() {
     setAdditionalImages([]);
     setAdditionalPreviews([]);
     setExistingAdditionalImages([]);
+    setPdfFile(null);
+    setPdfFileName("");
+    setExistingPdfUrl("");
     setShowAddCar(false);
     setEditingCar(null);
   };
@@ -314,6 +335,17 @@ export default function Admin() {
       }
     }
 
+    // Upload PDF if selected
+    let pdfUrl: string | null = existingPdfUrl || null;
+    if (pdfFile) {
+      try {
+        const result = await uploadPdfMutation.mutateAsync(pdfFile);
+        pdfUrl = result.pdfUrl;
+      } catch {
+        return;
+      }
+    }
+
     const carData = {
       ...carForm,
       userId: editingCar ? editingCar.userId : selectedUserId,
@@ -326,6 +358,7 @@ export default function Admin() {
       customUrl: carForm.customUrl || null,
       customUrlReason: carForm.customUrlReason || null,
       details: carForm.details || null,
+      pdfUrl,
     };
 
     if (editingCar) {
@@ -354,6 +387,9 @@ export default function Admin() {
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
+    setExistingPdfUrl(car.pdfUrl || "");
+    setPdfFile(null);
+    setPdfFileName("");
     setShowAddCar(true);
   };
 
@@ -1097,6 +1133,70 @@ export default function Admin() {
                       placeholder="أي تفاصيل إضافية عن السيارة..."
                       data-testid="input-details"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>ملف PDF (اختياري)</Label>
+                    {existingPdfUrl && !pdfFile ? (
+                      <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-secondary">
+                        <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-sm text-foreground flex-grow truncate">ملف PDF موجود</span>
+                        <div className="flex gap-2">
+                          <a
+                            href={existingPdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline"
+                          >
+                            عرض
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setExistingPdfUrl("")}
+                            className="text-xs text-destructive hover:underline"
+                          >
+                            إزالة
+                          </button>
+                        </div>
+                      </div>
+                    ) : pdfFile ? (
+                      <div className="flex items-center gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                        <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-sm text-foreground flex-grow truncate">{pdfFileName}</span>
+                        <button
+                          type="button"
+                          onClick={() => { setPdfFile(null); setPdfFileName(""); }}
+                          className="text-xs text-destructive hover:underline"
+                        >
+                          إزالة
+                        </button>
+                      </div>
+                    ) : (
+                      <label
+                        className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-secondary transition-colors"
+                        data-testid="label-pdf-upload"
+                        onClick={(e) => {
+                          const input = e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
+                          if (input) input.click();
+                        }}
+                      >
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">اختر ملف PDF</span>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setPdfFile(file);
+                              setPdfFileName(file.name);
+                            }
+                          }}
+                          data-testid="input-pdf"
+                        />
+                      </label>
+                    )}
                   </div>
 
                   <div className="flex gap-3 pt-4">

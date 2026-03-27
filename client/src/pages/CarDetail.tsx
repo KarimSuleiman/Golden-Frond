@@ -286,6 +286,25 @@ export default function CarDetail() {
                 </a>
               </div>
             )}
+
+            {(car as any).pdfUrl && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-4">
+                <div className="flex items-center gap-2 text-amber-700 font-semibold">
+                  <FileText className="w-5 h-5" />
+                  <span>{t("carDetail.pdfDoc")}</span>
+                </div>
+                <a
+                  href={(car as any).pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-medium transition-colors w-full justify-center"
+                  data-testid="link-pdf"
+                >
+                  <FileText className="w-5 h-5" />
+                  {t("carDetail.viewPdf")}
+                </a>
+              </div>
+            )}
           </motion.div>
         </div>
       </main>

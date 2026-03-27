@@ -164,6 +164,8 @@ const translations: Translations = {
   "carDetail.dateAdded": { ar: "تاريخ الإضافة", en: "Date Added" },
   "carDetail.additionalDetails": { ar: "تفاصيل إضافية", en: "Additional Details" },
   "carDetail.shippingInfo": { ar: "معلومات الشحن", en: "Shipping Information" },
+  "carDetail.pdfDoc": { ar: "وثيقة PDF", en: "PDF Document" },
+  "carDetail.viewPdf": { ar: "عرض / تحميل PDF", en: "View / Download PDF" },
   "carDetail.notFound": { ar: "السيارة غير موجودة", en: "Car Not Found" },
   "carDetail.notFoundDesc": { ar: "لم نتمكن من العثور على السيارة المطلوبة", en: "We couldn't find the requested car" },
   
