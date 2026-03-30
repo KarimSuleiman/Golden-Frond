@@ -87,9 +87,9 @@ export default function Admin() {
     customUrlReason: "",
   });
 
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfFileName, setPdfFileName] = useState<string>("");
-  const [existingPdfUrl, setExistingPdfUrl] = useState<string>("");
+  const [pdfFiles, setPdfFiles] = useState<File[]>([]);
+  const [pdfFileNames, setPdfFileNames] = useState<string[]>([]);
+  const [existingPdfUrls, setExistingPdfUrls] = useState<string[]>([]);
 
   const { data: users = [], isLoading: loadingUsers } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
@@ -328,9 +328,9 @@ export default function Admin() {
     setAdditionalImages([]);
     setAdditionalPreviews([]);
     setExistingAdditionalImages([]);
-    setPdfFile(null);
-    setPdfFileName("");
-    setExistingPdfUrl("");
+    setPdfFiles([]);
+    setPdfFileNames([]);
+    setExistingPdfUrls([]);
     setShowAddCar(false);
     setEditingCar(null);
   };
@@ -405,13 +405,14 @@ export default function Admin() {
       }
     }
 
-    // Upload PDF if selected
-    let pdfUrl: string | null = existingPdfUrl || null;
-    if (pdfFile) {
+    // Upload any new PDFs
+    const uploadedPdfUrls: string[] = [...existingPdfUrls];
+    for (const file of pdfFiles) {
       try {
-        const result = await uploadPdfMutation.mutateAsync(pdfFile);
-        pdfUrl = result.pdfUrl;
+        const result = await uploadPdfMutation.mutateAsync(file);
+        uploadedPdfUrls.push(result.pdfUrl);
       } catch {
+        toast({ title: "خطأ", description: "فشل رفع أحد ملفات PDF", variant: "destructive" });
         return;
       }
     }
@@ -428,7 +429,8 @@ export default function Admin() {
       customUrl: carForm.customUrl || null,
       customUrlReason: carForm.customUrlReason || null,
       details: carForm.details || null,
-      pdfUrl,
+      pdfUrl: uploadedPdfUrls[0] || null,
+      pdfUrls: uploadedPdfUrls.length > 0 ? uploadedPdfUrls : null,
     };
 
     if (editingCar) {
@@ -457,9 +459,9 @@ export default function Admin() {
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
-    setExistingPdfUrl(car.pdfUrl || "");
-    setPdfFile(null);
-    setPdfFileName("");
+    setExistingPdfUrls((car as any).pdfUrls || (car.pdfUrl ? [car.pdfUrl] : []));
+    setPdfFiles([]);
+    setPdfFileNames([]);
     setShowAddCar(true);
   };
 
@@ -1365,67 +1367,64 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>ملف PDF (اختياري)</Label>
-                    {existingPdfUrl && !pdfFile ? (
-                      <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-secondary">
-                        <FileText className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm text-foreground flex-grow truncate">ملف PDF موجود</span>
-                        <div className="flex gap-2">
-                          <a
-                            href={existingPdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-primary hover:underline"
-                          >
-                            عرض
-                          </a>
+                    <Label>ملفات PDF (اختياري)</Label>
+                    <div className="space-y-2">
+                      {/* Existing saved PDFs */}
+                      {existingPdfUrls.map((url, idx) => (
+                        <div key={`existing-${idx}`} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-secondary">
+                          <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                          <span className="text-sm text-foreground flex-grow truncate">ملف PDF {idx + 1}</span>
+                          <div className="flex gap-2">
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">عرض</a>
+                            <button
+                              type="button"
+                              onClick={() => setExistingPdfUrls(prev => prev.filter((_, i) => i !== idx))}
+                              className="text-xs text-destructive hover:underline"
+                            >
+                              إزالة
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {/* New PDFs queued for upload */}
+                      {pdfFileNames.map((name, idx) => (
+                        <div key={`new-${idx}`} className="flex items-center gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                          <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                          <span className="text-sm text-foreground flex-grow truncate">{name}</span>
                           <button
                             type="button"
-                            onClick={() => setExistingPdfUrl("")}
+                            onClick={() => {
+                              setPdfFiles(prev => prev.filter((_, i) => i !== idx));
+                              setPdfFileNames(prev => prev.filter((_, i) => i !== idx));
+                            }}
                             className="text-xs text-destructive hover:underline"
                           >
                             إزالة
                           </button>
                         </div>
-                      </div>
-                    ) : pdfFile ? (
-                      <div className="flex items-center gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
-                        <FileText className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm text-foreground flex-grow truncate">{pdfFileName}</span>
-                        <button
-                          type="button"
-                          onClick={() => { setPdfFile(null); setPdfFileName(""); }}
-                          className="text-xs text-destructive hover:underline"
-                        >
-                          إزالة
-                        </button>
-                      </div>
-                    ) : (
+                      ))}
+                      {/* Add PDF button */}
                       <label
                         className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-secondary transition-colors"
                         data-testid="label-pdf-upload"
-                        onClick={(e) => {
-                          const input = e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
-                          if (input) input.click();
-                        }}
                       >
                         <FileText className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">اختر ملف PDF</span>
+                        <span className="text-sm text-muted-foreground">إضافة ملف PDF</span>
                         <input
                           type="file"
                           accept="application/pdf"
-                          style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}
+                          multiple
+                          className="hidden"
                           onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              setPdfFile(file);
-                              setPdfFileName(file.name);
-                            }
+                            const files = Array.from(e.target.files || []);
+                            setPdfFiles(prev => [...prev, ...files]);
+                            setPdfFileNames(prev => [...prev, ...files.map(f => f.name)]);
+                            e.target.value = "";
                           }}
                           data-testid="input-pdf"
                         />
                       </label>
-                    )}
+                    </div>
                   </div>
 
                   <div className="flex gap-3 pt-4">

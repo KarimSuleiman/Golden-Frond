@@ -26,6 +26,7 @@ export const cars = pgTable("cars", {
   customUrl: text("custom_url"),
   customUrlReason: text("custom_url_reason"),
   pdfUrl: text("pdf_url"),
+  pdfUrls: text("pdf_urls").array(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
