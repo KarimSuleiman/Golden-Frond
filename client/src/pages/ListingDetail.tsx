@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X } from "lucide-react";
+import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import { useState } from "react";
@@ -48,6 +48,8 @@ export default function ListingDetail() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const nextImage = (allImgs: string[]) => setCurrentImageIndex(i => (i + 1) % allImgs.length);
+  const prevImage = (allImgs: string[]) => setCurrentImageIndex(i => (i - 1 + allImgs.length) % allImgs.length);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Listing>>({});
@@ -243,7 +245,7 @@ export default function ListingDetail() {
           </Button>
         </Link>
 
-        <div className="relative rounded-md overflow-hidden mb-6 bg-black">
+        <div className="relative rounded-md overflow-hidden mb-6 bg-black group">
           <img
             src={allImages[currentImageIndex]}
             alt={listingTitle}
@@ -251,18 +253,34 @@ export default function ListingDetail() {
             data-testid="img-listing-main"
           />
           {allImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-              {allImages.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentImageIndex(idx)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all ${
-                    idx === currentImageIndex ? "bg-white scale-125" : "bg-white/50"
-                  }`}
-                  data-testid={`button-image-dot-${idx}`}
-                />
-              ))}
-            </div>
+            <>
+              <button
+                onClick={() => prevImage(allImages)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                data-testid="button-prev-listing"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => nextImage(allImages)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                data-testid="button-next-listing"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {allImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      idx === currentImageIndex ? "bg-white scale-125" : "bg-white/50"
+                    }`}
+                    data-testid={`button-image-dot-${idx}`}
+                  />
+                ))}
+              </div>
+            </>
           )}
           <div className={`absolute bottom-4 ${language === "ar" ? "left-4" : "right-4"} bg-black/60 text-white text-xs px-2 py-1 rounded-md`}>
             {currentImageIndex + 1} / {allImages.length}
