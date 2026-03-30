@@ -624,7 +624,18 @@ export async function registerRoutes(
       if (!carData.userId) {
         return res.status(400).json({ message: "يجب تحديد المستخدم" });
       }
-      const input = api.cars.create.input.parse(carData);
+      // Fill in defaults for optional admin submissions
+      const dataWithDefaults = {
+        make: "",
+        model: "",
+        year: new Date().getFullYear(),
+        vin: "",
+        color: "",
+        imageUrl: "",
+        status: "Purchased",
+        ...carData,
+      };
+      const input = api.cars.create.input.parse(dataWithDefaults);
       const car = await storage.createCar(input);
       res.status(201).json(car);
     } catch (err) {

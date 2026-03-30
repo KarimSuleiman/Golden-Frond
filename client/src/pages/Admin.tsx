@@ -389,10 +389,7 @@ export default function Admin() {
       }
     }
 
-    if (!imageUrl && !editingCar) {
-      toast({ title: "خطأ", description: "يرجى رفع صورة للسيارة", variant: "destructive" });
-      return;
-    }
+    // Image is optional — no required check
 
     // Upload additional images
     const uploadedAdditionalImages: string[] = [...existingAdditionalImages];
@@ -1147,7 +1144,7 @@ export default function Admin() {
                   )}
 
                   <div className="space-y-2">
-                    <Label>الصورة الرئيسية {!editingCar && "*"}</Label>
+                    <Label>الصورة الرئيسية (اختياري)</Label>
                     <div className="flex items-center gap-4">
                       {imagePreview && (
                         <img src={imagePreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
@@ -1216,22 +1213,20 @@ export default function Admin() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>الشركة المصنعة *</Label>
+                      <Label>الشركة المصنعة</Label>
                       <Input
                         value={carForm.make}
                         onChange={(e) => setCarForm({ ...carForm, make: e.target.value })}
                         placeholder="Toyota"
-                        required
                         data-testid="input-make"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>الموديل *</Label>
+                      <Label>الموديل</Label>
                       <Input
                         value={carForm.model}
                         onChange={(e) => setCarForm({ ...carForm, model: e.target.value })}
                         placeholder="Land Cruiser"
-                        required
                         data-testid="input-model"
                       />
                     </div>
@@ -1239,42 +1234,39 @@ export default function Admin() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>سنة الصنع *</Label>
+                      <Label>سنة الصنع</Label>
                       <Input
                         type="number"
                         value={carForm.year}
                         onChange={(e) => setCarForm({ ...carForm, year: parseInt(e.target.value) })}
-                        required
                         data-testid="input-year"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>اللون *</Label>
+                      <Label>اللون</Label>
                       <Input
                         value={carForm.color}
                         onChange={(e) => setCarForm({ ...carForm, color: e.target.value })}
                         placeholder="أبيض لؤلؤي"
-                        required
                         data-testid="input-color"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>رقم الشاصي (VIN) *</Label>
+                    <Label>رقم الشاصي (VIN)</Label>
                     <Input
                       value={carForm.vin}
                       onChange={(e) => setCarForm({ ...carForm, vin: e.target.value })}
                       placeholder="JTMHT05J123456789"
                       dir="ltr"
-                      required
                       data-testid="input-vin"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>الحالة *</Label>
+                      <Label>الحالة</Label>
                       <Select
                         value={carForm.status}
                         onValueChange={(value) => setCarForm({ ...carForm, status: value })}
