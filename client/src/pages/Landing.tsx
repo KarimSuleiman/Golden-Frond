@@ -52,28 +52,32 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative flex-grow flex items-center justify-center overflow-hidden py-20 lg:py-32">
-        {/* Background Elements */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-        </div>
+      {/* Hero Section — full-bleed image with floating card */}
+      <section className="relative w-full overflow-hidden" style={{ minHeight: "calc(100vh - 4rem)" }}>
+        {/* Full-bleed background image */}
+        <img
+          src={heroCarImage}
+          alt={t("landing.heroImageAlt")}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        {/* Subtle dark overlay for photo legibility */}
+        <div className="absolute inset-0 bg-black/30" />
 
-        <div className="container mx-auto relative z-10 px-4">
+        {/* Floating card */}
+        <div className="relative z-10 flex items-center min-h-[calc(100vh-4rem)] px-4 sm:px-8 lg:px-16 py-12">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid lg:grid-cols-2 gap-12 items-center"
+            className="w-full max-w-md lg:max-w-lg"
           >
-            {/* Text Content */}
-            <div className="text-center lg:text-start space-y-8">
-
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 lg:p-10 space-y-7">
+              {/* Tagline pill */}
               <motion.div variants={itemVariants}>
-                <span className="inline-block px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold tracking-wide mb-4">
+                <span className="inline-block px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold tracking-wide mb-5">
                   {t("landing.tagline")}
                 </span>
-                <h1 className="text-5xl lg:text-7xl font-display font-bold leading-tight text-foreground">
+                <h1 className="text-4xl lg:text-5xl font-display font-bold leading-tight text-foreground">
                   {t("landing.title1")}
                   <br />
                   <span className="text-primary">{t("landing.title2")}</span>
@@ -82,21 +86,22 @@ export default function Landing() {
 
               <motion.p
                 variants={itemVariants}
-                className="text-lg text-muted-foreground max-w-xl leading-relaxed mx-auto lg:mx-0"
+                className="text-base text-muted-foreground leading-relaxed"
               >
                 {t("landing.description")}
               </motion.p>
 
+              {/* CTA buttons */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-wrap gap-4 justify-center lg:justify-start"
+                className="flex flex-wrap gap-3"
               >
                 {isAdminCheck?.isAdmin ? (
                   <>
                     <a href="/admin">
                       <Button
                         size="lg"
-                        className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
+                        className="bg-primary text-primary-foreground text-base px-7 py-5 h-auto shadow-xl hover:scale-105 transition-all"
                         data-testid="button-admin-hero"
                       >
                         <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
@@ -107,7 +112,7 @@ export default function Landing() {
                       <Button
                         size="lg"
                         variant="outline"
-                        className="text-lg px-8 py-6 h-auto shadow-md hover:scale-105 transition-all"
+                        className="text-base px-7 py-5 h-auto shadow-md hover:scale-105 transition-all"
                         data-testid="button-cars-for-sale-hero"
                       >
                         <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
@@ -119,35 +124,34 @@ export default function Landing() {
                   <a href="/cars-for-sale">
                     <Button
                       size="lg"
-                      className="bg-primary text-primary-foreground text-lg px-8 py-6 h-auto shadow-xl hover:scale-105 transition-all"
+                      className="bg-primary text-primary-foreground text-base px-7 py-5 h-auto shadow-xl hover:scale-105 transition-all"
                       data-testid="button-cars-for-sale-hero"
                     >
                       {t("nav.carsForSale")}{" "}
-                      <ArrowIcon
-                        className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`}
-                      />
+                      <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
                     </Button>
                   </a>
                 )}
               </motion.div>
 
+              {/* Stats row */}
               <motion.div
                 variants={itemVariants}
-                className="grid grid-cols-3 gap-6 pt-8 border-t border-border"
+                className="grid grid-cols-3 gap-4 pt-6 border-t border-border"
               >
-                <div>
+                <div className="text-center">
                   <h4 className="text-2xl font-bold text-foreground">+21</h4>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                     {t("landing.years")}
                   </p>
                 </div>
-                <div>
+                <div className="text-center">
                   <h4 className="text-2xl font-bold text-foreground">100%</h4>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                     {t("landing.secure")}
                   </p>
                 </div>
-                <div>
+                <div className="text-center">
                   <h4 className="text-2xl font-bold text-foreground">24/7</h4>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                     {t("landing.support")}
@@ -155,35 +159,6 @@ export default function Landing() {
                 </div>
               </motion.div>
             </div>
-
-            {/* Hero Image */}
-            <motion.div
-              variants={itemVariants}
-              className="relative hidden lg:block"
-            >
-              <div className="relative z-10 rounded-3xl overflow-hidden border border-border shadow-2xl animate-float bg-card">
-                <img
-                  src={heroCarImage}
-                  alt={t("landing.heroImageAlt")}
-                  className="w-full h-auto object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent" />
-                <div
-                  className={`absolute bottom-6 ${language === "ar" ? "left-6" : "right-6"} text-white`}
-                >
-                  <p className="font-display font-bold text-2xl">
-                    {t("landing.exclusive")}
-                  </p>
-                  <p className="text-sm text-gray-200">
-                    {t("landing.premium")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Decorative elements behind image */}
-              <div className="absolute -top-10 -right-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
-              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -z-10" />
-            </motion.div>
           </motion.div>
         </div>
       </section>
