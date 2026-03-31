@@ -241,18 +241,18 @@ export default function ListingDetail() {
           </Button>
         </Link>
 
-        <div className="relative rounded-md overflow-hidden mb-6 bg-black group">
-          <AnimatePresence mode="wait" initial={false}>
+        <div className="relative rounded-md overflow-hidden mb-1 bg-secondary group h-[280px] md:h-[460px]">
+          <AnimatePresence initial={false}>
             <motion.img
               key={currentImageIndex}
               src={allImages[currentImageIndex]}
               alt={listingTitle}
-              className="w-full h-[300px] md:h-[450px] object-contain"
+              className="absolute inset-0 w-full h-full object-contain"
               data-testid="img-listing-main"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
+              transition={{ duration: 0.22 }}
             />
           </AnimatePresence>
           {allImages.length > 1 && (
@@ -393,6 +393,63 @@ export default function ListingDetail() {
                   <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed" data-testid="text-listing-description">
                     {listing.description}
                   </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Features / Specifications section */}
+            {((listing.interiorFeatures && listing.interiorFeatures.length > 0) || (listing.exteriorFeatures && listing.exteriorFeatures.length > 0)) && (
+              <Card data-testid="section-features">
+                <CardContent className="p-5">
+                  <h3 className="font-bold text-foreground text-lg mb-4">{language === "ar" ? "المواصفات" : "Specifications"}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {listing.interiorFeatures && listing.interiorFeatures.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 pb-2 border-b border-border">
+                          {t("filter.interiorSpecs")}
+                        </p>
+                        <ul className="space-y-2">
+                          {listing.interiorFeatures.map((feat) => {
+                            const key = `filter.int${feat.charAt(0).toUpperCase() + feat.slice(1)}`;
+                            const label = t(key) || feat;
+                            return (
+                              <li key={feat} className="flex items-center gap-2.5 text-sm text-foreground" data-testid={`feature-int-${feat}`}>
+                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                  <svg className="w-3 h-3 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </span>
+                                {label}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                    {listing.exteriorFeatures && listing.exteriorFeatures.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 pb-2 border-b border-border">
+                          {t("filter.exteriorSpecs")}
+                        </p>
+                        <ul className="space-y-2">
+                          {listing.exteriorFeatures.map((feat) => {
+                            const key = `filter.ext${feat.charAt(0).toUpperCase() + feat.slice(1)}`;
+                            const label = t(key) || feat;
+                            return (
+                              <li key={feat} className="flex items-center gap-2.5 text-sm text-foreground" data-testid={`feature-ext-${feat}`}>
+                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                  <svg className="w-3 h-3 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </span>
+                                {label}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             )}
