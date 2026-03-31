@@ -77,11 +77,13 @@ export default function MyCars() {
             {cars.map((car) => (
               <Link key={car.id} href={`/car/${car.id}`}>
                 <Card className="overflow-hidden cursor-pointer hover-elevate transition-all group" data-testid={`card-car-${car.id}`}>
-                  <div className="relative aspect-video overflow-hidden">
+                  <div className="relative aspect-video overflow-hidden bg-secondary">
                     <img
-                      src={car.imageUrl}
-                      alt={`${car.make} ${car.model}`}
+                      src={car.imageUrl || ""}
+                      alt={[car.make, car.model].filter(Boolean).join(" ") || t("dashboard.vehicle")}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.svg"; }}
                     />
                     <Badge
                       className={`absolute top-3 ${language === "ar" ? "right-3" : "left-3"} border shadow-sm ${statusColors[car.status] || "bg-gray-100 text-gray-700"}`}

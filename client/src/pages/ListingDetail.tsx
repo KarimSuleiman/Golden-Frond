@@ -271,14 +271,14 @@ export default function ListingDetail() {
             <>
               <button
                 onClick={() => prevImage(allImages)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all md:opacity-0 md:group-hover:opacity-100"
                 data-testid="button-prev-listing"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={() => nextImage(allImages)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all md:opacity-0 md:group-hover:opacity-100"
                 data-testid="button-next-listing"
               >
                 <ChevronRight className="w-5 h-5" />

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
@@ -220,17 +220,20 @@ export default function CarsForSale() {
   );
 }
 
-function ListingCard({ listing }: { listing: Listing }) {
+const ListingCard = memo(function ListingCard({ listing }: { listing: Listing }) {
   const { t, language } = useLanguage();
+  const title = [listing.make, listing.model].filter(Boolean).join(" ") || t("marketplace.vehicle");
 
   return (
     <Link href={`/listing/${listing.id}`}>
       <Card className="overflow-hidden cursor-pointer hover-elevate transition-all group" data-testid={`listing-card-${listing.id}`}>
-        <div className="relative aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
           <img
-            src={listing.imageUrl}
-            alt={`${listing.make} ${listing.model}`}
+            src={listing.imageUrl || ""}
+            alt={title}
+            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.svg"; }}
           />
           {listing.images && listing.images.length > 0 && (
             <div className={`absolute bottom-2 ${language === "ar" ? "left-2" : "right-2"} bg-black/60 text-white text-xs px-2 py-1 rounded-md`}>
@@ -250,7 +253,7 @@ function ListingCard({ listing }: { listing: Listing }) {
         <div className="p-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className="font-bold text-foreground text-lg leading-tight">
-              {listing.make} {listing.model}
+              {title}
             </h3>
           </div>
           <p className="text-primary font-bold text-xl mb-3" data-testid={`text-price-${listing.id}`}>
@@ -278,4 +281,4 @@ function ListingCard({ listing }: { listing: Listing }) {
       </Card>
     </Link>
   );
-}
+});

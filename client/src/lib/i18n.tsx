@@ -128,6 +128,8 @@ const translations: Translations = {
   "dashboard.welcome": { ar: "مرحباً", en: "Welcome" },
   "dashboard.welcomeSuffix": { ar: "عزيزي العميل", en: "Dear Customer" },
   "dashboard.noCars": { ar: "لا توجد سيارات مسجلة في حسابك حالياً.", en: "No cars are currently registered in your account." },
+  "dashboard.vehicle": { ar: "مركبة", en: "Vehicle" },
+  "marketplace.vehicle": { ar: "سيارة للبيع", en: "Vehicle for Sale" },
   "dashboard.contactSupport": { ar: "تواصل مع فريق الدعم لإضافة سياراتك.", en: "Contact support to add your cars." },
   "dashboard.noCarsTitle": { ar: "لا توجد سيارات", en: "No Cars" },
   "dashboard.errorLoading": { ar: "خطأ في تحميل البيانات", en: "Error Loading Data" },

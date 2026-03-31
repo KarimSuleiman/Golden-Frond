@@ -456,7 +456,7 @@ export default function Admin() {
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
-    setExistingPdfUrls((car as any).pdfUrls || (car.pdfUrl ? [car.pdfUrl] : []));
+    setExistingPdfUrls(car.pdfUrls || (car.pdfUrl ? [car.pdfUrl] : []));
     setPdfFiles([]);
     setPdfFileNames([]);
     setShowAddCar(true);
