@@ -52,7 +52,7 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
-      {/* Hero Section — full-bleed image with floating card */}
+      {/* Hero Section — full-bleed cinematic */}
       <section className="relative w-full overflow-hidden" style={{ minHeight: "calc(100vh - 4rem)" }}>
         {/* Full-bleed background image */}
         <img
@@ -60,105 +60,110 @@ export default function Landing() {
           alt={t("landing.heroImageAlt")}
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        {/* Subtle dark overlay for photo legibility */}
-        <div className="absolute inset-0 bg-black/30" />
 
-        {/* Floating card */}
-        <div className="relative z-10 flex items-center min-h-[calc(100vh-4rem)] px-4 sm:px-8 lg:px-16 py-12">
+        {/* Directional gradient: opaque on the text side, fades to transparent on the photo side */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: language === "ar"
+              ? "linear-gradient(to left, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.60) 40%, rgba(10,8,5,0.10) 75%, transparent 100%)"
+              : "linear-gradient(to right, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.60) 40%, rgba(10,8,5,0.10) 75%, transparent 100%)"
+          }}
+        />
+        {/* Bottom vignette so stats row stays readable */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 to-transparent" />
+
+        {/* Content — sits directly on the gradient, no card box */}
+        <div className="relative z-10 flex items-center min-h-[calc(100vh-4rem)] px-6 sm:px-12 lg:px-20 py-16">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-md lg:max-w-lg"
+            className="w-full max-w-xl space-y-8"
           >
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 lg:p-10 space-y-7">
-              {/* Tagline pill */}
-              <motion.div variants={itemVariants}>
-                <span className="inline-block px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold tracking-wide mb-5">
-                  {t("landing.tagline")}
-                </span>
-                <h1 className="text-4xl lg:text-5xl font-display font-bold leading-tight text-foreground">
-                  {t("landing.title1")}
-                  <br />
-                  <span className="text-primary">{t("landing.title2")}</span>
-                </h1>
-              </motion.div>
+            {/* Tagline pill */}
+            <motion.div variants={itemVariants}>
+              <span className="inline-block px-4 py-1.5 rounded-full border border-white/30 bg-white/10 text-white/90 text-sm font-semibold tracking-widest mb-6 backdrop-blur-sm">
+                {t("landing.tagline")}
+              </span>
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
+                {t("landing.title1")}
+                <br />
+                <span className="text-primary drop-shadow-sm">{t("landing.title2")}</span>
+              </h1>
+            </motion.div>
 
-              <motion.p
-                variants={itemVariants}
-                className="text-base text-muted-foreground leading-relaxed"
-              >
-                {t("landing.description")}
-              </motion.p>
+            <motion.p
+              variants={itemVariants}
+              className="text-lg text-white/80 max-w-md leading-relaxed"
+            >
+              {t("landing.description")}
+            </motion.p>
 
-              {/* CTA buttons */}
-              <motion.div
-                variants={itemVariants}
-                className="flex flex-wrap gap-3"
-              >
-                {isAdminCheck?.isAdmin ? (
-                  <>
-                    <a href="/admin">
-                      <Button
-                        size="lg"
-                        className="bg-primary text-primary-foreground text-base px-7 py-5 h-auto shadow-xl hover:scale-105 transition-all"
-                        data-testid="button-admin-hero"
-                      >
-                        <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                        {t("admin.title")}
-                      </Button>
-                    </a>
-                    <a href="/cars-for-sale">
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="text-base px-7 py-5 h-auto shadow-md hover:scale-105 transition-all"
-                        data-testid="button-cars-for-sale-hero"
-                      >
-                        <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                        {t("nav.carsForSale")}
-                      </Button>
-                    </a>
-                  </>
-                ) : (
+            {/* CTA buttons */}
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
+              {isAdminCheck?.isAdmin ? (
+                <>
+                  <a href="/admin">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground text-base px-8 py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                      data-testid="button-admin-hero"
+                    >
+                      <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      {t("admin.title")}
+                    </Button>
+                  </a>
                   <a href="/cars-for-sale">
                     <Button
                       size="lg"
-                      className="bg-primary text-primary-foreground text-base px-7 py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                      variant="outline"
+                      className="text-base px-8 py-5 h-auto border-white/50 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm hover:scale-105 transition-all"
                       data-testid="button-cars-for-sale-hero"
                     >
-                      {t("nav.carsForSale")}{" "}
-                      <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
+                      <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      {t("nav.carsForSale")}
                     </Button>
                   </a>
-                )}
-              </motion.div>
+                </>
+              ) : (
+                <a href="/cars-for-sale">
+                  <Button
+                    size="lg"
+                    className="bg-primary text-primary-foreground text-base px-8 py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                    data-testid="button-cars-for-sale-hero"
+                  >
+                    {t("nav.carsForSale")}{" "}
+                    <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
+                  </Button>
+                </a>
+              )}
+            </motion.div>
 
-              {/* Stats row */}
-              <motion.div
-                variants={itemVariants}
-                className="grid grid-cols-3 gap-4 pt-6 border-t border-border"
-              >
-                <div className="text-center">
-                  <h4 className="text-2xl font-bold text-foreground">+21</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    {t("landing.years")}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <h4 className="text-2xl font-bold text-foreground">100%</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    {t("landing.secure")}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <h4 className="text-2xl font-bold text-foreground">24/7</h4>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    {t("landing.support")}
-                  </p>
-                </div>
-              </motion.div>
-            </div>
+            {/* Stats row — right on the image, separated by a subtle line */}
+            <motion.div
+              variants={itemVariants}
+              className="grid grid-cols-3 gap-6 pt-6 border-t border-white/20"
+            >
+              <div>
+                <h4 className="text-3xl font-bold text-white">+21</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                  {t("landing.years")}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-3xl font-bold text-white">100%</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                  {t("landing.secure")}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-3xl font-bold text-white">24/7</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                  {t("landing.support")}
+                </p>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
