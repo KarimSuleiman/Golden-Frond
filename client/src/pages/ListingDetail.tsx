@@ -653,13 +653,20 @@ export default function ListingDetail() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Main image */}
               <div className="space-y-2">
-                <Label>الصورة الرئيسية</Label>
-                <div className="flex items-center gap-3">
-                  <img src={editImagePreview || (editForm.imageUrl ?? listing?.imageUrl ?? "")} alt="" className="w-20 h-20 object-cover rounded-lg" />
-                  <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors text-sm">
-                    <Upload className="w-4 h-4" />
-                    تغيير الصورة
+                <Label>{t("admin.form.mainImage")}</Label>
+                {editImagePreview || editForm.imageUrl ? (
+                  <div className="relative">
+                    <img src={editImagePreview || (editForm.imageUrl ?? listing?.imageUrl ?? "")} alt="" className="w-full h-48 object-cover rounded-md" />
+                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/50 text-white" onClick={() => { setEditImageFile(null); setEditImagePreview(""); }}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-border rounded-md cursor-pointer hover:border-primary/50 transition-colors">
+                    <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">{t("admin.form.selectImage")}</span>
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
@@ -670,112 +677,324 @@ export default function ListingDetail() {
                       }
                     }} />
                   </label>
-                </div>
+                )}
               </div>
 
               {/* Additional photos */}
               <div className="space-y-2">
-                <Label>صور إضافية</Label>
+                <Label>{t("admin.form.additionalImages")}</Label>
                 <div className="flex flex-wrap gap-2">
                   {editExistingImages.map((img, idx) => (
                     <div key={`existing-${idx}`} className="relative">
-                      <img src={img} alt="" className="w-16 h-16 object-cover rounded-lg" />
-                      <button
-                        type="button"
-                        onClick={() => setEditExistingImages(prev => prev.filter((_, i) => i !== idx))}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center"
-                      >
+                      <img src={img} alt="" className="w-20 h-20 object-cover rounded-md" />
+                      <button type="button" onClick={() => setEditExistingImages(prev => prev.filter((_, i) => i !== idx))} className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center">
                         <X className="w-3 h-3" />
                       </button>
                     </div>
                   ))}
                   {editNewImagePreviews.map((preview, idx) => (
                     <div key={`new-${idx}`} className="relative">
-                      <img src={preview} alt="" className="w-16 h-16 object-cover rounded-lg border-2 border-primary" />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditNewImageFiles(prev => prev.filter((_, i) => i !== idx));
-                          setEditNewImagePreviews(prev => prev.filter((_, i) => i !== idx));
-                        }}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center"
-                      >
+                      <img src={preview} alt="" className="w-20 h-20 object-cover rounded-md border-2 border-primary" />
+                      <button type="button" onClick={() => { setEditNewImageFiles(prev => prev.filter((_, i) => i !== idx)); setEditNewImagePreviews(prev => prev.filter((_, i) => i !== idx)); }} className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center">
                         <X className="w-3 h-3" />
                       </button>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => editAdditionalInputRef.current?.click()}
-                    className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary transition-colors bg-transparent"
-                  >
+                  <button type="button" onClick={() => editAdditionalInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors bg-transparent">
                     <Upload className="w-5 h-5 text-muted-foreground" />
                   </button>
-                  <input
-                    ref={editAdditionalInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={handleAddEditImages}
-                  />
+                  <input ref={editAdditionalInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleAddEditImages} />
                 </div>
               </div>
 
+              {/* Make / Model */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>الماركة</Label>
+                <div className="space-y-2">
+                  <Label>{t("marketplace.brand")}</Label>
                   <Input value={editForm.make || ""} onChange={(e) => setEditForm(f => ({ ...f, make: e.target.value }))} />
                 </div>
-                <div className="space-y-1">
-                  <Label>الموديل</Label>
+                <div className="space-y-2">
+                  <Label>{t("marketplace.model")}</Label>
                   <Input value={editForm.model || ""} onChange={(e) => setEditForm(f => ({ ...f, model: e.target.value }))} />
                 </div>
-                <div className="space-y-1">
-                  <Label>السنة</Label>
+              </div>
+
+              {/* Year / Price */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("marketplace.yearLabel")}</Label>
                   <Input type="number" value={editForm.year || ""} onChange={(e) => setEditForm(f => ({ ...f, year: parseInt(e.target.value) || undefined }))} />
                 </div>
-                <div className="space-y-1">
-                  <Label>السعر (د.أ)</Label>
+                <div className="space-y-2">
+                  <Label>{t("marketplace.priceLabel")}</Label>
                   <Input type="number" value={editForm.price || ""} onChange={(e) => setEditForm(f => ({ ...f, price: parseInt(e.target.value) || undefined }))} />
                 </div>
-                <div className="space-y-1">
-                  <Label>اللون</Label>
-                  <Input value={editForm.color || ""} onChange={(e) => setEditForm(f => ({ ...f, color: e.target.value }))} />
+              </div>
+
+              {/* Exterior Color / Condition */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("filter.exteriorColor")}</Label>
+                  <Select value={editForm.color || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, color: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                        <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="space-y-1">
-                  <Label>الكيلومترات</Label>
+                <div className="space-y-2">
+                  <Label>{t("marketplace.condition")}</Label>
+                  <Select value={editForm.condition || "used"} onValueChange={(v) => setEditForm(f => ({ ...f, condition: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">{t("marketplace.conditionNew")}</SelectItem>
+                      <SelectItem value="used">{t("marketplace.conditionUsed")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Mileage / Body Type */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("marketplace.mileage")}</Label>
                   <Input type="number" value={editForm.mileage || ""} onChange={(e) => setEditForm(f => ({ ...f, mileage: parseInt(e.target.value) || undefined }))} />
                 </div>
+                <div className="space-y-2">
+                  <Label>{t("marketplace.bodyType")}</Label>
+                  <Select value={editForm.bodyType || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, bodyType: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="suv">{t("filter.bodySUV")}</SelectItem>
+                      <SelectItem value="van">{t("filter.bodyVan")}</SelectItem>
+                      <SelectItem value="pickup">{t("filter.bodyPickup")}</SelectItem>
+                      <SelectItem value="truck">{t("filter.bodyTruck")}</SelectItem>
+                      <SelectItem value="sedan">{t("filter.bodySedan")}</SelectItem>
+                      <SelectItem value="convertible">{t("filter.bodyConvertible")}</SelectItem>
+                      <SelectItem value="coupe">{t("filter.bodyCoupe")}</SelectItem>
+                      <SelectItem value="hatchback">{t("filter.bodyHatchback")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <Label>الوصف</Label>
-                <Textarea rows={3} value={editForm.description || ""} onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))} />
+              {/* Transmission / Fuel Type */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("marketplace.transmission")}</Label>
+                  <Select value={editForm.transmission || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, transmission: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="automatic">{t("marketplace.automatic")}</SelectItem>
+                      <SelectItem value="manual">{t("marketplace.manual")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("marketplace.fuelType")}</Label>
+                  <Select value={editForm.fuelType || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, fuelType: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="petrol">{t("filter.fuelPetrol")}</SelectItem>
+                      <SelectItem value="diesel">{t("filter.fuelDiesel")}</SelectItem>
+                      <SelectItem value="electric">{t("filter.fuelElectric")}</SelectItem>
+                      <SelectItem value="mild_hybrid">{t("filter.fuelMildHybrid")}</SelectItem>
+                      <SelectItem value="hybrid">{t("filter.fuelHybrid")}</SelectItem>
+                      <SelectItem value="plugin_hybrid">{t("filter.fuelPluginHybrid")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <Label>رقم التواصل</Label>
-                <Input value={editForm.contactPhone || ""} onChange={(e) => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} />
+              {/* Engine Size / Seats */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("marketplace.engineSize")}</Label>
+                  <Input value={editForm.engineSize || ""} onChange={(e) => setEditForm(f => ({ ...f, engineSize: e.target.value }))} placeholder="2.0L" />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("filter.seats")}</Label>
+                  <Input type="number" value={editForm.seats || ""} onChange={(e) => setEditForm(f => ({ ...f, seats: parseInt(e.target.value) || undefined }))} />
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <Label>الحالة</Label>
+              {/* Interior Color / Regional Specs */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("filter.interiorColor")}</Label>
+                  <Select value={editForm.interiorColor || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, interiorColor: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                        <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("filter.regionalSpecs")}</Label>
+                  <Select value={editForm.regionalSpecs || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, regionalSpecs: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="american">{t("filter.specAmerican")}</SelectItem>
+                      <SelectItem value="european">{t("filter.specEuropean")}</SelectItem>
+                      <SelectItem value="gulf">{t("filter.specGulf")}</SelectItem>
+                      <SelectItem value="chinese">{t("filter.specChinese")}</SelectItem>
+                      <SelectItem value="korean">{t("filter.specKorean")}</SelectItem>
+                      <SelectItem value="japanese">{t("filter.specJapanese")}</SelectItem>
+                      <SelectItem value="other">{t("filter.specOther")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Country of Origin / License */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("filter.countryOfOrigin")}</Label>
+                  <Select value={editForm.countryOfOrigin || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, countryOfOrigin: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="germany">{t("filter.originGermany")}</SelectItem>
+                      <SelectItem value="india">{t("filter.originIndia")}</SelectItem>
+                      <SelectItem value="japan">{t("filter.originJapan")}</SelectItem>
+                      <SelectItem value="usa">{t("filter.originUSA")}</SelectItem>
+                      <SelectItem value="iran">{t("filter.originIran")}</SelectItem>
+                      <SelectItem value="spain">{t("filter.originSpain")}</SelectItem>
+                      <SelectItem value="uae">{t("filter.originUAE")}</SelectItem>
+                      <SelectItem value="sweden">{t("filter.originSweden")}</SelectItem>
+                      <SelectItem value="china">{t("filter.originChina")}</SelectItem>
+                      <SelectItem value="italy">{t("filter.originItaly")}</SelectItem>
+                      <SelectItem value="uk">{t("filter.originUK")}</SelectItem>
+                      <SelectItem value="russia">{t("filter.originRussia")}</SelectItem>
+                      <SelectItem value="france">{t("filter.originFrance")}</SelectItem>
+                      <SelectItem value="korea">{t("filter.originKorea")}</SelectItem>
+                      <SelectItem value="malaysia">{t("filter.originMalaysia")}</SelectItem>
+                      <SelectItem value="netherlands">{t("filter.originNetherlands")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("filter.license")}</Label>
+                  <Select value={editForm.license || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, license: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="licensed">{t("filter.licensed")}</SelectItem>
+                      <SelectItem value="unlicensed">{t("filter.unlicensed")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Insurance / Customs */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("filter.insurance")}</Label>
+                  <Select value={editForm.insurance || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, insurance: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="mandatory">{t("filter.insuranceMandatory")}</SelectItem>
+                      <SelectItem value="comprehensive">{t("filter.insuranceComprehensive")}</SelectItem>
+                      <SelectItem value="uninsured">{t("filter.insuranceNone")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("filter.customs")}</Label>
+                  <Select value={editForm.customs || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, customs: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                      <SelectItem value="cleared">{t("filter.customsCleared")}</SelectItem>
+                      <SelectItem value="not_cleared">{t("filter.customsNotCleared")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Interior Features */}
+              <div className="space-y-2">
+                <Label>{t("filter.interiorSpecs")}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {["auxUsb","airbags","powerSeats","steeringControl","seatMemory","powerWindows","centralLock","heatedSeats","cdPlayer","leatherSeats","sportSeats","heatedSteering","rearElectric","cooledSeats","ac","alarm"].map(f => {
+                    const arr: string[] = (editForm.interiorFeatures as string[] | null) || [];
+                    return (
+                      <button key={f} type="button"
+                        onClick={() => setEditForm(ef => ({ ...ef, interiorFeatures: arr.includes(f) ? arr.filter(i => i !== f) : [...arr, f] }))}
+                        className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${arr.includes(f) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}
+                      >
+                        {t(`filter.int${f.charAt(0).toUpperCase() + f.slice(1)}`)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Exterior Features */}
+              <div className="space-y-2">
+                <Label>{t("filter.exteriorSpecs")}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {["daytimeLights","spareTire","alloyWheels","frontSensors","rearSensors","keylessEntry","sunroof","panorama","powerMirrors","foldingMirrors","xenonLights","ledLights","sportEdition","rearHook"].map(f => {
+                    const arr: string[] = (editForm.exteriorFeatures as string[] | null) || [];
+                    return (
+                      <button key={f} type="button"
+                        onClick={() => setEditForm(ef => ({ ...ef, exteriorFeatures: arr.includes(f) ? arr.filter(i => i !== f) : [...arr, f] }))}
+                        className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${arr.includes(f) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}
+                      >
+                        {t(`filter.ext${f.charAt(0).toUpperCase() + f.slice(1)}`)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="space-y-2">
+                <Label>{t("marketplace.location")}</Label>
+                <Input value={editForm.location || ""} onChange={(e) => setEditForm(f => ({ ...f, location: e.target.value }))} />
+              </div>
+
+              {/* Contact Phone */}
+              <div className="space-y-2">
+                <Label>{t("marketplace.contactPhone")}</Label>
+                <Input value={editForm.contactPhone || ""} onChange={(e) => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} dir="ltr" placeholder="07XXXXXXXX" />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label>{t("marketplace.description")}</Label>
+                <Textarea rows={4} value={editForm.description || ""} onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))} className="min-h-[100px]" />
+              </div>
+
+              {/* Status */}
+              <div className="space-y-2">
+                <Label>{t("admin.form.status")}</Label>
                 <Select value={editForm.status || "active"} onValueChange={(v) => setEditForm(f => ({ ...f, status: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">نشط</SelectItem>
-                    <SelectItem value="hidden">مخفي</SelectItem>
-                    <SelectItem value="sold">مباع</SelectItem>
+                    <SelectItem value="active">{t("admin.listing.active")}</SelectItem>
+                    <SelectItem value="hidden">{t("admin.listing.hidden")}</SelectItem>
+                    <SelectItem value="sold">{t("listing.sold")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex gap-3 pt-2">
                 <Button className="flex-1" onClick={handleSaveEdit} disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? "جاري الحفظ..." : "حفظ التعديلات"}
+                  {updateMutation.isPending ? <span className="flex items-center gap-2"><Upload className="w-4 h-4 animate-spin" />{t("admin.saveChanges")}</span> : t("admin.saveChanges")}
                 </Button>
-                <Button variant="outline" onClick={() => setShowEditModal(false)}>إلغاء</Button>
+                <Button variant="outline" onClick={() => setShowEditModal(false)}>{t("admin.form.cancel")}</Button>
               </div>
             </CardContent>
           </Card>
