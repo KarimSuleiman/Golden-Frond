@@ -61,32 +61,35 @@ export default function Landing() {
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
 
-        {/* Directional gradient: opaque on the text side, fades to transparent on the photo side */}
+        {/* Mobile overlay: car shows clearly at top, dark at bottom for text readability */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 md:hidden"
+          style={{ background: "linear-gradient(to top, rgba(10,8,5,0.92) 0%, rgba(10,8,5,0.70) 40%, rgba(10,8,5,0.20) 70%, transparent 100%)" }}
+        />
+        {/* Desktop overlay: directional side gradient */}
+        <div
+          className="absolute inset-0 hidden md:block"
           style={{
             background: language === "ar"
               ? "linear-gradient(to left, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.60) 40%, rgba(10,8,5,0.10) 75%, transparent 100%)"
               : "linear-gradient(to right, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.60) 40%, rgba(10,8,5,0.10) 75%, transparent 100%)"
           }}
         />
-        {/* Bottom vignette so stats row stays readable */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 to-transparent" />
 
-        {/* Content — sits directly on the gradient, no card box */}
-        <div className="relative z-10 flex items-center min-h-[calc(100vh-4rem)] px-6 sm:px-12 lg:px-20 py-16">
+        {/* Content — bottom on mobile, centered on desktop */}
+        <div className="relative z-10 flex items-end md:items-center min-h-[calc(100vh-4rem)] px-5 sm:px-8 md:px-12 lg:px-20 pb-10 md:py-16">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-xl space-y-8"
+            className="w-full max-w-xl space-y-4 md:space-y-8"
           >
             {/* Tagline pill */}
             <motion.div variants={itemVariants}>
-              <span className="inline-block px-4 py-1.5 rounded-full border border-white/30 bg-white/10 text-white/90 text-sm font-semibold tracking-widest mb-6 backdrop-blur-sm">
+              <span className="inline-block px-3 py-1 rounded-full border border-white/30 bg-white/10 text-white/90 text-xs font-semibold tracking-widest mb-3 md:mb-6 backdrop-blur-sm">
                 {t("landing.tagline")}
               </span>
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
                 {t("landing.title1")}
                 <br />
                 <span className="text-primary drop-shadow-sm">{t("landing.title2")}</span>
@@ -95,22 +98,22 @@ export default function Landing() {
 
             <motion.p
               variants={itemVariants}
-              className="text-lg text-white/80 max-w-md leading-relaxed"
+              className="text-sm md:text-lg text-white/80 max-w-md leading-relaxed"
             >
               {t("landing.description")}
             </motion.p>
 
             {/* CTA buttons */}
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-3">
               {isAdminCheck?.isAdmin ? (
                 <>
                   <a href="/admin">
                     <Button
                       size="lg"
-                      className="bg-primary text-primary-foreground text-base px-8 py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                      className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
                       data-testid="button-admin-hero"
                     >
-                      <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      <Settings className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                       {t("admin.title")}
                     </Button>
                   </a>
@@ -118,10 +121,10 @@ export default function Landing() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="text-base px-8 py-5 h-auto border-white/50 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm hover:scale-105 transition-all"
+                      className="text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto border-white/50 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm hover:scale-105 transition-all"
                       data-testid="button-cars-for-sale-hero"
                     >
-                      <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      <Car className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                       {t("nav.carsForSale")}
                     </Button>
                   </a>
@@ -130,35 +133,35 @@ export default function Landing() {
                 <a href="/cars-for-sale">
                   <Button
                     size="lg"
-                    className="bg-primary text-primary-foreground text-base px-8 py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                    className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
                     data-testid="button-cars-for-sale-hero"
                   >
                     {t("nav.carsForSale")}{" "}
-                    <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
+                    <ArrowIcon className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
                   </Button>
                 </a>
               )}
             </motion.div>
 
-            {/* Stats row — right on the image, separated by a subtle line */}
+            {/* Stats row */}
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-3 gap-6 pt-6 border-t border-white/20"
+              className="grid grid-cols-3 gap-4 md:gap-6 pt-4 md:pt-6 border-t border-white/20"
             >
               <div>
-                <h4 className="text-3xl font-bold text-white">+21</h4>
-                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                <h4 className="text-xl md:text-3xl font-bold text-white">+21</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
                   {t("landing.years")}
                 </p>
               </div>
               <div>
-                <h4 className="text-3xl font-bold text-white">100%</h4>
-                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                <h4 className="text-xl md:text-3xl font-bold text-white">100%</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
                   {t("landing.secure")}
                 </p>
               </div>
               <div>
-                <h4 className="text-3xl font-bold text-white">24/7</h4>
+                <h4 className="text-xl md:text-3xl font-bold text-white">24/7</h4>
                 <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
                   {t("landing.support")}
                 </p>
@@ -169,7 +172,7 @@ export default function Landing() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-secondary border-t border-border">
+      <section id="about" className="py-12 md:py-20 bg-secondary border-t border-border">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -178,7 +181,7 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-4xl font-display font-bold text-foreground mb-4">
               {t("landing.about")}
             </h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
@@ -272,7 +275,7 @@ export default function Landing() {
       </section>
 
       {/* Features Strip */}
-      <section className="py-20 bg-card border-t border-border">
+      <section className="py-12 md:py-20 bg-card border-t border-border">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -281,7 +284,7 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-4xl font-display font-bold text-foreground mb-4">
               {t("landing.services")}
             </h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full" />
@@ -309,7 +312,7 @@ export default function Landing() {
       {/* Contact Section */}
       <section
         id="contact"
-        className="py-20 bg-secondary border-t border-border"
+        className="py-12 md:py-20 bg-secondary border-t border-border"
       >
         <div className="container mx-auto px-4">
           <motion.div
@@ -319,7 +322,7 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-4xl font-display font-bold text-foreground mb-4">
               {t("landing.contact")}
             </h2>
             <div className="w-24 h-1 bg-primary mx-auto rounded-full" />

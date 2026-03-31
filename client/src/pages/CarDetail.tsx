@@ -192,7 +192,7 @@ export default function CarDetail() {
             className="space-y-6"
           >
             <div>
-              <h1 className="text-4xl font-display font-bold text-foreground mb-2">
+              <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground mb-2">
                 {car.make} <span className="text-primary">{car.model}</span>
               </h1>
               <p className="text-lg text-muted-foreground">

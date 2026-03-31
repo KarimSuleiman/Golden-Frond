@@ -59,7 +59,7 @@ export default function MyCars() {
 
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="mb-12">
-          <h1 className="text-4xl lg:text-5xl font-display font-bold text-foreground mb-4" data-testid="text-my-cars-title">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-4" data-testid="text-my-cars-title">
             {t("dashboard.title")}
           </h1>
           <p className="text-muted-foreground text-lg">

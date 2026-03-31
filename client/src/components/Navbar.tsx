@@ -146,7 +146,7 @@ export function Navbar() {
       className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-xl shadow-sm"
       dir={dir}
     >
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
+      <div className="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
         {/* Left side: Logo + utility icons (About, Contact, Language) */}
         <div className="flex items-center gap-4">
           <Link
@@ -156,7 +156,7 @@ export function Navbar() {
             <img
               src={logoImage}
               alt={t("common.altLogo")}
-              className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+              className="h-10 md:h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
             />
           </Link>
 
@@ -299,14 +299,24 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden text-foreground p-2"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          data-testid="button-mobile-menu"
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
+        {/* Mobile: Language button + hamburger */}
+        <div className="flex items-center gap-1 md:hidden">
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground/80 hover:text-primary hover:bg-secondary transition-colors text-sm font-medium"
+            data-testid="button-language-toggle-mobile"
+          >
+            <Globe className="w-4 h-4" />
+            <span className="text-xs font-bold">{language === "ar" ? "EN" : "عر"}</span>
+          </button>
+          <button
+            className="text-foreground p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            data-testid="button-mobile-menu"
+          >
+            {isMobileMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu Overlay */}

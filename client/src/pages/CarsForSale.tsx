@@ -82,7 +82,7 @@ export default function CarsForSale() {
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
           <div>
-            <h1 className="text-3xl font-bold text-foreground" data-testid="text-cars-for-sale-title">
+            <h1 className="text-xl md:text-3xl font-bold text-foreground" data-testid="text-cars-for-sale-title">
               {t("marketplace.title")}
             </h1>
             <p className="text-muted-foreground mt-1">
