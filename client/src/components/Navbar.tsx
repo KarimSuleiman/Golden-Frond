@@ -9,7 +9,6 @@ import {
   Menu,
   X,
   Settings,
-  Globe,
   Info,
   Phone,
   Mail,
@@ -230,10 +229,10 @@ export function Navbar() {
             <button
               onClick={toggleLanguage}
               title={t("common.langToggleFull")}
-              className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+              className="text-foreground/70 hover:text-primary transition-colors cursor-pointer flex items-center gap-1.5"
               data-testid="button-language-toggle"
             >
-              <Globe className="w-5 h-5" />
+              <span className="text-xl leading-none">{language === "ar" ? "🇬🇧" : "🇯🇴"}</span>
             </button>
           </div>
         </div>
@@ -306,8 +305,7 @@ export function Navbar() {
             className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground/80 hover:text-primary hover:bg-secondary transition-colors text-sm font-medium"
             data-testid="button-language-toggle-mobile"
           >
-            <Globe className="w-4 h-4" />
-            <span className="text-xs font-bold">{language === "ar" ? "EN" : "عر"}</span>
+            <span className="text-lg leading-none">{language === "ar" ? "🇬🇧" : "🇯🇴"}</span>
           </button>
           <button
             className="text-foreground p-2"
@@ -401,7 +399,7 @@ export function Navbar() {
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <Globe className="w-5 h-5 text-primary" />
+                <span className="text-xl leading-none">{language === "ar" ? "🇬🇧" : "🇯🇴"}</span>
                 <span>{t("common.langToggleFull")}</span>
               </div>
 

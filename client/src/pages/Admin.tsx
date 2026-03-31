@@ -896,60 +896,56 @@ export default function Admin() {
                   {hasActiveFilters ? t("admin.filter.results") + " 0" : t("admin.noCars")}
                 </p>
               ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
                   {filteredCars.map((car) => (
                     <div
                       key={car.id}
-                      className="flex gap-4 p-4 rounded-lg bg-secondary border border-border"
+                      className="rounded-lg bg-secondary border border-border overflow-hidden"
                       data-testid={`car-card-${car.id}`}
                     >
-                      <img
-                        src={car.imageUrl}
-                        alt={`${car.make} ${car.model}`}
-                        className="w-24 h-24 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-bold text-foreground">
-                              {car.make} {car.model} {car.year}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">{car.color}</p>
-                            <p className="text-xs text-muted-foreground mt-1" dir="ltr">
-                              VIN: {car.vin}
-                            </p>
-                          </div>
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              car.status === "In Transit"
-                                ? "bg-blue-500/20 text-blue-600"
-                                : car.status === "Purchased"
-                                ? "bg-green-500/20 text-green-600"
-                                : "bg-yellow-500/20 text-yellow-600"
-                            }`}
-                          >
-                            {car.status === "In Transit"
-                              ? t("car.status.inTransit")
+                      <div className="relative h-32">
+                        <img
+                          src={car.imageUrl}
+                          alt={`${car.make} ${car.model}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <span
+                          className={`absolute top-2 right-2 text-xs px-2 py-0.5 rounded-full ${
+                            car.status === "In Transit"
+                              ? "bg-blue-500/20 text-blue-600"
                               : car.status === "Purchased"
-                              ? t("car.status.purchased")
-                              : t("car.status.reserved")}
-                          </span>
-                        </div>
-                        <p className="text-xs text-primary mt-2">{t("admin.owner")}: {getUserName(car.userId)}</p>
-                        <div className="flex gap-2 mt-3">
-                          <Button size="sm" variant="outline" onClick={() => handleEdit(car)} data-testid={`button-edit-car-${car.id}`}>
+                              ? "bg-green-500/20 text-green-600"
+                              : "bg-yellow-500/20 text-yellow-600"
+                          }`}
+                        >
+                          {car.status === "In Transit"
+                            ? t("car.status.inTransit")
+                            : car.status === "Purchased"
+                            ? t("car.status.purchased")
+                            : t("car.status.reserved")}
+                        </span>
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-bold text-sm text-foreground leading-tight">
+                          {car.make} {car.model} {car.year}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">{car.color}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5" dir="ltr">VIN: {car.vin}</p>
+                        <p className="text-xs text-primary mt-1 truncate">{t("admin.owner")}: {getUserName(car.userId)}</p>
+                        <div className="flex gap-1.5 mt-2">
+                          <Button size="sm" variant="outline" className="flex-1 h-7 text-xs" onClick={() => handleEdit(car)} data-testid={`button-edit-car-${car.id}`}>
                             <Edit className="w-3 h-3 ml-1" />
                             {t("admin.edit")}
                           </Button>
                           <Button
                             size="sm"
                             variant="destructive"
+                            className="h-7 text-xs px-2"
                             onClick={() => deleteCarMutation.mutate(car.id)}
                             disabled={deleteCarMutation.isPending}
                             data-testid={`button-delete-car-${car.id}`}
                           >
-                            <Trash2 className="w-3 h-3 ml-1" />
-                            {t("admin.delete")}
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
