@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
@@ -25,6 +25,7 @@ export default function AddListing() {
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
   const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const additionalInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     make: "",
@@ -544,24 +545,23 @@ export default function AddListing() {
                       </button>
                     </div>
                   ))}
-                  <label
-                    className="w-20 h-20 border-2 border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:border-primary/50"
+                  <button
+                    type="button"
+                    className="w-20 h-20 border-2 border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors bg-transparent"
                     data-testid="label-additional-images"
-                    onClick={(e) => {
-                      const input = e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
-                      if (input) input.click();
-                    }}
+                    onClick={() => additionalInputRef.current?.click()}
                   >
                     <Upload className="w-5 h-5 text-muted-foreground" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}
-                      onChange={handleAdditionalImages}
-                      data-testid="input-additional-images"
-                    />
-                  </label>
+                  </button>
+                  <input
+                    ref={additionalInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleAdditionalImages}
+                    data-testid="input-additional-images"
+                  />
                 </div>
               </div>
 

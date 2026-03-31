@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X, ChevronLeft, ChevronRight, Fuel, Users, Settings2, Zap, Car } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import type { Listing } from "@shared/schema";
@@ -59,6 +59,7 @@ export default function ListingDetail() {
   const [editExistingImages, setEditExistingImages] = useState<string[]>([]);
   const [editNewImageFiles, setEditNewImageFiles] = useState<File[]>([]);
   const [editNewImagePreviews, setEditNewImagePreviews] = useState<string[]>([]);
+  const editAdditionalInputRef = useRef<HTMLInputElement>(null);
   const [, setLocation] = useLocation();
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
@@ -224,19 +225,6 @@ export default function ListingDetail() {
   const shareUrl = window.location.href;
   const shareText = listingTitle || t("marketplace.title");
 
-  const specs = [
-    ...(listing.condition ? [{ label: t("marketplace.condition"), value: listing.condition === "new" ? t("marketplace.conditionNew") : t("marketplace.conditionUsed") }] : []),
-    ...(listing.make ? [{ label: t("marketplace.brand"), value: listing.make }] : []),
-    ...(listing.model ? [{ label: t("marketplace.model"), value: listing.model }] : []),
-    ...(listing.year ? [{ label: t("marketplace.yearLabel"), value: listing.year.toString() }] : []),
-    ...(listing.color ? [{ label: t("marketplace.color"), value: listing.color }] : []),
-    ...(listing.bodyType ? [{ label: t("marketplace.bodyType"), value: getBodyTypeLabel(listing.bodyType, t) }] : []),
-    ...(listing.transmission ? [{ label: t("marketplace.transmission"), value: listing.transmission === "automatic" ? t("marketplace.automatic") : t("marketplace.manual") }] : []),
-    ...(listing.fuelType ? [{ label: t("marketplace.fuelType"), value: listing.fuelType }] : []),
-    ...(listing.engineSize ? [{ label: t("marketplace.engineSize"), value: listing.engineSize }] : []),
-    ...(listing.mileage ? [{ label: t("marketplace.mileage"), value: `${listing.mileage.toLocaleString()} ${t("marketplace.km")}` }] : []),
-    ...(listing.location ? [{ label: t("marketplace.location"), value: listing.location }] : []),
-  ];
 
   const suggestedListings = (allListings || [])
     .filter((l) => l.id !== listing.id && l.status === "active")
@@ -302,6 +290,24 @@ export default function ListingDetail() {
           </div>
         </div>
 
+        {/* Thumbnail strip */}
+        {allImages.length > 1 && (
+          <div className="flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-thin">
+            {allImages.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentImageIndex(idx)}
+                className={`flex-shrink-0 w-16 h-12 rounded-md overflow-hidden border-2 transition-all ${
+                  idx === currentImageIndex ? "border-primary opacity-100" : "border-transparent opacity-55 hover:opacity-80"
+                }`}
+                data-testid={`button-thumb-${idx}`}
+              >
+                <img src={img} alt="" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="grid md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
             <div>
@@ -333,13 +339,47 @@ export default function ListingDetail() {
               </div>
             </div>
 
-            {specs.length > 0 && (
+            {/* Vehicle Summary — icon grid */}
+            {(listing.mileage || listing.fuelType || listing.transmission || listing.seats || listing.bodyType || listing.engineSize) && (
+              <div>
+                <h2 className="font-bold text-lg text-foreground mb-3">{t("marketplace.vehicleSummary")}</h2>
+                <div className="grid grid-cols-3 border border-border rounded-xl overflow-hidden">
+                  {([
+                    listing.mileage ? { icon: <Gauge className="w-7 h-7" />, label: `${listing.mileage.toLocaleString()} ${t("marketplace.km")}` } : null,
+                    listing.fuelType ? { icon: <Fuel className="w-7 h-7" />, label: t(`filter.fuel${listing.fuelType.charAt(0).toUpperCase() + listing.fuelType.replace(/_([a-z])/g, (_:string, c:string) => c.toUpperCase()).slice(1)}`) || listing.fuelType } : null,
+                    listing.transmission ? { icon: <Settings2 className="w-7 h-7" />, label: listing.transmission === "automatic" ? t("marketplace.automatic") : t("marketplace.manual") } : null,
+                    listing.seats ? { icon: <Users className="w-7 h-7" />, label: `${listing.seats} ${t("marketplace.seats")}` } : null,
+                    listing.bodyType ? { icon: <Car className="w-7 h-7" />, label: getBodyTypeLabel(listing.bodyType, t) } : null,
+                    listing.engineSize ? { icon: <Zap className="w-7 h-7" />, label: listing.engineSize } : null,
+                  ] as Array<{icon: React.ReactNode; label: string} | null>).filter(Boolean).map((item, idx, arr) => (
+                    <div
+                      key={idx}
+                      className={`flex flex-col items-center justify-start gap-2 p-4 text-center ${idx < arr.length - (arr.length % 3 === 0 ? 3 : arr.length % 3) ? "border-b border-border" : ""} ${(idx + 1) % 3 !== 0 ? "border-r border-border" : ""}`}
+                      data-testid={`spec-icon-${idx}`}
+                    >
+                      <span className="text-muted-foreground mt-1">{item!.icon}</span>
+                      <span className="text-sm text-foreground leading-snug">{item!.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Additional details table */}
+            {(listing.condition || listing.make || listing.model || listing.year || listing.color || listing.location || listing.regionalSpecs || listing.countryOfOrigin) && (
               <Card>
-                <CardContent className="p-4 space-y-3">
-                  {specs.map((spec, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-2 border-b border-border last:border-0" data-testid={`spec-row-${idx}`}>
-                      <span className="text-muted-foreground">{spec.label}</span>
-                      <span className="font-medium text-foreground">{spec.value}</span>
+                <CardContent className="p-0">
+                  {[
+                    listing.condition ? { label: t("marketplace.condition"), value: listing.condition === "new" ? t("marketplace.conditionNew") : t("marketplace.conditionUsed") } : null,
+                    listing.make ? { label: t("marketplace.brand"), value: listing.make } : null,
+                    listing.model ? { label: t("marketplace.model"), value: listing.model } : null,
+                    listing.year ? { label: t("marketplace.yearLabel"), value: listing.year.toString() } : null,
+                    listing.color ? { label: t("marketplace.color"), value: listing.color } : null,
+                    listing.location ? { label: t("marketplace.location"), value: listing.location } : null,
+                  ].filter(Boolean).map((spec, idx, arr) => (
+                    <div key={idx} className={`flex justify-between items-center px-4 py-3 ${idx < arr.length - 1 ? "border-b border-border" : ""}`} data-testid={`spec-row-${idx}`}>
+                      <span className="text-muted-foreground text-sm">{spec!.label}</span>
+                      <span className="font-medium text-foreground text-sm">{spec!.value}</span>
                     </div>
                   ))}
                 </CardContent>
@@ -492,7 +532,7 @@ export default function ListingDetail() {
               </Card>
             )}
 
-            {authInfo?.isAdmin && (
+            {(authInfo?.isAdmin || (user && listing && listing.sellerId === user.id)) && (
               <Button
                 variant="outline"
                 className="w-full"
@@ -607,10 +647,21 @@ export default function ListingDetail() {
                       </button>
                     </div>
                   ))}
-                  <label className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => editAdditionalInputRef.current?.click()}
+                    className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary transition-colors bg-transparent"
+                  >
                     <Upload className="w-5 h-5 text-muted-foreground" />
-                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleAddEditImages} />
-                  </label>
+                  </button>
+                  <input
+                    ref={editAdditionalInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleAddEditImages}
+                  />
                 </div>
               </div>
 

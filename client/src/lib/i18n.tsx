@@ -303,6 +303,8 @@ const translations: Translations = {
   "marketplace.addFirstListing": { ar: "أضف أول إعلان", en: "Add First Listing" },
   "marketplace.currency": { ar: "دينار", en: "JOD" },
   "marketplace.km": { ar: "كم", en: "km" },
+  "marketplace.vehicleSummary": { ar: "ملخص المركبة", en: "Vehicle Summary" },
+  "marketplace.seats": { ar: "مقاعد", en: "seats" },
   "marketplace.notFound": { ar: "الإعلان غير موجود", en: "Listing Not Found" },
   "marketplace.backToListings": { ar: "العودة للإعلانات", en: "Back to Listings" },
   "marketplace.condition": { ar: "الحالة", en: "Condition" },
