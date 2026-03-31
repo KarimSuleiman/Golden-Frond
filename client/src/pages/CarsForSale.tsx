@@ -151,13 +151,13 @@ export default function CarsForSale() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-80 w-full rounded-md bg-secondary" />
+              <Skeleton key={i} className="h-64 md:h-80 w-full rounded-md bg-secondary" />
             ))}
           </div>
         ) : filteredListings.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {filteredListings.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
@@ -250,28 +250,28 @@ const ListingCard = memo(function ListingCard({ listing }: { listing: Listing })
             </span>
           </div>
         </div>
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="font-bold text-foreground text-lg leading-tight">
-              {title}
-            </h3>
-          </div>
-          <p className="text-primary font-bold text-xl mb-3" data-testid={`text-price-${listing.id}`}>
+        <div className="p-2.5 md:p-4">
+          <h3 className="font-bold text-foreground text-sm md:text-lg leading-tight mb-1 truncate">
+            {title}
+          </h3>
+          <p className="text-primary font-bold text-sm md:text-xl mb-1.5 md:mb-3" data-testid={`text-price-${listing.id}`}>
             {listing.price ? `${listing.price.toLocaleString()} ${t("marketplace.currency")}` : t("marketplace.priceOnRequest")}
           </p>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
-              {listing.year}
-            </span>
+          <div className="flex items-center gap-1.5 md:gap-3 text-xs md:text-sm text-muted-foreground flex-wrap">
+            {listing.year && (
+              <span className="flex items-center gap-0.5 md:gap-1">
+                <Calendar className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                {listing.year}
+              </span>
+            )}
             {listing.mileage && (
-              <span className="flex items-center gap-1">
-                <Gauge className="w-3.5 h-3.5" />
-                {listing.mileage.toLocaleString()} {t("marketplace.km")}
+              <span className="flex items-center gap-0.5 md:gap-1">
+                <Gauge className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                {listing.mileage.toLocaleString()}
               </span>
             )}
             {listing.location && (
-              <span className="flex items-center gap-1">
+              <span className="hidden md:flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5" />
                 {listing.location}
               </span>
