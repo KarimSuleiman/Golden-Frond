@@ -26,7 +26,7 @@ import {
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CarDetail() {
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -40,6 +40,13 @@ export default function CarDetail() {
     queryKey: [`/api/cars/${carId}`],
     enabled: !!carId && !!user,
   });
+
+  // Preload all images so switching is instant
+  useEffect(() => {
+    if (!car) return;
+    const imgs = [car.imageUrl, ...(car.images || [])].filter(Boolean);
+    imgs.forEach(src => { const i = new Image(); i.src = src; });
+  }, [car]);
 
   const BackArrow = language === "ar" ? ArrowRight : ArrowLeft;
 
@@ -120,11 +127,18 @@ export default function CarDetail() {
               onClick={() => setIsGalleryOpen(true)}
               data-testid="image-main"
             >
-              <img
-                src={allImages[selectedImageIndex]}
-                alt={`${car.make} ${car.model}`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.img
+                  key={selectedImageIndex}
+                  src={allImages[selectedImageIndex]}
+                  alt={`${car.make} ${car.model}`}
+                  className="w-full h-full object-cover"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                />
+              </AnimatePresence>
               <Badge 
                 className={`absolute top-4 ${language === "ar" ? "right-4" : "left-4"} border shadow-sm ${statusColors[car.status] || "bg-gray-100 text-gray-700"}`}
               >

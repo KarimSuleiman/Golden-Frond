@@ -10,7 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import type { Listing } from "@shared/schema";
 import { Input } from "@/components/ui/input";
@@ -73,6 +74,13 @@ export default function ListingDetail() {
       return res.json();
     },
   });
+
+  // Preload all images so switching is instant
+  useEffect(() => {
+    if (!listing) return;
+    const imgs = [listing.imageUrl, ...(listing.images || [])].filter(Boolean);
+    imgs.forEach(src => { const i = new Image(); i.src = src; });
+  }, [listing]);
 
   const { data: allListings } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
@@ -246,12 +254,19 @@ export default function ListingDetail() {
         </Link>
 
         <div className="relative rounded-md overflow-hidden mb-6 bg-black group">
-          <img
-            src={allImages[currentImageIndex]}
-            alt={listingTitle}
-            className="w-full h-[300px] md:h-[450px] object-contain"
-            data-testid="img-listing-main"
-          />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.img
+              key={currentImageIndex}
+              src={allImages[currentImageIndex]}
+              alt={listingTitle}
+              className="w-full h-[300px] md:h-[450px] object-contain"
+              data-testid="img-listing-main"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            />
+          </AnimatePresence>
           {allImages.length > 1 && (
             <>
               <button
