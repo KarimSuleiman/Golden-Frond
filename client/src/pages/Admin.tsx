@@ -239,7 +239,7 @@ export default function Admin() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cars"] });
-      toast({ title: "تم حذف السيارة" });
+      toast({ title: t("admin.carDeleted") });
     },
     onError: (error: Error) => {
       toast({ title: "خطأ", description: error.message, variant: "destructive" });
@@ -537,8 +537,8 @@ export default function Admin() {
       <div className="min-h-screen bg-background" dir="rtl">
         <Navbar />
         <div className="container py-20 text-center">
-          <h1 className="text-2xl font-bold text-foreground">غير مصرح لك بالوصول لهذه الصفحة</h1>
-          <p className="text-muted-foreground mt-4">هذه الصفحة للمسؤولين فقط</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.unauthorized")}</h1>
+          <p className="text-muted-foreground mt-4">{t("admin.adminOnly")}</p>
         </div>
       </div>
     );
@@ -549,10 +549,10 @@ export default function Admin() {
       <Navbar />
       <div className="container py-8 px-4">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-foreground">لوحة التحكم</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t("admin.title")}</h1>
           <Button onClick={() => setShowAddCar(true)} data-testid="button-add-car">
             <Plus className="w-4 h-4 ml-2" />
-            إضافة سيارة
+            {t("admin.addCar")}
           </Button>
         </div>
 
@@ -561,7 +561,7 @@ export default function Admin() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                المستخدمين ({users.length})
+                {t("admin.users")} ({users.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -893,7 +893,7 @@ export default function Admin() {
                 </div>
               ) : filteredCars.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
-                  {hasActiveFilters ? t("admin.filter.results") + " 0" : "لا توجد سيارات بعد"}
+                  {hasActiveFilters ? t("admin.filter.results") + " 0" : t("admin.noCars")}
                 </p>
               ) : (
                 <div className="space-y-4">
@@ -929,17 +929,17 @@ export default function Admin() {
                             }`}
                           >
                             {car.status === "In Transit"
-                              ? "في الطريق"
+                              ? t("car.status.inTransit")
                               : car.status === "Purchased"
-                              ? "مشتراة"
-                              : "محجوزة"}
+                              ? t("car.status.purchased")
+                              : t("car.status.reserved")}
                           </span>
                         </div>
-                        <p className="text-xs text-primary mt-2">المالك: {getUserName(car.userId)}</p>
+                        <p className="text-xs text-primary mt-2">{t("admin.owner")}: {getUserName(car.userId)}</p>
                         <div className="flex gap-2 mt-3">
                           <Button size="sm" variant="outline" onClick={() => handleEdit(car)} data-testid={`button-edit-car-${car.id}`}>
                             <Edit className="w-3 h-3 ml-1" />
-                            تعديل
+                            {t("admin.edit")}
                           </Button>
                           <Button
                             size="sm"
@@ -949,7 +949,7 @@ export default function Admin() {
                             data-testid={`button-delete-car-${car.id}`}
                           >
                             <Trash2 className="w-3 h-3 ml-1" />
-                            حذف
+                            {t("admin.delete")}
                           </Button>
                         </div>
                       </div>
@@ -967,7 +967,7 @@ export default function Admin() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5" />
-                إعلانات السوق ({allListings.length})
+                {t("admin.marketplace")} ({allListings.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -976,9 +976,9 @@ export default function Admin() {
                   <Loader2 className="w-6 h-6 animate-spin" />
                 </div>
               ) : allListings.length === 0 ? (
-                <p className="text-center text-muted-foreground py-6">لا توجد إعلانات</p>
+                <p className="text-center text-muted-foreground py-6">{t("admin.noListings")}</p>
               ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                   {allListings.map((listing) => (
                     <div key={listing.id} className="border border-border rounded-lg overflow-hidden">
                       <div className="relative h-36">
@@ -988,7 +988,7 @@ export default function Admin() {
                           className="w-full h-full object-cover"
                         />
                         <span className={`absolute top-2 right-2 text-xs px-2 py-0.5 rounded-full ${listing.status === "active" ? "bg-green-500/20 text-green-700" : "bg-gray-400/20 text-gray-600"}`}>
-                          {listing.status === "active" ? "نشط" : "مخفي"}
+                          {listing.status === "active" ? t("admin.listing.active") : t("admin.listing.hidden")}
                         </span>
                       </div>
                       <div className="p-3 space-y-1">
@@ -997,7 +997,7 @@ export default function Admin() {
                         <div className="flex gap-2 pt-1">
                           <Button size="sm" variant="outline" className="flex-1 h-7 text-xs" onClick={() => openEditListing(listing)} data-testid={`button-edit-listing-${listing.id}`}>
                             <Edit className="w-3 h-3 ml-1" />
-                            تعديل
+                            {t("admin.edit")}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -1007,13 +1007,13 @@ export default function Admin() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>حذف الإعلان</AlertDialogTitle>
-                                <AlertDialogDescription>هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع.</AlertDialogDescription>
+                                <AlertDialogTitle>{t("admin.deleteListing.title")}</AlertDialogTitle>
+                                <AlertDialogDescription>{t("admin.deleteListing.desc")}</AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                <AlertDialogCancel>{t("admin.form.cancel")}</AlertDialogCancel>
                                 <AlertDialogAction onClick={() => deleteListingMutation.mutate(listing.id)} className="bg-red-500 text-white">
-                                  حذف
+                                  {t("admin.delete")}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -1033,7 +1033,7 @@ export default function Admin() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
               <CardHeader className="flex flex-row items-center justify-between gap-2">
-                <CardTitle>تعديل الإعلان</CardTitle>
+                <CardTitle>{t("admin.editListing")}</CardTitle>
                 <Button size="icon" variant="ghost" onClick={() => setEditingListing(null)}>
                   <X className="w-4 h-4" />
                 </Button>
@@ -1041,12 +1041,12 @@ export default function Admin() {
               <CardContent className="space-y-4">
                 {/* Image */}
                 <div className="space-y-2">
-                  <Label>الصورة الرئيسية</Label>
+                  <Label>{t("admin.form.mainImage")}</Label>
                   <div className="flex items-center gap-3">
                     <img src={listingImagePreview || editingListing.imageUrl} alt="" className="w-20 h-20 object-cover rounded-lg" />
                     <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors text-sm">
                       <Upload className="w-4 h-4" />
-                      تغيير الصورة
+                      {t("admin.form.selectImage")}
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -1062,58 +1062,58 @@ export default function Admin() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label>الماركة</Label>
+                    <Label>{t("admin.form.make")}</Label>
                     <Input value={listingForm.make || ""} onChange={(e) => setListingForm(f => ({ ...f, make: e.target.value }))} />
                   </div>
                   <div className="space-y-1">
-                    <Label>الموديل</Label>
+                    <Label>{t("admin.form.model")}</Label>
                     <Input value={listingForm.model || ""} onChange={(e) => setListingForm(f => ({ ...f, model: e.target.value }))} />
                   </div>
                   <div className="space-y-1">
-                    <Label>السنة</Label>
+                    <Label>{t("admin.form.year")}</Label>
                     <Input type="number" value={listingForm.year || ""} onChange={(e) => setListingForm(f => ({ ...f, year: parseInt(e.target.value) || null }))} />
                   </div>
                   <div className="space-y-1">
-                    <Label>السعر (د.أ)</Label>
+                    <Label>{t("admin.form.price")}</Label>
                     <Input type="number" value={listingForm.price || ""} onChange={(e) => setListingForm(f => ({ ...f, price: parseInt(e.target.value) || null }))} />
                   </div>
                   <div className="space-y-1">
-                    <Label>اللون</Label>
+                    <Label>{t("admin.form.color")}</Label>
                     <Input value={listingForm.color || ""} onChange={(e) => setListingForm(f => ({ ...f, color: e.target.value }))} />
                   </div>
                   <div className="space-y-1">
-                    <Label>الكيلومترات</Label>
+                    <Label>{t("listing.mileage")}</Label>
                     <Input type="number" value={listingForm.mileage || ""} onChange={(e) => setListingForm(f => ({ ...f, mileage: parseInt(e.target.value) || null }))} />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <Label>الوصف</Label>
+                  <Label>{t("listing.description")}</Label>
                   <Textarea rows={3} value={listingForm.description || ""} onChange={(e) => setListingForm(f => ({ ...f, description: e.target.value }))} />
                 </div>
 
                 <div className="space-y-1">
-                  <Label>رقم التواصل</Label>
+                  <Label>{t("listing.contact")}</Label>
                   <Input value={listingForm.contactPhone || ""} onChange={(e) => setListingForm(f => ({ ...f, contactPhone: e.target.value }))} />
                 </div>
 
                 <div className="space-y-1">
-                  <Label>الحالة</Label>
+                  <Label>{t("admin.form.status")}</Label>
                   <Select value={listingForm.status || "active"} onValueChange={(v) => setListingForm(f => ({ ...f, status: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">نشط</SelectItem>
-                      <SelectItem value="hidden">مخفي</SelectItem>
-                      <SelectItem value="sold">مباع</SelectItem>
+                      <SelectItem value="active">{t("admin.listing.active")}</SelectItem>
+                      <SelectItem value="hidden">{t("admin.listing.hidden")}</SelectItem>
+                      <SelectItem value="sold">{t("listing.sold")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="flex gap-3 pt-2">
                   <Button className="flex-1" onClick={handleSaveListing} disabled={updateListingMutation.isPending}>
-                    {updateListingMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "حفظ التعديلات"}
+                    {updateListingMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t("admin.saveChanges")}
                   </Button>
-                  <Button variant="outline" onClick={() => setEditingListing(null)}>إلغاء</Button>
+                  <Button variant="outline" onClick={() => setEditingListing(null)}>{t("admin.form.cancel")}</Button>
                 </div>
               </CardContent>
             </Card>
@@ -1124,7 +1124,7 @@ export default function Admin() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <CardHeader className="flex flex-row items-center justify-between gap-2">
-                <CardTitle>{editingCar ? "تعديل السيارة" : "إضافة سيارة جديدة"}</CardTitle>
+                <CardTitle>{editingCar ? t("admin.form.editCar") : t("admin.form.addCar")}</CardTitle>
                 <Button size="icon" variant="ghost" onClick={resetForm}>
                   <X className="w-4 h-4" />
                 </Button>
@@ -1133,10 +1133,10 @@ export default function Admin() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {!editingCar && (
                     <div className="space-y-2">
-                      <Label>المستخدم *</Label>
+                      <Label>{t("admin.form.user")} *</Label>
                       <Select value={selectedUserId} onValueChange={setSelectedUserId}>
                         <SelectTrigger data-testid="select-user">
-                          <SelectValue placeholder="اختر المستخدم" />
+                          <SelectValue placeholder={t("admin.form.selectUser")} />
                         </SelectTrigger>
                         <SelectContent>
                           {users.map((user) => (
@@ -1150,14 +1150,14 @@ export default function Admin() {
                   )}
 
                   <div className="space-y-2">
-                    <Label>الصورة الرئيسية (اختياري)</Label>
+                    <Label>{t("admin.form.mainImage")}</Label>
                     <div className="flex items-center gap-4">
                       {imagePreview && (
                         <img src={imagePreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
                       )}
                       <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-secondary transition-colors">
                         <Upload className="w-4 h-4" />
-                        <span>اختر صورة</span>
+                        <span>{t("admin.form.selectImage")}</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -1170,7 +1170,7 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>صور إضافية (اختياري)</Label>
+                    <Label>{t("admin.form.additionalImages")}</Label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {existingAdditionalImages.map((img, idx) => (
                         <div key={`existing-${idx}`} className="relative">
@@ -1205,7 +1205,7 @@ export default function Admin() {
                       }}
                     >
                       <Plus className="w-4 h-4" />
-                      <span>إضافة صور</span>
+                      <span>{t("admin.form.addImages")}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1219,7 +1219,7 @@ export default function Admin() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>الشركة المصنعة</Label>
+                      <Label>{t("admin.form.make")}</Label>
                       <Input
                         value={carForm.make}
                         onChange={(e) => setCarForm({ ...carForm, make: e.target.value })}
@@ -1228,7 +1228,7 @@ export default function Admin() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>الموديل</Label>
+                      <Label>{t("admin.form.model")}</Label>
                       <Input
                         value={carForm.model}
                         onChange={(e) => setCarForm({ ...carForm, model: e.target.value })}
@@ -1240,7 +1240,7 @@ export default function Admin() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>سنة الصنع</Label>
+                      <Label>{t("admin.form.year")}</Label>
                       <Input
                         type="number"
                         value={carForm.year}
@@ -1249,7 +1249,7 @@ export default function Admin() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>اللون</Label>
+                      <Label>{t("admin.form.color")}</Label>
                       <Input
                         value={carForm.color}
                         onChange={(e) => setCarForm({ ...carForm, color: e.target.value })}
@@ -1260,7 +1260,7 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>رقم الشاصي (VIN)</Label>
+                    <Label>{t("admin.form.vin")}</Label>
                     <Input
                       value={carForm.vin}
                       onChange={(e) => setCarForm({ ...carForm, vin: e.target.value })}
@@ -1272,7 +1272,7 @@ export default function Admin() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>الحالة</Label>
+                      <Label>{t("admin.form.status")}</Label>
                       <Select
                         value={carForm.status}
                         onValueChange={(value) => setCarForm({ ...carForm, status: value })}
@@ -1281,14 +1281,14 @@ export default function Admin() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Purchased">مشتراة</SelectItem>
-                          <SelectItem value="Reserved">محجوزة</SelectItem>
-                          <SelectItem value="In Transit">في الطريق</SelectItem>
+                          <SelectItem value="Purchased">{t("car.status.purchased")}</SelectItem>
+                          <SelectItem value="Reserved">{t("car.status.reserved")}</SelectItem>
+                          <SelectItem value="In Transit">{t("car.status.inTransit")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>السعر (اختياري)</Label>
+                      <Label>{t("admin.form.price")}</Label>
                       <Input
                         type="number"
                         value={carForm.price || ""}
@@ -1301,7 +1301,7 @@ export default function Admin() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>رقم الكونتينر</Label>
+                      <Label>{t("admin.form.container")}</Label>
                       <Input
                         value={carForm.containerNumber}
                         onChange={(e) => setCarForm({ ...carForm, containerNumber: e.target.value })}
@@ -1311,7 +1311,7 @@ export default function Admin() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>رقم الحجز</Label>
+                      <Label>{t("admin.form.booking")}</Label>
                       <Input
                         value={carForm.bookingNumber}
                         onChange={(e) => setCarForm({ ...carForm, bookingNumber: e.target.value })}
@@ -1323,7 +1323,7 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>رابط التتبع</Label>
+                    <Label>{t("admin.form.tracking")}</Label>
                     <Input
                       value={carForm.trackingUrl}
                       onChange={(e) => setCarForm({ ...carForm, trackingUrl: e.target.value })}
@@ -1334,7 +1334,7 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>رابط مخصص (اختياري)</Label>
+                    <Label>{t("admin.form.customUrl")}</Label>
                     <Input
                       value={carForm.customUrl}
                       onChange={(e) => setCarForm({ ...carForm, customUrl: e.target.value })}
@@ -1345,21 +1345,21 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>سبب إضافة الرابط</Label>
+                    <Label>{t("admin.form.customUrlReason")}</Label>
                     <Textarea
                       value={carForm.customUrlReason}
                       onChange={(e) => setCarForm({ ...carForm, customUrlReason: e.target.value })}
-                      placeholder="اشرح لماذا تمت إضافة هذا الرابط..."
+                      placeholder={t("admin.form.customUrlReasonPlaceholder")}
                       data-testid="input-custom-url-reason"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>تفاصيل إضافية</Label>
+                    <Label>{t("admin.form.details")}</Label>
                     <Textarea
                       value={carForm.details}
                       onChange={(e) => setCarForm({ ...carForm, details: e.target.value })}
-                      placeholder="أي تفاصيل إضافية عن السيارة..."
+                      placeholder={t("admin.form.detailsPlaceholder")}
                       data-testid="input-details"
                     />
                   </div>
@@ -1415,21 +1415,21 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>ملفات PDF (اختياري)</Label>
+                    <Label>{t("admin.form.pdf")}</Label>
                     <div className="space-y-2">
                       {/* Existing saved PDFs */}
                       {existingPdfUrls.map((url, idx) => (
                         <div key={`existing-${idx}`} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-secondary">
                           <FileText className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span className="text-sm text-foreground flex-grow truncate">ملف PDF {idx + 1}</span>
+                          <span className="text-sm text-foreground flex-grow truncate">{t("carDetail.viewPdf")} {idx + 1}</span>
                           <div className="flex gap-2">
-                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">عرض</a>
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">{t("carDetail.openLink")}</a>
                             <button
                               type="button"
                               onClick={() => setExistingPdfUrls(prev => prev.filter((_, i) => i !== idx))}
                               className="text-xs text-destructive hover:underline"
                             >
-                              إزالة
+                              {t("admin.delete")}
                             </button>
                           </div>
                         </div>
@@ -1447,7 +1447,7 @@ export default function Admin() {
                             }}
                             className="text-xs text-destructive hover:underline"
                           >
-                            إزالة
+                            {t("admin.delete")}
                           </button>
                         </div>
                       ))}
@@ -1457,7 +1457,7 @@ export default function Admin() {
                         data-testid="label-pdf-upload"
                       >
                         <FileText className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">إضافة ملف PDF</span>
+                        <span className="text-sm text-muted-foreground">{t("admin.form.addPdf")}</span>
                         <input
                           type="file"
                           accept="application/pdf"
@@ -1485,10 +1485,10 @@ export default function Admin() {
                       {(createCarMutation.isPending || updateCarMutation.isPending || uploadMutation.isPending) && (
                         <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                       )}
-                      {editingCar ? "تحديث السيارة" : "إضافة السيارة"}
+                      {editingCar ? t("admin.form.update") : t("admin.form.submit")}
                     </Button>
                     <Button type="button" variant="outline" onClick={resetForm}>
-                      إلغاء
+                      {t("admin.form.cancel")}
                     </Button>
                   </div>
                 </form>

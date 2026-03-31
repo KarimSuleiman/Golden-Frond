@@ -152,6 +152,14 @@ const translations: Translations = {
   "car.status.reserved": { ar: "محجوز", en: "Reserved" },
   "car.status.inTransit": { ar: "قيد الشحن", en: "In Transit" },
   
+  // Listing (marketplace)
+  "listing.mileage": { ar: "الكيلومترات", en: "Mileage" },
+  "listing.description": { ar: "الوصف", en: "Description" },
+  "listing.contact": { ar: "رقم التواصل", en: "Contact Number" },
+  "listing.sold": { ar: "مباع", en: "Sold" },
+  "listing.active": { ar: "نشط", en: "Active" },
+  "listing.hidden": { ar: "مخفي", en: "Hidden" },
+  
   // Car Detail
   "carDetail.back": { ar: "العودة لسياراتي", en: "Back to My Cars" },
   "carDetail.info": { ar: "معلومات السيارة", en: "Car Information" },
@@ -232,6 +240,21 @@ const translations: Translations = {
   "admin.filter.allStatus": { ar: "جميع الحالات", en: "All Status" },
   "admin.filter.clear": { ar: "مسح الفلاتر", en: "Clear Filters" },
   "admin.filter.results": { ar: "نتيجة", en: "results" },
+  "admin.marketplace": { ar: "إعلانات السوق", en: "Marketplace Listings" },
+  "admin.noCars": { ar: "لا توجد سيارات بعد", en: "No cars yet" },
+  "admin.noListings": { ar: "لا توجد إعلانات", en: "No listings yet" },
+  "admin.listing.active": { ar: "نشط", en: "Active" },
+  "admin.listing.hidden": { ar: "مخفي", en: "Hidden" },
+  "admin.editListing": { ar: "تعديل الإعلان", en: "Edit Listing" },
+  "admin.deleteListing.title": { ar: "حذف الإعلان", en: "Delete Listing" },
+  "admin.deleteListing.desc": { ar: "هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع.", en: "Are you sure you want to delete this listing? This cannot be undone." },
+  "admin.saveChanges": { ar: "حفظ التعديلات", en: "Save Changes" },
+  "admin.carDeleted": { ar: "تم حذف السيارة", en: "Car deleted" },
+  "admin.listingDeleted": { ar: "تم حذف الإعلان", en: "Listing deleted" },
+  "admin.addImages": { ar: "إضافة سيارة", en: "Add Car" },
+  "admin.form.pdf": { ar: "ملفات PDF (اختياري)", en: "PDF Files (optional)" },
+  "admin.form.addPdf": { ar: "إضافة ملف PDF", en: "Add PDF File" },
+  "admin.form.detailsPlaceholder": { ar: "أي تفاصيل إضافية عن السيارة...", en: "Any additional details about the car..." },
   
   // Forgot Password
   "forgot.title": { ar: "نسيت كلمة المرور", en: "Forgot Password" },
