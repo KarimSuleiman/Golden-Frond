@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
@@ -33,6 +34,24 @@ export default function Landing() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
+
+  // Endless logo scroll via requestAnimationFrame
+  const marqueeTrackRef = useRef<HTMLDivElement>(null);
+  const marqueePos = useRef(0);
+  const marqueeRaf = useRef<number>();
+  useEffect(() => {
+    const el = marqueeTrackRef.current;
+    if (!el) return;
+    const tick = () => {
+      marqueePos.current += 0.6;
+      const halfWidth = el.scrollWidth / 2;
+      if (marqueePos.current >= halfWidth) marqueePos.current = 0;
+      el.style.transform = `translateX(-${marqueePos.current}px)`;
+      marqueeRaf.current = requestAnimationFrame(tick);
+    };
+    marqueeRaf.current = requestAnimationFrame(tick);
+    return () => { if (marqueeRaf.current) cancelAnimationFrame(marqueeRaf.current); };
+  }, []);
 
   const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
     queryKey: ["/api/auth/is-admin"],
@@ -296,8 +315,8 @@ export default function Landing() {
           {/* Fade edges */}
           <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
-          {/* Scrolling track — two identical sets for seamless infinite loop */}
-          <div className="flex animate-marquee" style={{ width: "max-content" }}>
+          {/* Scrolling track — JS RAF drives endless scroll, two sets for seamless repeat */}
+          <div ref={marqueeTrackRef} className="flex will-change-transform" style={{ width: "max-content" }}>
             {/* Set 1 */}
             {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
               <div key={`a-${i}`} className="flex items-center justify-center mx-8 shrink-0">
