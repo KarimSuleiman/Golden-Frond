@@ -91,6 +91,8 @@ const translations: Translations = {
   "landing.email": { ar: "البريد الإلكتروني", en: "Email" },
   "landing.location": { ar: "المعرض", en: "Showroom" },
   "landing.address": { ar: "الزرقاء - المنطقة الحرة\nشارع ١٥ شمال", en: "Zarqa - Free Zone\nStreet 15 North" },
+  "landing.office": { ar: "المكتب", en: "Office" },
+  "landing.officeAddress": { ar: "عمان - الأردن", en: "Amman, Jordan" },
   "landing.facebook": { ar: "فيسبوك", en: "Facebook" },
   "landing.whatsapp": { ar: "واتساب", en: "WhatsApp" },
   "landing.copyright": { ar: "السعفة الذهبية لتجارة السيارات. جميع الحقوق محفوظة.", en: "Golden Frond Car Trading. All rights reserved." },

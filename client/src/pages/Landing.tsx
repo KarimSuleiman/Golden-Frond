@@ -431,7 +431,7 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
             <motion.a
               href="tel:0796796108"
               initial={{ opacity: 0, y: 20 }}
@@ -541,6 +541,28 @@ export default function Landing() {
               </h3>
               <p className="text-muted-foreground text-center text-sm whitespace-pre-line">
                 {t("landing.address")}
+              </p>
+            </motion.a>
+
+            <motion.a
+              href="https://maps.app.goo.gl/Dc97U2qeQ7nP3dki7?g_st=iw"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.35 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
+              data-testid="link-office"
+            >
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <MapPin className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="font-bold text-foreground mb-1">
+                {t("landing.office")}
+              </h3>
+              <p className="text-muted-foreground text-center text-sm whitespace-pre-line">
+                {t("landing.officeAddress")}
               </p>
             </motion.a>
           </div>
