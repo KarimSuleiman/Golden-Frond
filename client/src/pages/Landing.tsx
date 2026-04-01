@@ -1,4 +1,3 @@
-import { useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
@@ -34,33 +33,6 @@ export default function Landing() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
-
-  // Endless logo scroll — DOM recycling: first card that leaves the left is appended to the right
-  const marqueeTrackRef = useRef<HTMLDivElement>(null);
-  const marqueeRaf = useRef<number>();
-  useEffect(() => {
-    const track = marqueeTrackRef.current;
-    if (!track) return;
-    let offset = 0;
-    const tick = () => {
-      offset += 0.6;
-      const first = track.firstElementChild as HTMLElement | null;
-      if (first) {
-        const cs = window.getComputedStyle(first);
-        const cardFullWidth = first.offsetWidth
-          + parseFloat(cs.marginLeft)
-          + parseFloat(cs.marginRight);
-        if (offset >= cardFullWidth) {
-          offset -= cardFullWidth;
-          track.appendChild(first); // move to back — no snap, no reset
-        }
-      }
-      track.style.transform = `translateX(-${offset}px)`;
-      marqueeRaf.current = requestAnimationFrame(tick);
-    };
-    marqueeRaf.current = requestAnimationFrame(tick);
-    return () => { if (marqueeRaf.current) cancelAnimationFrame(marqueeRaf.current); };
-  }, []);
 
   const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
     queryKey: ["/api/auth/is-admin"],
@@ -324,22 +296,24 @@ export default function Landing() {
           {/* Fade edges */}
           <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
-          {/* Scrolling track — DOM recycling keeps logos moving forever: 1→2→3→4→5→1→2… */}
-          <div ref={marqueeTrackRef} className="flex will-change-transform" style={{ width: "max-content" }}>
-            {/* Start with 3 full sets so the track always overflows the viewport */}
-            {[...Array(3)].flatMap((_, s) =>
-              [logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-                <div key={`${s}-${i}`} className="flex items-center justify-center mx-8 shrink-0">
-                  <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                    <img
-                      src={logo}
-                      alt={`partner-${s}-${i}`}
-                      className="max-h-12 max-w-full w-auto object-contain"
-                    />
-                  </div>
+          {/*
+            Two IDENTICAL sets — CSS moves from translateX(0) → translateX(-50%).
+            At exactly -50% the browser loops back to 0, which looks pixel-identical
+            to the midpoint, giving a smooth, gap-free, GPU-accelerated infinite scroll.
+          */}
+          <div className="logo-scroll flex" style={{ width: "max-content" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge,
+              logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                  <img
+                    src={logo}
+                    alt={`partner-${i}`}
+                    className="max-h-12 max-w-full w-auto object-contain"
+                  />
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
