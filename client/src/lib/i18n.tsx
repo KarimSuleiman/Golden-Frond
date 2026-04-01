@@ -41,6 +41,7 @@ const translations: Translations = {
   "landing.showroomImageAlt": { ar: "معرض السيارات", en: "Car Showroom" },
   
   // Landing - About
+  "landing.partners": { ar: "شركاؤنا في المزادات", en: "Our Auction Partners" },
   "landing.about": { ar: "من نحن", en: "About Us" },
   "landing.about.text1": { 
     ar: "السعفة الذهبية شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست عام 2004، مع أكثر من 21 عاماً من الخبرة في توفير أفضل السيارات للعملاء الكرام.", 

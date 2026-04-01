@@ -23,6 +23,11 @@ import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import heroCarImage from "@assets/1fe806ff-fb76-4c76-bb40-24697774b8e9_1774627254576.JPG";
 import showroomImage from "@assets/a6631636-3d18-4929-bb1b-64efeac1259e_1775085031189.JPG";
+import logoImpact from "@assets/5c2b7587-b6f3-4754-923d-fb3aceda9632_1775085234273.JPG";
+import logoCopart from "@assets/101f5ade-48ba-4b6b-a9a5-214e8198214a_1775085234273.JPG";
+import logoIAAI from "@assets/bd1feaf9-4435-4fdb-b1e4-e92272e040e9_1775085234273.JPG";
+import logoAdesa from "@assets/bebf5f12-f42a-48d1-af21-78ce8647bc87_1775085234273.JPG";
+import logoEdge from "@assets/f5fb237d-2ede-4658-83b0-4a985539352a_1775085234273.JPG";
 
 export default function Landing() {
   const { t, language, dir } = useLanguage();
@@ -276,6 +281,32 @@ export default function Landing() {
                 <p className="text-sm">{t("landing.yearsExp")}</p>
               </div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Auction Partners Marquee */}
+      <section className="py-10 bg-background border-t border-border overflow-hidden">
+        <div className="container mx-auto px-4 mb-6 text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            {t("landing.partners")}
+          </p>
+        </div>
+        <div className="relative w-full overflow-hidden">
+          {/* Fade edges */}
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+          {/* Scrolling track — logos duplicated for seamless loop */}
+          <div className="flex animate-marquee" style={{ width: "max-content" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge, logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} className="flex items-center justify-center mx-10 md:mx-16 shrink-0">
+                <img
+                  src={logo}
+                  alt={`partner-${i}`}
+                  className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
