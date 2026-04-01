@@ -18,6 +18,7 @@ import {
   MessageCircle,
   Settings,
   Car,
+  Anchor,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
@@ -91,9 +92,9 @@ export default function Landing() {
             className="w-full max-w-xl space-y-4 md:space-y-8"
           >
             {/* Logo + Brand name */}
-            <motion.div variants={itemVariants} className="flex items-center gap-3 mb-2">
+            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-2">
               <img src={logoImage} alt={t("common.altLogo")} className="h-14 md:h-16 w-auto object-contain drop-shadow-lg" />
-              <span className="text-white/90 text-sm md:text-base font-semibold tracking-wide drop-shadow-md">
+              <span className="text-white text-xl md:text-3xl font-bold tracking-wide drop-shadow-md leading-snug">
                 {t("landing.tagline")}
               </span>
             </motion.div>
@@ -282,6 +283,54 @@ export default function Landing() {
               </div>
             </motion.div>
           </div>
+
+          {/* Receiving Ports */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="mt-16"
+          >
+            <div className="text-center mb-8">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                {language === "ar" ? "موانئ الاستلام" : "Receiving Ports"}
+              </p>
+              <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                {language === "ar" ? "نوصّل سياراتك إلى هذه الموانئ" : "We deliver your cars to these ports"}
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { country: "العراق", port: "ميناء ام قصر", countryEn: "Iraq", portEn: "Umm Qasr Port" },
+                { country: "الأردن", port: "ميناء العقبة", countryEn: "Jordan", portEn: "Aqaba Port" },
+                { country: "الإمارات العربية المتحدة", port: "ميناء جبل علي", countryEn: "UAE", portEn: "Jebel Ali Port" },
+                { country: "تركيا", port: "ميناء ميرسين", countryEn: "Turkey", portEn: "Mersin Port" },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:shadow-md transition-all text-center group"
+                >
+                  <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Anchor className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-foreground text-sm">
+                      {language === "ar" ? item.country : item.countryEn}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {language === "ar" ? item.port : item.portEn}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
         </div>
       </section>
 
