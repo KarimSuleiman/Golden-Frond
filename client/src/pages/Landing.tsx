@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
-import heroCarImage from "@assets/4d74338e-f97b-47bb-a692-531b76e63b0b_1775084196040.JPG";
+import heroCarImage from "@assets/1fe806ff-fb76-4c76-bb40-24697774b8e9_1774627254576.JPG";
+import showroomImage from "@assets/4d74338e-f97b-47bb-a692-531b76e63b0b_1775084196040.JPG";
 
 export default function Landing() {
   const { t, language, dir } = useLanguage();
@@ -263,9 +264,9 @@ export default function Landing() {
             >
               <div className="rounded-2xl overflow-hidden border border-border shadow-xl">
                 <img
-                  src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop"
+                  src={showroomImage}
                   alt={t("landing.showroomImageAlt")}
-                  className="w-full h-80 object-cover"
+                  className="w-full h-80 object-cover object-center"
                 />
               </div>
               <div
