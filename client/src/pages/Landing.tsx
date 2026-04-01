@@ -35,18 +35,27 @@ export default function Landing() {
   const { user } = useAuth();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
 
-  // Endless logo scroll via requestAnimationFrame
+  // Endless logo scroll — DOM recycling: first card that leaves the left is appended to the right
   const marqueeTrackRef = useRef<HTMLDivElement>(null);
-  const marqueePos = useRef(0);
   const marqueeRaf = useRef<number>();
   useEffect(() => {
-    const el = marqueeTrackRef.current;
-    if (!el) return;
+    const track = marqueeTrackRef.current;
+    if (!track) return;
+    let offset = 0;
     const tick = () => {
-      marqueePos.current += 0.6;
-      const halfWidth = el.scrollWidth / 2;
-      if (marqueePos.current >= halfWidth) marqueePos.current = 0;
-      el.style.transform = `translateX(-${marqueePos.current}px)`;
+      offset += 0.6;
+      const first = track.firstElementChild as HTMLElement | null;
+      if (first) {
+        const cs = window.getComputedStyle(first);
+        const cardFullWidth = first.offsetWidth
+          + parseFloat(cs.marginLeft)
+          + parseFloat(cs.marginRight);
+        if (offset >= cardFullWidth) {
+          offset -= cardFullWidth;
+          track.appendChild(first); // move to back — no snap, no reset
+        }
+      }
+      track.style.transform = `translateX(-${offset}px)`;
       marqueeRaf.current = requestAnimationFrame(tick);
     };
     marqueeRaf.current = requestAnimationFrame(tick);
@@ -315,32 +324,22 @@ export default function Landing() {
           {/* Fade edges */}
           <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
-          {/* Scrolling track — JS RAF drives endless scroll, two sets for seamless repeat */}
+          {/* Scrolling track — DOM recycling keeps logos moving forever: 1→2→3→4→5→1→2… */}
           <div ref={marqueeTrackRef} className="flex will-change-transform" style={{ width: "max-content" }}>
-            {/* Set 1 */}
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={`a-${i}`} className="flex items-center justify-center mx-8 shrink-0">
-                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img
-                    src={logo}
-                    alt={`partner-${i}`}
-                    className="max-h-12 max-w-full w-auto object-contain"
-                  />
+            {/* Start with 3 full sets so the track always overflows the viewport */}
+            {[...Array(3)].flatMap((_, s) =>
+              [logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+                <div key={`${s}-${i}`} className="flex items-center justify-center mx-8 shrink-0">
+                  <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                    <img
+                      src={logo}
+                      alt={`partner-${s}-${i}`}
+                      className="max-h-12 max-w-full w-auto object-contain"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-            {/* Set 2 — exact duplicate for seamless loop */}
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={`b-${i}`} className="flex items-center justify-center mx-8 shrink-0">
-                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img
-                    src={logo}
-                    alt={`partner-${i}`}
-                    className="max-h-12 max-w-full w-auto object-contain"
-                  />
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
