@@ -344,7 +344,7 @@ const translations: Translations = {
   "marketplace.notFound": { ar: "الإعلان غير موجود", en: "Listing Not Found" },
   "marketplace.backToListings": { ar: "العودة للإعلانات", en: "Back to Listings" },
   "marketplace.condition": { ar: "الحالة", en: "Condition" },
-  "marketplace.brand": { ar: "العلامة التجارية", en: "Brand" },
+  "marketplace.brand": { ar: "الصنع", en: "Brand" },
   "marketplace.model": { ar: "الموديل", en: "Model" },
   "marketplace.yearLabel": { ar: "سنة الصنع", en: "Year" },
   "marketplace.color": { ar: "اللون", en: "Color" },
