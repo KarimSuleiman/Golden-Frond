@@ -70,14 +70,20 @@
 }
 
 /* Animations */
-@keyframes scroll-x {
+/* Two-track infinite marquee — Track A exits left while Track B enters from right */
+@keyframes marquee-a {
   from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  to   { transform: translateX(-100%); }
 }
-
-.logo-scroll {
-  animation: scroll-x 28s linear infinite;
-  will-change: transform;
+@keyframes marquee-b {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.logo-track-a {
+  animation: marquee-a 30s linear infinite;
+}
+.logo-track-b {
+  animation: marquee-b 30s linear infinite;
 }
 
 @keyframes float {

@@ -1,4 +1,3 @@
-import { useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
@@ -35,24 +34,6 @@ export default function Landing() {
   const { user } = useAuth();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
 
-  // Pixel-exact Web Animations API scroll — no percentage jitter, no lag
-  const logoTrackRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = logoTrackRef.current;
-    if (!el) return;
-    // Wait one frame so the DOM has laid out and scrollWidth is accurate
-    const raf = requestAnimationFrame(() => {
-      const oneSetPx = el.scrollWidth / 2; // track contains exactly 2 identical sets
-      el.animate(
-        [
-          { transform: "translateX(0px)" },
-          { transform: `translateX(-${oneSetPx}px)` },
-        ],
-        { duration: 30000, iterations: Infinity, easing: "linear" }
-      );
-    });
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
     queryKey: ["/api/auth/is-admin"],
@@ -358,25 +339,34 @@ export default function Landing() {
             {t("landing.partners")}
           </p>
         </div>
-        <div className="relative w-full overflow-hidden">
+        {/*
+          Two independent tracks with the same 30 s duration.
+          Track A starts at position 0 and slides to -100% (exits left).
+          Track B starts at +100% (right, off-screen) and slides to 0 (enters).
+          They move in perfect sync so one is always fully visible — no gap, no reset flash.
+        */}
+        <div className="relative w-full overflow-hidden" style={{ height: "5.5rem" }}>
           {/* Fade edges */}
           <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
-          {/*
-            Two IDENTICAL sets — CSS moves from translateX(0) → translateX(-50%).
-            At exactly -50% the browser loops back to 0, which looks pixel-identical
-            to the midpoint, giving a smooth, gap-free, GPU-accelerated infinite scroll.
-          */}
-          <div ref={logoTrackRef} className="flex" style={{ width: "max-content" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge,
-              logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+
+          {/* Track A — starts visible, exits left */}
+          <div className="logo-track-a absolute top-0 left-0 flex" style={{ width: "max-content" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
               <div key={i} className="flex items-center justify-center mx-8 shrink-0">
                 <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img
-                    src={logo}
-                    alt={`partner-${i}`}
-                    className="max-h-12 max-w-full w-auto object-contain"
-                  />
+                  <img src={logo} alt={`partner-a-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Track B — starts off-screen right, enters as A exits */}
+          <div className="logo-track-b absolute top-0 left-0 flex" style={{ width: "max-content" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                  <img src={logo} alt={`partner-b-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
                 </div>
               </div>
             ))}
