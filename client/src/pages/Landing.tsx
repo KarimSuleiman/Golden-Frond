@@ -18,7 +18,6 @@ import {
   MessageCircle,
   Settings,
   Car,
-  Anchor,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
@@ -302,10 +301,10 @@ export default function Landing() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { country: "العراق", port: "ميناء ام قصر", countryEn: "Iraq", portEn: "Umm Qasr Port" },
-                { country: "الأردن", port: "ميناء العقبة", countryEn: "Jordan", portEn: "Aqaba Port" },
-                { country: "الإمارات العربية المتحدة", port: "ميناء جبل علي", countryEn: "UAE", portEn: "Jebel Ali Port" },
-                { country: "تركيا", port: "ميناء ميرسين", countryEn: "Turkey", portEn: "Mersin Port" },
+                { country: "العراق", port: "ميناء ام قصر", countryEn: "Iraq", portEn: "Umm Qasr Port", flag: "🇮🇶" },
+                { country: "الأردن", port: "ميناء العقبة", countryEn: "Jordan", portEn: "Aqaba Port", flag: "🇯🇴" },
+                { country: "الإمارات العربية المتحدة", port: "ميناء جبل علي", countryEn: "UAE", portEn: "Jebel Ali Port", flag: "🇦🇪" },
+                { country: "تركيا", port: "ميناء ميرسين", countryEn: "Turkey", portEn: "Mersin Port", flag: "🇹🇷" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -315,9 +314,7 @@ export default function Landing() {
                   viewport={{ once: true }}
                   className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:shadow-md transition-all text-center group"
                 >
-                  <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Anchor className="w-5 h-5 text-primary" />
-                  </div>
+                  <span className="text-4xl leading-none">{item.flag}</span>
                   <div>
                     <p className="font-bold text-foreground text-sm">
                       {language === "ar" ? item.country : item.countryEn}
