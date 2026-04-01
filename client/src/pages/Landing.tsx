@@ -65,7 +65,7 @@ export default function Landing() {
         <img
           src={heroCarImage}
           alt={t("landing.heroImageAlt")}
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="absolute inset-0 w-full h-full object-cover object-center hero-pan"
         />
 
         {/* Mobile overlay: car shows clearly at top, dark at bottom for text readability */}

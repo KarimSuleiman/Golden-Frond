@@ -69,6 +69,16 @@
   background: hsl(var(--primary) / 0.5);
 }
 
+/* Hero pan — gentle left-to-right drift */
+@keyframes pan-lr {
+  0%   { transform: scale(1.06) translateX(-2.5%); }
+  100% { transform: scale(1.06) translateX(2.5%); }
+}
+.hero-pan {
+  animation: pan-lr 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
 /* Animations */
 /* Two-track infinite marquee — Track A exits left while Track B enters from right */
 @keyframes marquee-a {
