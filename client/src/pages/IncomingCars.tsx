@@ -530,18 +530,6 @@ export default function IncomingCars() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>{t("filter.exteriorSpecs")}</Label>
-              <div className="flex flex-wrap gap-2">
-                {["sunroof","panoramicRoof","rearCamera","360Camera","parkingSensors","frontCamera","ledLights","adaptiveLights","remoteStart","keylessEntry","spareWheel","towHook","roofRack","runFlatTires"].map(f => (
-                  <button key={f} type="button"
-                    onClick={() => setForm(prev => ({ ...prev, exteriorFeatures: prev.exteriorFeatures.includes(f) ? prev.exteriorFeatures.filter(i => i !== f) : [...prev.exteriorFeatures, f] }))}
-                    className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${form.exteriorFeatures.includes(f) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}>
-                    {t(`filter.ext${f.charAt(0).toUpperCase() + f.slice(1)}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <div className="space-y-2">
               <Label>{t("incoming.form.status")}</Label>
