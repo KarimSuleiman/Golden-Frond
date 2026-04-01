@@ -286,7 +286,7 @@ export default function Landing() {
       </section>
 
       {/* Auction Partners Marquee */}
-      <section className="py-10 bg-background border-t border-border overflow-hidden">
+      <section className="py-10 bg-muted/40 border-t border-border overflow-hidden">
         <div className="container mx-auto px-4 mb-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {t("landing.partners")}
@@ -294,17 +294,32 @@ export default function Landing() {
         </div>
         <div className="relative w-full overflow-hidden">
           {/* Fade edges */}
-          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-          {/* Scrolling track — logos duplicated for seamless loop */}
+          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
+          {/* Scrolling track — two identical sets for seamless infinite loop */}
           <div className="flex animate-marquee" style={{ width: "max-content" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge, logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} className="flex items-center justify-center mx-10 md:mx-16 shrink-0">
-                <img
-                  src={logo}
-                  alt={`partner-${i}`}
-                  className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
-                />
+            {/* Set 1 */}
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={`a-${i}`} className="flex items-center justify-center mx-8 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                  <img
+                    src={logo}
+                    alt={`partner-${i}`}
+                    className="max-h-12 max-w-full w-auto object-contain"
+                  />
+                </div>
+              </div>
+            ))}
+            {/* Set 2 — exact duplicate for seamless loop */}
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={`b-${i}`} className="flex items-center justify-center mx-8 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                  <img
+                    src={logo}
+                    alt={`partner-${i}`}
+                    className="max-h-12 max-w-full w-auto object-contain"
+                  />
+                </div>
               </div>
             ))}
           </div>
