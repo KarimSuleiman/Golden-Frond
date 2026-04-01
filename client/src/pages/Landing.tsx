@@ -532,12 +532,16 @@ export default function Landing() {
               </p>
             </motion.a>
 
-            <motion.div
+            <motion.a
+              href="https://maps.app.goo.gl/DwzcKL7kADFedVdX9?g_st=iw"
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
               viewport={{ once: true }}
-              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg transition-all group"
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-primary/30 transition-all group"
+              data-testid="link-location"
             >
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                 <MapPin className="w-8 h-8 text-white" />
@@ -548,7 +552,7 @@ export default function Landing() {
               <p className="text-muted-foreground text-center text-sm whitespace-pre-line">
                 {t("landing.address")}
               </p>
-            </motion.div>
+            </motion.a>
           </div>
         </div>
       </section>
