@@ -89,7 +89,7 @@ const translations: Translations = {
   "landing.contact.desc": { ar: "نحن هنا لمساعدتك. تواصل معنا عبر أي من الوسائل التالية", en: "We are here to help. Contact us through any of the following methods" },
   "landing.phone": { ar: "الهاتف", en: "Phone" },
   "landing.email": { ar: "البريد الإلكتروني", en: "Email" },
-  "landing.location": { ar: "الموقع", en: "Location" },
+  "landing.location": { ar: "المعرض", en: "Showroom" },
   "landing.address": { ar: "الزرقاء - المنطقة الحرة\nشارع ١٥ شمال", en: "Zarqa - Free Zone\nStreet 15 North" },
   "landing.facebook": { ar: "فيسبوك", en: "Facebook" },
   "landing.whatsapp": { ar: "واتساب", en: "WhatsApp" },
