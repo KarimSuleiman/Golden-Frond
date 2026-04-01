@@ -85,6 +85,24 @@ export const listingsRelations = relations(listings, ({ one, many }) => ({
   favorites: many(favorites),
 }));
 
+export const incomingCars = pgTable("incoming_cars", {
+  id: serial("id").primaryKey(),
+  make: text("make").notNull(),
+  model: text("model").notNull(),
+  year: integer("year").notNull(),
+  color: text("color"),
+  imageUrl: text("image_url").notNull(),
+  images: text("images").array(),
+  details: text("details"),
+  status: text("status").notNull().default("coming"),
+  estimatedArrival: text("estimated_arrival"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertIncomingCarSchema = createInsertSchema(incomingCars).omit({ id: true, createdAt: true });
+export type IncomingCar = typeof incomingCars.$inferSelect;
+export type InsertIncomingCar = z.infer<typeof insertIncomingCarSchema>;
+
 export const favoritesRelations = relations(favorites, ({ one }) => ({
   user: one(users, {
     fields: [favorites.userId],

@@ -4,6 +4,7 @@ import {
   users,
   listings,
   favorites,
+  incomingCars,
   type Car,
   type InsertCar,
   type UpdateCarRequest,
@@ -13,6 +14,8 @@ import {
   type UpdateListingRequest,
   type Favorite,
   type InsertFavorite,
+  type IncomingCar,
+  type InsertIncomingCar,
 } from "@shared/schema";
 import { eq, desc, and, sql, count } from "drizzle-orm";
 
@@ -37,6 +40,11 @@ export interface IStorage {
   deleteUser(userId: string): Promise<void>;
   getFavoritesCountByUser(userId: string): Promise<number>;
   updateLastActive(userId: string): Promise<void>;
+  getIncomingCars(): Promise<IncomingCar[]>;
+  getIncomingCar(id: number): Promise<IncomingCar | undefined>;
+  createIncomingCar(car: InsertIncomingCar): Promise<IncomingCar>;
+  updateIncomingCar(id: number, updates: Partial<InsertIncomingCar>): Promise<IncomingCar>;
+  deleteIncomingCar(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -167,6 +175,29 @@ export class DatabaseStorage implements IStorage {
     await db.update(users)
       .set({ lastActiveAt: new Date() })
       .where(eq(users.id, userId));
+  }
+
+  async getIncomingCars(): Promise<IncomingCar[]> {
+    return await db.select().from(incomingCars).orderBy(desc(incomingCars.createdAt));
+  }
+
+  async getIncomingCar(id: number): Promise<IncomingCar | undefined> {
+    const [car] = await db.select().from(incomingCars).where(eq(incomingCars.id, id));
+    return car;
+  }
+
+  async createIncomingCar(car: InsertIncomingCar): Promise<IncomingCar> {
+    const [created] = await db.insert(incomingCars).values(car).returning();
+    return created;
+  }
+
+  async updateIncomingCar(id: number, updates: Partial<InsertIncomingCar>): Promise<IncomingCar> {
+    const [updated] = await db.update(incomingCars).set(updates).where(eq(incomingCars.id, id)).returning();
+    return updated;
+  }
+
+  async deleteIncomingCar(id: number): Promise<void> {
+    await db.delete(incomingCars).where(eq(incomingCars.id, id));
   }
 }
 

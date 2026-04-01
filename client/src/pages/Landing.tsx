@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
-import heroCarImage from "@assets/1fe806ff-fb76-4c76-bb40-24697774b8e9_1774627254576.JPG";
+import heroCarImage from "@assets/4d74338e-f97b-47bb-a692-531b76e63b0b_1775084196040.JPG";
 
 export default function Landing() {
   const { t, language, dir } = useLanguage();
@@ -84,11 +84,16 @@ export default function Landing() {
             animate="visible"
             className="w-full max-w-xl space-y-4 md:space-y-8"
           >
-            {/* Tagline pill */}
-            <motion.div variants={itemVariants}>
-              <span className="inline-block px-3 py-1 rounded-full border border-white/30 bg-white/10 text-white/90 text-xs font-semibold tracking-widest mb-3 md:mb-6 backdrop-blur-sm">
+            {/* Logo + Brand name */}
+            <motion.div variants={itemVariants} className="flex items-center gap-3 mb-2">
+              <img src={logoImage} alt={t("common.altLogo")} className="h-14 md:h-16 w-auto object-contain drop-shadow-lg" />
+              <span className="text-white/90 text-sm md:text-base font-semibold tracking-wide drop-shadow-md">
                 {t("landing.tagline")}
               </span>
+            </motion.div>
+
+            {/* Main heading */}
+            <motion.div variants={itemVariants}>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
                 {t("landing.title1")}
                 <br />

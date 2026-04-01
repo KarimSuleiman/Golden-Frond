@@ -13,6 +13,7 @@ import {
   Info,
   Phone,
   Mail,
+  Truck,
   MapPin,
   ChevronDown,
   Car,
@@ -56,6 +57,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: t("nav.home"), icon: Home },
     { href: "/cars-for-sale", label: t("nav.carsForSale"), icon: Car },
+    { href: "/incoming-cars", label: t("nav.incomingCars"), icon: Truck },
     ...(authInfo?.isTrader
       ? [
           {
@@ -240,7 +242,7 @@ export function Navbar() {
         </div>
 
         {/* Right side: Main nav links + login/logout */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4">
           {navLinks.filter((link) => !link.iconOnly).map((link) =>
             link.isAnchor ? (
               <a

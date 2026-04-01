@@ -870,5 +870,74 @@ export async function registerRoutes(
     }
   });
 
+  // ─── Incoming Cars (سيارات قيد التحميل) ───────────────────────────
+  app.get("/api/incoming-cars", async (req, res) => {
+    try {
+      const cars = await storage.getIncomingCars();
+      res.json(cars);
+    } catch (error) {
+      console.error("Get incoming cars error:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  app.post("/api/admin/incoming-cars", isAuthenticated, upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }]), async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
+
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const mainImage = files?.image?.[0];
+      const additionalImages = files?.images || [];
+
+      if (!mainImage) return res.status(400).json({ message: "Main image required" });
+
+      const imageUrl = `/uploads/${mainImage.filename}`;
+      const imagesArr = additionalImages.map((f: Express.Multer.File) => `/uploads/${f.filename}`);
+
+      const car = await storage.createIncomingCar({
+        make: req.body.make,
+        model: req.body.model,
+        year: parseInt(req.body.year),
+        color: req.body.color || null,
+        imageUrl,
+        images: imagesArr.length > 0 ? imagesArr : null,
+        details: req.body.details || null,
+        status: req.body.status || "coming",
+        estimatedArrival: req.body.estimatedArrival || null,
+      });
+      res.json(car);
+    } catch (error) {
+      console.error("Create incoming car error:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  app.put("/api/admin/incoming-cars/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
+      const id = parseInt(req.params.id);
+      const updated = await storage.updateIncomingCar(id, req.body);
+      res.json(updated);
+    } catch (error) {
+      console.error("Update incoming car error:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  app.delete("/api/admin/incoming-cars/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
+      const id = parseInt(req.params.id);
+      await storage.deleteIncomingCar(id);
+      res.json({ message: "Deleted" });
+    } catch (error) {
+      console.error("Delete incoming car error:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
   return httpServer;
 }

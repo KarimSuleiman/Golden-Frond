@@ -102,6 +102,18 @@ Preferred communication style: Simple, everyday language.
 - **Framer Motion**: Page transitions and scroll animations
 - **Google Fonts**: Manrope (body) and Playfair Display (display)
 
+### Cars in Transit (سيارات قيد التحميل)
+- **Page**: `/incoming-cars` — publicly visible to ALL users, traders, and admins
+- **Purpose**: Shows cars coming from auction that will arrive soon
+- **Admin features**: Add new incoming cars (image, make, model, year, color, status, estimated arrival, details), delete cars
+- **Card layout**: Grid view with status badge (قيد الشحن / وصلت), click to open detail dialog with image carousel
+- **DB table**: `incoming_cars` — id, make, model, year, color, imageUrl, images[], details, status, estimatedArrival, createdAt
+- **API endpoints**:
+  - `GET /api/incoming-cars` — public
+  - `POST /api/admin/incoming-cars` — admin only (multipart/form-data with image upload)
+  - `PUT /api/admin/incoming-cars/:id` — admin only
+  - `DELETE /api/admin/incoming-cars/:id` — admin only
+
 ### Marketplace Filter System
 - Full-screen filter panel (FilterPanel component) accessible from CarsForSale page
 - Filter categories: condition, make, model, year range, price range, body type, seats, fuel type, transmission, exterior/interior color, interior/exterior features, regional specs, country of origin, license, insurance, customs
