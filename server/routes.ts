@@ -895,16 +895,35 @@ export async function registerRoutes(
       const imageUrl = `/uploads/${mainImage.filename}`;
       const imagesArr = additionalImages.map((f: Express.Multer.File) => `/uploads/${f.filename}`);
 
+      const b = req.body;
       const car = await storage.createIncomingCar({
-        make: req.body.make,
-        model: req.body.model,
-        year: parseInt(req.body.year),
-        color: req.body.color || null,
+        make: b.make,
+        model: b.model,
+        year: parseInt(b.year),
+        color: b.color || null,
         imageUrl,
         images: imagesArr.length > 0 ? imagesArr : null,
-        details: req.body.details || null,
-        status: req.body.status || "coming",
-        estimatedArrival: req.body.estimatedArrival || null,
+        details: b.details || null,
+        status: b.status || "coming",
+        estimatedArrival: b.estimatedArrival || null,
+        price: b.price ? parseInt(b.price) : null,
+        condition: b.condition || null,
+        mileage: b.mileage ? parseInt(b.mileage) : null,
+        bodyType: b.bodyType || null,
+        transmission: b.transmission || null,
+        fuelType: b.fuelType || null,
+        engineSize: b.engineSize || null,
+        seats: b.seats ? parseInt(b.seats) : null,
+        interiorColor: b.interiorColor || null,
+        interiorFeatures: b.interiorFeatures ? JSON.parse(b.interiorFeatures) : null,
+        exteriorFeatures: b.exteriorFeatures ? JSON.parse(b.exteriorFeatures) : null,
+        regionalSpecs: b.regionalSpecs || null,
+        countryOfOrigin: b.countryOfOrigin || null,
+        license: b.license || null,
+        insurance: b.insurance || null,
+        customs: b.customs || null,
+        location: b.location || null,
+        contactPhone: b.contactPhone || null,
       });
       res.json(car);
     } catch (error) {

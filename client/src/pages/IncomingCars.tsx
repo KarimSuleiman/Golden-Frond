@@ -57,6 +57,12 @@ export default function IncomingCars() {
   const [form, setForm] = useState({
     make: "", model: "", year: "", color: "",
     details: "", status: "coming", estimatedArrival: "",
+    price: "", condition: "used", mileage: "", bodyType: "",
+    transmission: "", fuelType: "", engineSize: "", seats: "",
+    interiorColor: "", interiorFeatures: [] as string[],
+    exteriorFeatures: [] as string[],
+    regionalSpecs: "", countryOfOrigin: "", license: "",
+    insurance: "", customs: "", location: "", contactPhone: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -100,6 +106,24 @@ export default function IncomingCars() {
       fd.append("details", form.details);
       fd.append("status", form.status);
       fd.append("estimatedArrival", form.estimatedArrival);
+      fd.append("price", form.price);
+      fd.append("condition", form.condition);
+      fd.append("mileage", form.mileage);
+      fd.append("bodyType", form.bodyType);
+      fd.append("transmission", form.transmission);
+      fd.append("fuelType", form.fuelType);
+      fd.append("engineSize", form.engineSize);
+      fd.append("seats", form.seats);
+      fd.append("interiorColor", form.interiorColor);
+      fd.append("interiorFeatures", JSON.stringify(form.interiorFeatures));
+      fd.append("exteriorFeatures", JSON.stringify(form.exteriorFeatures));
+      fd.append("regionalSpecs", form.regionalSpecs);
+      fd.append("countryOfOrigin", form.countryOfOrigin);
+      fd.append("license", form.license);
+      fd.append("insurance", form.insurance);
+      fd.append("customs", form.customs);
+      fd.append("location", form.location);
+      fd.append("contactPhone", form.contactPhone);
       fd.append("image", imageFile);
       additionalFiles.forEach(f => fd.append("images", f));
 
@@ -108,7 +132,13 @@ export default function IncomingCars() {
       await queryClient.invalidateQueries({ queryKey: ["/api/incoming-cars"] });
       toast({ title: language === "ar" ? "تم إضافة السيارة" : "Car added successfully" });
       setShowAddModal(false);
-      setForm({ make: "", model: "", year: "", color: "", details: "", status: "coming", estimatedArrival: "" });
+      setForm({
+        make: "", model: "", year: "", color: "", details: "", status: "coming", estimatedArrival: "",
+        price: "", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
+        engineSize: "", seats: "", interiorColor: "", interiorFeatures: [], exteriorFeatures: [],
+        regionalSpecs: "", countryOfOrigin: "", license: "", insurance: "", customs: "",
+        location: "", contactPhone: "",
+      });
       setImageFile(null); setImagePreview("");
       setAdditionalFiles([]); setAdditionalPreviews([]);
     } catch {
@@ -318,6 +348,10 @@ export default function IncomingCars() {
                 <Input type="number" value={form.year} onChange={e => setForm(f => ({ ...f, year: e.target.value }))} placeholder="2025" data-testid="input-incoming-year" />
               </div>
               <div className="space-y-2">
+                <Label>{t("marketplace.priceLabel")}</Label>
+                <Input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} data-testid="input-incoming-price" />
+              </div>
+              <div className="space-y-2">
                 <Label>{t("filter.exteriorColor")}</Label>
                 <Select value={form.color || "none"} onValueChange={v => setForm(f => ({ ...f, color: v === "none" ? "" : v }))}>
                   <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
@@ -328,6 +362,184 @@ export default function IncomingCars() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("marketplace.condition")}</Label>
+                <Select value={form.condition} onValueChange={v => setForm(f => ({ ...f, condition: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">{t("marketplace.conditionNew")}</SelectItem>
+                    <SelectItem value="used">{t("marketplace.conditionUsed")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("marketplace.mileage")}</Label>
+                <Input type="number" value={form.mileage} onChange={e => setForm(f => ({ ...f, mileage: e.target.value }))} data-testid="input-incoming-mileage" />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("marketplace.bodyType")}</Label>
+                <Select value={form.bodyType || "none"} onValueChange={v => setForm(f => ({ ...f, bodyType: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="suv">{t("filter.bodySUV")}</SelectItem>
+                    <SelectItem value="van">{t("filter.bodyVan")}</SelectItem>
+                    <SelectItem value="pickup">{t("filter.bodyPickup")}</SelectItem>
+                    <SelectItem value="truck">{t("filter.bodyTruck")}</SelectItem>
+                    <SelectItem value="sedan">{t("filter.bodySedan")}</SelectItem>
+                    <SelectItem value="convertible">{t("filter.bodyConvertible")}</SelectItem>
+                    <SelectItem value="coupe">{t("filter.bodyCoupe")}</SelectItem>
+                    <SelectItem value="hatchback">{t("filter.bodyHatchback")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("marketplace.transmission")}</Label>
+                <Select value={form.transmission || "none"} onValueChange={v => setForm(f => ({ ...f, transmission: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="automatic">{t("marketplace.automatic")}</SelectItem>
+                    <SelectItem value="manual">{t("marketplace.manual")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("marketplace.fuelType")}</Label>
+                <Select value={form.fuelType || "none"} onValueChange={v => setForm(f => ({ ...f, fuelType: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="petrol">{t("filter.fuelPetrol")}</SelectItem>
+                    <SelectItem value="diesel">{t("filter.fuelDiesel")}</SelectItem>
+                    <SelectItem value="electric">{t("filter.fuelElectric")}</SelectItem>
+                    <SelectItem value="mild_hybrid">{t("filter.fuelMildHybrid")}</SelectItem>
+                    <SelectItem value="hybrid">{t("filter.fuelHybrid")}</SelectItem>
+                    <SelectItem value="plugin_hybrid">{t("filter.fuelPluginHybrid")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("marketplace.engineSize")}</Label>
+                <Input value={form.engineSize} onChange={e => setForm(f => ({ ...f, engineSize: e.target.value }))} placeholder="2.0L" data-testid="input-incoming-engine" />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.seats")}</Label>
+                <Input type="number" value={form.seats} onChange={e => setForm(f => ({ ...f, seats: e.target.value }))} data-testid="input-incoming-seats" />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.interiorColor")}</Label>
+                <Select value={form.interiorColor || "none"} onValueChange={v => setForm(f => ({ ...f, interiorColor: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                      <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.regionalSpecs")}</Label>
+                <Select value={form.regionalSpecs || "none"} onValueChange={v => setForm(f => ({ ...f, regionalSpecs: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="american">{t("filter.specAmerican")}</SelectItem>
+                    <SelectItem value="european">{t("filter.specEuropean")}</SelectItem>
+                    <SelectItem value="gulf">{t("filter.specGulf")}</SelectItem>
+                    <SelectItem value="chinese">{t("filter.specChinese")}</SelectItem>
+                    <SelectItem value="korean">{t("filter.specKorean")}</SelectItem>
+                    <SelectItem value="japanese">{t("filter.specJapanese")}</SelectItem>
+                    <SelectItem value="other">{t("filter.specOther")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.countryOfOrigin")}</Label>
+                <Select value={form.countryOfOrigin || "none"} onValueChange={v => setForm(f => ({ ...f, countryOfOrigin: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="germany">{t("filter.originGermany")}</SelectItem>
+                    <SelectItem value="india">{t("filter.originIndia")}</SelectItem>
+                    <SelectItem value="japan">{t("filter.originJapan")}</SelectItem>
+                    <SelectItem value="usa">{t("filter.originUSA")}</SelectItem>
+                    <SelectItem value="iran">{t("filter.originIran")}</SelectItem>
+                    <SelectItem value="spain">{t("filter.originSpain")}</SelectItem>
+                    <SelectItem value="uae">{t("filter.originUAE")}</SelectItem>
+                    <SelectItem value="sweden">{t("filter.originSweden")}</SelectItem>
+                    <SelectItem value="china">{t("filter.originChina")}</SelectItem>
+                    <SelectItem value="italy">{t("filter.originItaly")}</SelectItem>
+                    <SelectItem value="uk">{t("filter.originUK")}</SelectItem>
+                    <SelectItem value="russia">{t("filter.originRussia")}</SelectItem>
+                    <SelectItem value="france">{t("filter.originFrance")}</SelectItem>
+                    <SelectItem value="korea">{t("filter.originKorea")}</SelectItem>
+                    <SelectItem value="malaysia">{t("filter.originMalaysia")}</SelectItem>
+                    <SelectItem value="netherlands">{t("filter.originNetherlands")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.license")}</Label>
+                <Select value={form.license || "none"} onValueChange={v => setForm(f => ({ ...f, license: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="licensed">{t("filter.licensed")}</SelectItem>
+                    <SelectItem value="unlicensed">{t("filter.unlicensed")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.insurance")}</Label>
+                <Select value={form.insurance || "none"} onValueChange={v => setForm(f => ({ ...f, insurance: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="mandatory">{t("filter.insuranceMandatory")}</SelectItem>
+                    <SelectItem value="comprehensive">{t("filter.insuranceComprehensive")}</SelectItem>
+                    <SelectItem value="uninsured">{t("filter.insuranceNone")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("filter.customs")}</Label>
+                <Select value={form.customs || "none"} onValueChange={v => setForm(f => ({ ...f, customs: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="cleared">{t("filter.customsCleared")}</SelectItem>
+                    <SelectItem value="not_cleared">{t("filter.customsNotCleared")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("filter.interiorSpecs")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {["auxUsb","airbags","powerSeats","steeringControl","seatMemory","powerWindows","centralLock","heatedSeats","cdPlayer","leatherSeats","sportSeats","heatedSteering","rearElectric","cooledSeats","ac","alarm"].map(f => (
+                  <button key={f} type="button"
+                    onClick={() => setForm(prev => ({ ...prev, interiorFeatures: prev.interiorFeatures.includes(f) ? prev.interiorFeatures.filter(i => i !== f) : [...prev.interiorFeatures, f] }))}
+                    className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${form.interiorFeatures.includes(f) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}>
+                    {t(`filter.int${f.charAt(0).toUpperCase() + f.slice(1)}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("filter.exteriorSpecs")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {["sunroof","panoramicRoof","rearCamera","360Camera","parkingSensors","frontCamera","ledLights","adaptiveLights","remoteStart","keylessEntry","spareWheel","towHook","roofRack","runFlatTires"].map(f => (
+                  <button key={f} type="button"
+                    onClick={() => setForm(prev => ({ ...prev, exteriorFeatures: prev.exteriorFeatures.includes(f) ? prev.exteriorFeatures.filter(i => i !== f) : [...prev.exteriorFeatures, f] }))}
+                    className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${form.exteriorFeatures.includes(f) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}>
+                    {t(`filter.ext${f.charAt(0).toUpperCase() + f.slice(1)}`)}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -346,6 +558,16 @@ export default function IncomingCars() {
               <Label>{t("incoming.estimatedArrival")}</Label>
               <Input value={form.estimatedArrival} onChange={e => setForm(f => ({ ...f, estimatedArrival: e.target.value }))}
                 placeholder={language === "ar" ? "مثال: خلال أسبوعين" : "e.g. 2 weeks"} data-testid="input-incoming-arrival" />
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("marketplace.location")}</Label>
+              <Input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} data-testid="input-incoming-location" />
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("marketplace.contactPhone")}</Label>
+              <Input value={form.contactPhone} onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value }))} dir="ltr" data-testid="input-incoming-phone" />
             </div>
 
             <div className="space-y-2">
