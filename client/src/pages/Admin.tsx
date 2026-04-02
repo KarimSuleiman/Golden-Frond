@@ -85,8 +85,6 @@ export default function Admin() {
     trackingUrl: "",
     customUrl: "",
     customUrlReason: "",
-    interiorFeatures: [] as string[],
-    exteriorFeatures: [] as string[],
   });
 
   const [pdfFiles, setPdfFiles] = useState<File[]>([]);
@@ -323,8 +321,6 @@ export default function Admin() {
       trackingUrl: "",
       customUrl: "",
       customUrlReason: "",
-      interiorFeatures: [],
-      exteriorFeatures: [],
     });
     setSelectedUserId("");
     setImageFile(null);
@@ -457,8 +453,6 @@ export default function Admin() {
       trackingUrl: car.trackingUrl || "",
       customUrl: car.customUrl || "",
       customUrlReason: car.customUrlReason || "",
-      interiorFeatures: car.interiorFeatures || [],
-      exteriorFeatures: car.exteriorFeatures || [],
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
@@ -1358,56 +1352,6 @@ export default function Admin() {
                       placeholder={t("admin.form.detailsPlaceholder")}
                       data-testid="input-details"
                     />
-                  </div>
-
-                  {/* Interior Features */}
-                  <div className="space-y-2">
-                    <Label>{t("filter.interiorSpecs")}</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {["auxUsb","airbags","powerSeats","steeringControl","seatMemory","powerWindows","centralLock","heatedSeats","cdPlayer","leatherSeats","sportSeats","heatedSteering","rearElectric","cooledSeats","ac","alarm"].map(f => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => {
-                            const arr = carForm.interiorFeatures;
-                            setCarForm({ ...carForm, interiorFeatures: arr.includes(f) ? arr.filter(i => i !== f) : [...arr, f] });
-                          }}
-                          className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
-                            carForm.interiorFeatures.includes(f)
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-secondary text-secondary-foreground border-border"
-                          }`}
-                          data-testid={`chip-admin-int-${f}`}
-                        >
-                          {t(`filter.int${f.charAt(0).toUpperCase() + f.slice(1)}`)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Exterior Features */}
-                  <div className="space-y-2">
-                    <Label>{t("filter.exteriorSpecs")}</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {["daytimeLights","spareTire","alloyWheels","frontSensors","rearSensors","keylessEntry","sunroof","panorama","powerMirrors","foldingMirrors","xenonLights","ledLights","sportEdition","rearHook"].map(f => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => {
-                            const arr = carForm.exteriorFeatures;
-                            setCarForm({ ...carForm, exteriorFeatures: arr.includes(f) ? arr.filter(i => i !== f) : [...arr, f] });
-                          }}
-                          className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
-                            carForm.exteriorFeatures.includes(f)
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-secondary text-secondary-foreground border-border"
-                          }`}
-                          data-testid={`chip-admin-ext-${f}`}
-                        >
-                          {t(`filter.ext${f.charAt(0).toUpperCase() + f.slice(1)}`)}
-                        </button>
-                      ))}
-                    </div>
                   </div>
 
                   <div className="space-y-2">
