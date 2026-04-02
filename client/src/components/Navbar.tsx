@@ -162,6 +162,11 @@ export function Navbar() {
             />
           </Link>
 
+          {/* Company name — desktop only */}
+          <span className="hidden md:block text-base font-bold text-foreground tracking-wide whitespace-nowrap select-none font-display">
+            {t("landing.brandName")}
+          </span>
+
           {/* Utility icons beside logo - desktop only */}
           <div className="hidden md:flex items-center gap-3">
             {/* About Us icon */}
