@@ -103,14 +103,26 @@ html[lang="ar"] h6 {
   will-change: transform;
 }
 
-/* Infinite marquee — single track with doubled content, slides by exactly 50% */
+/* Infinite partner marquee */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
-.logo-track {
-  animation: marquee 30s linear infinite;
+.marquee-track {
+  display: flex;
+  flex-direction: row;
   width: max-content;
+  align-items: center;
+  animation: marquee 28s linear infinite;
+  padding: 8px 0;
+}
+.marquee-item {
+  flex-shrink: 0;
+  margin-left: 20px;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @keyframes float {
