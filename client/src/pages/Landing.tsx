@@ -340,33 +340,26 @@ export default function Landing() {
           </p>
         </div>
         {/*
-          Two independent tracks with the same 30 s duration.
-          Track A starts at position 0 and slides to -100% (exits left).
-          Track B starts at +100% (right, off-screen) and slides to 0 (enters).
-          They move in perfect sync so one is always fully visible — no gap, no reset flash.
+          Single track with logos doubled. Animates from 0 → -50% (exactly one set's width).
+          Seamless on any screen size — no gap, no flash.
         */}
         <div className="relative w-full overflow-hidden" style={{ height: "5.5rem" }}>
           {/* Fade edges */}
           <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
 
-          {/* Track A — starts visible, exits left */}
-          <div className="logo-track-a absolute top-0 left-0 flex" style={{ width: "max-content" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
-                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img src={logo} alt={`partner-a-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Track B — starts off-screen right, enters as A exits */}
-          <div className="logo-track-b absolute top-0 left-0 flex" style={{ width: "max-content" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
-                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img src={logo} alt={`partner-b-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
+          {/* Single looping track — content repeated twice for seamless wrap */}
+          <div className="logo-track flex items-center">
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge,
+              logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} className="flex items-center justify-center mx-6 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-5 py-3 flex items-center justify-center h-20 w-44">
+                  <img
+                    src={logo}
+                    alt={`partner-${i % 5}`}
+                    className="max-h-12 max-w-full w-auto object-contain"
+                    loading="eager"
+                  />
                 </div>
               </div>
             ))}
