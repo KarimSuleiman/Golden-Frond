@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-body: 'Manrope', 'Cairo', sans-serif;
+  --font-body: 'Manrope', sans-serif;
   --font-display: 'Playfair Display', serif;
 
   /* Darker Golden Theme - السعفة الذهبية */
@@ -52,24 +54,6 @@
   }
 }
 
-/* Arabic language — use Cairo for clean Arabic rendering */
-html[lang="ar"] body,
-html[lang="ar"] input,
-html[lang="ar"] button,
-html[lang="ar"] textarea,
-html[lang="ar"] select {
-  font-family: 'Cairo', sans-serif;
-}
-html[lang="ar"] h1,
-html[lang="ar"] h2,
-html[lang="ar"] h3,
-html[lang="ar"] h4,
-html[lang="ar"] h5,
-html[lang="ar"] h6 {
-  font-family: 'Cairo', sans-serif;
-  font-weight: 700;
-}
-
 /* Custom Scrollbar for a premium feel */
 ::-webkit-scrollbar {
   width: 8px;
@@ -103,26 +87,21 @@ html[lang="ar"] h6 {
   will-change: transform;
 }
 
-/* Infinite partner marquee */
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Animations */
+/* Two-track infinite marquee — Track A exits left while Track B enters from right */
+@keyframes marquee-a {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
 }
-.marquee-track {
-  display: flex;
-  flex-direction: row;
-  width: max-content;
-  align-items: center;
-  animation: marquee 28s linear infinite;
-  padding: 8px 0;
+@keyframes marquee-b {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
-.marquee-item {
-  flex-shrink: 0;
-  margin-left: 20px;
-  margin-right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo-track-a {
+  animation: marquee-a 30s linear infinite;
+}
+.logo-track-b {
+  animation: marquee-b 30s linear infinite;
 }
 
 @keyframes float {

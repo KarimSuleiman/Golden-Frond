@@ -339,18 +339,34 @@ export default function Landing() {
             {t("landing.partners")}
           </p>
         </div>
-        <div className="relative w-full" style={{ overflow: "hidden" }}>
+        {/*
+          Two independent tracks with the same 30 s duration.
+          Track A starts at position 0 and slides to -100% (exits left).
+          Track B starts at +100% (right, off-screen) and slides to 0 (enters).
+          They move in perfect sync so one is always fully visible — no gap, no reset flash.
+        */}
+        <div className="relative w-full overflow-hidden" style={{ height: "5.5rem" }}>
           {/* Fade edges */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-muted/40 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-muted/40 to-transparent" />
+          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
 
-          {/* Doubled content — scrolls -50% then resets invisibly */}
-          <div className="marquee-track">
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge,
-              logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} className="marquee-item">
-                <div className="bg-white rounded-xl shadow-sm flex items-center justify-center" style={{ width: 176, height: 80, padding: "12px 20px" }}>
-                  <img src={logo} alt={`partner-${i % 5}`} style={{ maxHeight: 48, width: "auto", objectFit: "contain" }} />
+          {/* Track A — starts visible, exits left */}
+          <div className="logo-track-a absolute top-0 left-0 flex" style={{ width: "max-content" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                  <img src={logo} alt={`partner-a-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Track B — starts off-screen right, enters as A exits */}
+          <div className="logo-track-b absolute top-0 left-0 flex" style={{ width: "max-content" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
+                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
+                  <img src={logo} alt={`partner-b-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
                 </div>
               </div>
             ))}
