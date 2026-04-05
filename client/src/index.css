@@ -87,24 +87,6 @@
   will-change: transform;
 }
 
-/* Partner logos — 4-set sliding marquee, pixel-exact loop */
-@keyframes partners-scroll {
-  0%   { transform: translateX(0px); }
-  100% { transform: translateX(-1080px); }
-}
-.partners-track {
-  display: flex;
-  width: max-content;
-  align-items: center;
-  animation: partners-scroll 22s linear infinite;
-  padding: 6px 0;
-  will-change: transform;
-}
-.partners-item {
-  flex-shrink: 0;
-  margin-left: 20px;
-  margin-right: 20px;
-}
 /* Partner logo cards */
 .partners-card {
   background: white;
