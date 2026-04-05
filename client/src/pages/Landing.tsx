@@ -345,9 +345,16 @@ export default function Landing() {
         </div>
         <div className="flex flex-wrap justify-center items-center gap-5 px-4">
           {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-            <div key={i} className="partners-card">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: i * 0.12, ease: "easeOut" }}
+              viewport={{ once: true }}
+              className="partners-card"
+            >
               <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
