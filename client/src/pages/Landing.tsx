@@ -343,20 +343,12 @@ export default function Landing() {
             {t("landing.partners")}
           </p>
         </div>
-        {/* Overflow wrapper — clips the scrolling track */}
-        <div style={{ width: "100%", overflowX: "hidden" }}>
-          {/* Track contains logos 1-5 FOUR times so it always fills any screen width */}
-          <div className="partners-track">
-            {Array.from({ length: 4 }, (_, set) =>
-              [logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-                <div key={`${set}-${i}`} className="partners-item">
-                  <div className="partners-card">
-                    <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+        <div className="flex flex-wrap justify-center items-center gap-5 px-4">
+          {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+            <div key={i} className="partners-card">
+              <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
+            </div>
+          ))}
         </div>
       </section>
 
