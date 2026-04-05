@@ -87,18 +87,24 @@
   will-change: transform;
 }
 
-/* Partner logos — 4-set track, animates by -25% (one set width), loops forever */
+/*
+  Partner logos infinite marquee.
+  Each card: width 176px + margin-left 20px + margin-right 20px = 216px per item.
+  One set = 5 logos × 216px = 1080px.
+  Track has 4 sets = 4320px total.
+  Animation moves exactly -1080px (one set), then resets invisibly — logo after 5 is always logo 1.
+*/
 @keyframes partners-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-25%); }
+  0%   { transform: translateX(0px); }
+  100% { transform: translateX(-1080px); }
 }
 .partners-track {
   display: flex;
-  flex-direction: row;
   width: max-content;
   align-items: center;
-  animation: partners-scroll 32s linear infinite;
+  animation: partners-scroll 24s linear infinite;
   padding: 6px 0;
+  will-change: transform;
 }
 .partners-item {
   flex-shrink: 0;
