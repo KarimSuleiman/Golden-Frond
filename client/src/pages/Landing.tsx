@@ -343,24 +343,18 @@ export default function Landing() {
             {t("landing.partners")}
           </p>
         </div>
-        <div className="flex flex-wrap justify-center items-center gap-5 px-4">
-          {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-            <div key={i} className="partners-card">
-              <motion.img
-                src={logo}
-                alt={`partner-${i + 1}`}
-                className="partners-img"
-                animate={{ y: [0, -6, 0] }}
-                transition={{
-                  duration: 2.8 + i * 0.35,
-                  delay: i * 0.6,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  ease: "easeInOut",
-                }}
-              />
-            </div>
-          ))}
+        <div style={{ width: "100%", overflowX: "hidden" }}>
+          <div className="partners-track">
+            {Array.from({ length: 4 }, (_, set) =>
+              [logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+                <div key={`${set}-${i}`} className="partners-item">
+                  <div className="partners-card">
+                    <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </section>
 
