@@ -337,40 +337,24 @@ export default function Landing() {
       </section>
 
       {/* Auction Partners Marquee */}
-      <section className="py-10 bg-muted/40 border-t border-border overflow-hidden">
+      <section className="py-10 bg-muted/40 border-t border-border" style={{ overflow: "hidden" }}>
         <div className="container mx-auto px-4 mb-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {t("landing.partners")}
           </p>
         </div>
-        {/*
-          Two independent tracks with the same 30 s duration.
-          Track A starts at position 0 and slides to -100% (exits left).
-          Track B starts at +100% (right, off-screen) and slides to 0 (enters).
-          They move in perfect sync so one is always fully visible — no gap, no reset flash.
-        */}
-        <div className="relative w-full overflow-hidden" style={{ height: "5.5rem" }}>
+        <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
           {/* Fade edges */}
-          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-muted/40 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-muted/40 to-transparent z-10 pointer-events-none" />
+          <div style={{ position: "absolute", inset: "0 auto 0 0", width: 80, background: "linear-gradient(to right, hsl(var(--muted)/0.4), transparent)", zIndex: 10, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: "0 0 0 auto", width: 80, background: "linear-gradient(to left, hsl(var(--muted)/0.4), transparent)", zIndex: 10, pointerEvents: "none" }} />
 
-          {/* Track A — starts visible, exits left */}
-          <div className="logo-track-a absolute top-0 left-0 flex" style={{ width: "max-content" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
-                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img src={logo} alt={`partner-a-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Track B — starts off-screen right, enters as A exits */}
-          <div className="logo-track-b absolute top-0 left-0 flex" style={{ width: "max-content" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
-                <div className="bg-white rounded-xl shadow-sm px-6 py-4 flex items-center justify-center h-20 w-44">
-                  <img src={logo} alt={`partner-b-${i}`} className="max-h-12 max-w-full w-auto object-contain" />
+          {/* Single track: logos 1-5 twice. Animates 0→-50% = one full set, loops forever */}
+          <div style={{ display: "flex", width: "max-content", animation: "partners-scroll 28s linear infinite", alignItems: "center", padding: "8px 0" }}>
+            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge,
+              logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+              <div key={i} style={{ flexShrink: 0, marginLeft: 24, marginRight: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ background: "white", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", padding: "14px 22px", display: "flex", alignItems: "center", justifyContent: "center", width: 176, height: 80 }}>
+                  <img src={logo} alt={`partner-${(i % 5) + 1}`} style={{ maxHeight: 48, maxWidth: "100%", width: "auto", objectFit: "contain" }} />
                 </div>
               </div>
             ))}

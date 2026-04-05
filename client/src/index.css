@@ -87,21 +87,10 @@
   will-change: transform;
 }
 
-/* Animations */
-/* Two-track infinite marquee — Track A exits left while Track B enters from right */
-@keyframes marquee-a {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
-}
-@keyframes marquee-b {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
-}
-.logo-track-a {
-  animation: marquee-a 30s linear infinite;
-}
-.logo-track-b {
-  animation: marquee-b 30s linear infinite;
+/* Partner logos — single-track doubled content loop */
+@keyframes partners-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 @keyframes float {
