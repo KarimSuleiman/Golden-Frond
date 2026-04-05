@@ -302,10 +302,10 @@ export default function Landing() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { country: "العراق", port: "ميناء ام قصر", countryEn: "Iraq", portEn: "Umm Qasr Port", flag: "🇮🇶" },
-                { country: "الأردن", port: "ميناء العقبة", countryEn: "Jordan", portEn: "Aqaba Port", flag: "🇯🇴" },
-                { country: "الإمارات العربية المتحدة", port: "ميناء جبل علي", countryEn: "UAE", portEn: "Jebel Ali Port", flag: "🇦🇪" },
-                { country: "تركيا", port: "ميناء ميرسين", countryEn: "Turkey", portEn: "Mersin Port", flag: "🇹🇷" },
+                { country: "العراق", port: "ميناء ام قصر", countryEn: "Iraq", portEn: "Umm Qasr Port", code: "iq" },
+                { country: "الأردن", port: "ميناء العقبة", countryEn: "Jordan", portEn: "Aqaba Port", code: "jo" },
+                { country: "الإمارات العربية المتحدة", port: "ميناء جبل علي", countryEn: "UAE", portEn: "Jebel Ali Port", code: "ae" },
+                { country: "تركيا", port: "ميناء ميرسين", countryEn: "Turkey", portEn: "Mersin Port", code: "tr" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -315,7 +315,11 @@ export default function Landing() {
                   viewport={{ once: true }}
                   className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:shadow-md transition-all text-center group"
                 >
-                  <span className="text-4xl leading-none">{item.flag}</span>
+                  <img
+                    src={`https://flagcdn.com/w80/${item.code}.png`}
+                    alt={item.countryEn}
+                    className="w-12 h-8 object-cover rounded shadow-sm"
+                  />
                   <div>
                     <p className="font-bold text-foreground text-sm">
                       {language === "ar" ? item.country : item.countryEn}

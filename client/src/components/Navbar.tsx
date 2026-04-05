@@ -241,7 +241,11 @@ export function Navbar() {
               data-testid="button-language-toggle"
             >
               <Globe className="w-5 h-5" />
-              <span className="text-lg leading-none">{language === "ar" ? "🇬🇧" : "🇯🇴"}</span>
+              <img
+                src={`https://flagcdn.com/w40/${language === "ar" ? "gb" : "jo"}.png`}
+                alt={language === "ar" ? "English" : "عربي"}
+                className="w-6 h-4 object-cover rounded-sm shadow-sm"
+              />
             </button>
           </div>
         </div>
@@ -315,7 +319,11 @@ export function Navbar() {
             data-testid="button-language-toggle-mobile"
           >
             <Globe className="w-4 h-4" />
-            <span className="text-base leading-none">{language === "ar" ? "🇬🇧" : "🇯🇴"}</span>
+            <img
+              src={`https://flagcdn.com/w40/${language === "ar" ? "gb" : "jo"}.png`}
+              alt={language === "ar" ? "English" : "عربي"}
+              className="w-6 h-4 object-cover rounded-sm shadow-sm"
+            />
           </button>
           <button
             className="text-foreground p-2"
@@ -410,7 +418,11 @@ export function Navbar() {
                 }}
               >
                 <Globe className="w-5 h-5 text-primary" />
-                <span className="text-xl leading-none">{language === "ar" ? "🇬🇧" : "🇯🇴"}</span>
+                <img
+                  src={`https://flagcdn.com/w40/${language === "ar" ? "gb" : "jo"}.png`}
+                  alt={language === "ar" ? "English" : "عربي"}
+                  className="w-7 h-5 object-cover rounded-sm shadow-sm"
+                />
                 <span>{t("common.langToggleFull")}</span>
               </div>
 
