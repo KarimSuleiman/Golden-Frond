@@ -95,8 +95,8 @@
   Animation moves exactly -1080px (one set), then resets invisibly — logo after 5 is always logo 1.
 */
 @keyframes partners-scroll {
-  0%   { transform: translateX(0px); }
-  100% { transform: translateX(-1080px); }
+  0%   { transform: translateX(-1080px); }
+  100% { transform: translateX(0px); }
 }
 .partners-track {
   display: flex;
