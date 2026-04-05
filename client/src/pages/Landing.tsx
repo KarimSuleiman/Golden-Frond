@@ -353,7 +353,18 @@ export default function Landing() {
               viewport={{ once: true }}
               className="partners-card"
             >
-              <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
+              <motion.img
+                src={logo}
+                alt={`partner-${i + 1}`}
+                className="partners-img"
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  duration: 2.6 + i * 0.3,
+                  delay: i * 0.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
             </motion.div>
           ))}
         </div>
