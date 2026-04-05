@@ -337,27 +337,25 @@ export default function Landing() {
       </section>
 
       {/* Auction Partners Marquee */}
-      <section className="py-10 bg-muted/40 border-t border-border" style={{ overflow: "hidden" }}>
+      <section className="py-10 bg-muted/40 border-t border-border">
         <div className="container mx-auto px-4 mb-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {t("landing.partners")}
           </p>
         </div>
-        <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
-          {/* Fade edges */}
-          <div style={{ position: "absolute", inset: "0 auto 0 0", width: 80, background: "linear-gradient(to right, hsl(var(--muted)/0.4), transparent)", zIndex: 10, pointerEvents: "none" }} />
-          <div style={{ position: "absolute", inset: "0 0 0 auto", width: 80, background: "linear-gradient(to left, hsl(var(--muted)/0.4), transparent)", zIndex: 10, pointerEvents: "none" }} />
-
-          {/* Single track: logos 1-5 twice. Animates 0→-50% = one full set, loops forever */}
-          <div style={{ display: "flex", width: "max-content", animation: "partners-scroll 28s linear infinite", alignItems: "center", padding: "8px 0" }}>
-            {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge,
-              logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
-              <div key={i} style={{ flexShrink: 0, marginLeft: 24, marginRight: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ background: "white", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", padding: "14px 22px", display: "flex", alignItems: "center", justifyContent: "center", width: 176, height: 80 }}>
-                  <img src={logo} alt={`partner-${(i % 5) + 1}`} style={{ maxHeight: 48, maxWidth: "100%", width: "auto", objectFit: "contain" }} />
+        {/* Overflow wrapper — clips the scrolling track */}
+        <div style={{ width: "100%", overflowX: "hidden" }}>
+          {/* Track contains logos 1-5 FOUR times so it always fills any screen width */}
+          <div className="partners-track">
+            {Array.from({ length: 4 }, (_, set) =>
+              [logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+                <div key={`${set}-${i}`} className="partners-item">
+                  <div className="partners-card">
+                    <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>

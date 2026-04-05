@@ -87,10 +87,40 @@
   will-change: transform;
 }
 
-/* Partner logos — single-track doubled content loop */
+/* Partner logos — 4-set track, animates by -25% (one set width), loops forever */
 @keyframes partners-scroll {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-25%); }
+}
+.partners-track {
+  display: flex;
+  flex-direction: row;
+  width: max-content;
+  align-items: center;
+  animation: partners-scroll 32s linear infinite;
+  padding: 6px 0;
+}
+.partners-item {
+  flex-shrink: 0;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.partners-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 176px;
+  height: 80px;
+}
+.partners-img {
+  max-height: 48px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
 }
 
 @keyframes float {
