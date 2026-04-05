@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
@@ -344,7 +343,13 @@ export default function Landing() {
             {t("landing.partners")}
           </p>
         </div>
-        <PartnersSlider logos={[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge]} />
+        <div className="flex flex-wrap justify-center items-center gap-5 px-4">
+          {[logoImpact, logoCopart, logoIAAI, logoAdesa, logoEdge].map((logo, i) => (
+            <div key={i} className="partners-card">
+              <img src={logo} alt={`partner-${i + 1}`} className="partners-img" />
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Features Strip */}
@@ -681,56 +686,4 @@ function FeatureCard({
   );
 }
 
-const CARD_W = 216; // 176px card + 20px margin each side
-
-function PartnersSlider({ logos }: { logos: string[] }) {
-  const count = logos.length;
-  const extended = [...logos, ...logos, ...logos];
-  const [index, setIndex] = useState(count);
-  const animating = useRef(true);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex(prev => prev + 1);
-    }, 2400);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (index >= count * 2) {
-      const t = setTimeout(() => {
-        animating.current = false;
-        setIndex(count);
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            animating.current = true;
-          });
-        });
-      }, 680);
-      return () => clearTimeout(t);
-    }
-  }, [index, count]);
-
-  return (
-    <div style={{ width: "100%", overflowX: "hidden" }}>
-      <motion.div
-        style={{ display: "flex", width: "max-content" }}
-        animate={{ x: -index * CARD_W }}
-        transition={
-          animating.current
-            ? { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }
-            : { duration: 0 }
-        }
-      >
-        {extended.map((logo, i) => (
-          <div key={i} style={{ flexShrink: 0, margin: "6px 20px" }}>
-            <div className="partners-card">
-              <img src={logo} alt={`partner-${(i % count) + 1}`} className="partners-img" />
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
 
