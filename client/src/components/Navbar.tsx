@@ -17,11 +17,14 @@ import {
   MapPin,
   ChevronDown,
   Car,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "@/hooks/use-theme";
 import logoImage from "@assets/image_1769171762465.png";
 import {
   AlertDialog,
@@ -46,6 +49,9 @@ export function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+  const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean; isTrader: boolean }>({
     queryKey: ["/api/auth/is-admin"],
@@ -247,6 +253,16 @@ export function Navbar() {
                 className="w-6 h-4 object-cover rounded-sm shadow-sm"
               />
             </button>
+
+            {/* Dark / Light mode toggle */}
+            <button
+              onClick={toggleTheme}
+              title={isDark ? "الوضع الفاتح" : "الوضع الداكن"}
+              className="text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+              data-testid="button-theme-toggle"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 
@@ -311,7 +327,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile: Language button + hamburger */}
+        {/* Mobile: Language button + theme toggle + hamburger */}
         <div className="flex items-center gap-1 md:hidden">
           <button
             onClick={toggleLanguage}
@@ -324,6 +340,13 @@ export function Navbar() {
               alt={language === "ar" ? "English" : "عربي"}
               className="w-6 h-4 object-cover rounded-sm shadow-sm"
             />
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-foreground/80 hover:text-primary transition-colors"
+            data-testid="button-theme-toggle-mobile"
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <button
             className="text-foreground p-2"
