@@ -15,6 +15,117 @@ import logoImage from "@assets/image_1769171762465.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
 import type { Listing } from "@shared/schema";
 
+const BODY_TYPES_QUICK = [
+  {
+    value: "sedan", arLabel: "سيدان", enLabel: "Sedan",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
+        <path d="M26 23 L32 13 H64 L70 23" />
+        <path d="M34 14 H49 V23 H32 Z" /><path d="M51 14 H62 L68 23 H51 Z" />
+      </svg>
+    ),
+  },
+  {
+    value: "suv", arLabel: "SUV", enLabel: "SUV",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
+        <path d="M18 23 L20 12 H76 L78 23" />
+        <path d="M22 13 H44 V23 H20 Z" /><path d="M46 13 H74 V23 H46 Z" />
+      </svg>
+    ),
+  },
+  {
+    value: "coupe", arLabel: "كوبيه", enLabel: "Coupe",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
+        <path d="M24 23 L36 13 H72 L80 23" />
+        <path d="M38 14 H54 V23 H34 Z" /><path d="M56 14 H70 L76 23 H56 Z" />
+      </svg>
+    ),
+  },
+  {
+    value: "hatchback", arLabel: "هاتشباك", enLabel: "Hatchback",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
+        <path d="M22 23 L30 13 H72 L78 23" />
+        <path d="M32 14 H50 V23 H28 Z" /><path d="M52 14 H70 V23 H52 Z" />
+      </svg>
+    ),
+  },
+  {
+    value: "pickup", arLabel: "بيكأب", enLabel: "Pickup",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H92 M4 31 L8 23 H92" />
+        <path d="M50 23 H92 V31" />
+        <path d="M18 23 L22 13 H46 L50 23" />
+        <path d="M24 14 H44 V23 H22 Z" />
+        <line x1="50" y1="26" x2="90" y2="26" />
+      </svg>
+    ),
+  },
+  {
+    value: "van", arLabel: "فان", enLabel: "Van",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="20" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H90 M4 31 L4 14 H82 L90 31" />
+        <path d="M6 14 H26 V23 H6 Z" />
+        <path d="M28 14 H80 V23 H28 Z" />
+        <line x1="54" y1="14" x2="54" y2="23" />
+      </svg>
+    ),
+  },
+  {
+    value: "truck", arLabel: "شاحنة", enLabel: "Truck",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="18" cy="37" r="5" /><circle cx="30" cy="37" r="5" /><circle cx="76" cy="37" r="5" />
+        <path d="M4 31 H90 M4 31 L4 12 H40 L44 31" />
+        <path d="M44 18 H90 L90 31" />
+        <path d="M6 13 H38 V23 H6 Z" />
+        <line x1="46" y1="18" x2="88" y2="18" />
+      </svg>
+    ),
+  },
+  {
+    value: "convertible", arLabel: "مكشوفة", enLabel: "Convertible",
+    svg: (
+      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
+        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
+        <path d="M28 23 L36 17" />
+        <path d="M36 17 H62" />
+        <path d="M62 17 L68 23" />
+      </svg>
+    ),
+  },
+];
+
+const CAR_MAKES_QUICK = [
+  { value: "Toyota", slug: "toyota", arLabel: "تويوتا" },
+  { value: "BMW", slug: "bmw", arLabel: "BMW" },
+  { value: "Mercedes-Benz", slug: "mercedes-benz", arLabel: "مرسيدس" },
+  { value: "Hyundai", slug: "hyundai", arLabel: "هيونداي" },
+  { value: "Kia", slug: "kia", arLabel: "كيا" },
+  { value: "Nissan", slug: "nissan", arLabel: "نيسان" },
+  { value: "Ford", slug: "ford", arLabel: "فورد" },
+  { value: "Chevrolet", slug: "chevrolet", arLabel: "شيفروليه" },
+  { value: "Volkswagen", slug: "volkswagen", arLabel: "فولكس" },
+  { value: "Mitsubishi", slug: "mitsubishi", arLabel: "ميتسوبيشي" },
+  { value: "Honda", slug: "honda", arLabel: "هوندا" },
+  { value: "Audi", slug: "audi", arLabel: "أودي" },
+];
+
 export default function CarsForSale() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
@@ -80,13 +191,23 @@ export default function CarsForSale() {
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        {/* Modern page header */}
+        <div className="flex items-end justify-between gap-4 mb-8 flex-wrap">
           <div>
-            <h1 className="text-xl md:text-3xl font-bold text-foreground" data-testid="text-cars-for-sale-title">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-block w-1 h-6 rounded-full bg-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">
+                {language === "ar" ? "المعرض" : "Showroom"}
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-4xl font-extrabold text-foreground leading-tight" data-testid="text-cars-for-sale-title">
               {t("marketplace.title")}
             </h1>
-            <p className="text-muted-foreground mt-1">
-              {t("marketplace.subtitle")} ({filteredListings.length})
+            <p className="text-muted-foreground mt-1.5 text-sm md:text-base flex items-center gap-2">
+              {t("marketplace.subtitle")}
+              <span className="inline-flex items-center justify-center bg-primary/10 text-primary font-bold text-xs px-2.5 py-0.5 rounded-full">
+                {filteredListings.length}
+              </span>
             </p>
           </div>
           {user && (
@@ -147,6 +268,78 @@ export default function CarsForSale() {
                 <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.filter.clear")}</span>
               </Button>
             )}
+          </div>
+        </div>
+
+        {/* Quick Body Type + Make Filter Bar — visible to all users */}
+        <div className="mb-8 space-y-5">
+          {/* Body Type */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {language === "ar" ? "نوع الهيكل" : "Body Type"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {BODY_TYPES_QUICK.map((bt) => {
+                const active = filters.bodyType === bt.value;
+                return (
+                  <button
+                    key={bt.value}
+                    onClick={() => setFilters(f => ({ ...f, bodyType: active ? "" : bt.value }))}
+                    className={`flex flex-col items-center gap-1.5 min-w-[72px] px-2 py-2.5 rounded-xl border transition-all cursor-pointer ${
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                    }`}
+                    data-testid={`button-body-type-${bt.value}`}
+                  >
+                    <span className="w-14 h-8">{bt.svg}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wide leading-none">
+                      {language === "ar" ? bt.arLabel : bt.enLabel}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Car Make */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {language === "ar" ? "الماركة" : "Make"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {CAR_MAKES_QUICK.map((make) => {
+                const active = filters.make === make.value;
+                return (
+                  <button
+                    key={make.value}
+                    onClick={() => setFilters(f => ({ ...f, make: active ? "" : make.value }))}
+                    className={`flex flex-col items-center gap-1.5 min-w-[72px] px-2 py-2.5 rounded-xl border transition-all cursor-pointer ${
+                      active
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                    data-testid={`button-make-${make.slug}`}
+                  >
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${make.slug}.png`}
+                      alt={make.value}
+                      className="w-10 h-10 object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                    <span className={`text-[10px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>
+                      {language === "ar" ? make.arLabel : make.value}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
