@@ -19,93 +19,107 @@ const BODY_TYPES_QUICK = [
   {
     value: "sedan", arLabel: "سيدان", enLabel: "Sedan",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
-        <path d="M26 23 L32 13 H64 L70 23" />
-        <path d="M34 14 H49 V23 H32 Z" /><path d="M51 14 H62 L68 23 H51 Z" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="24" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L17 34 M83 34 L97 34" />
+        <path d="M3 34 L8 27 H92 L97 34" />
+        <path d="M27 27 C29 27 33 16 36 14 H64 C67 14 71 24 73 27" />
+        <line x1="50" y1="14" x2="50" y2="27" />
+        <line x1="36" y1="14" x2="36" y2="27" />
+        <line x1="64" y1="14" x2="64" y2="27" />
       </svg>
     ),
   },
   {
     value: "suv", arLabel: "SUV", enLabel: "SUV",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
-        <path d="M18 23 L20 12 H76 L78 23" />
-        <path d="M22 13 H44 V23 H20 Z" /><path d="M46 13 H74 V23 H46 Z" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="24" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L17 34 M83 34 L97 34" />
+        <path d="M3 34 L7 27 H93 L97 34" />
+        <path d="M20 27 L21 13 H79 L80 27" />
+        <line x1="46" y1="13" x2="46" y2="27" />
+        <line x1="21" y1="13" x2="79" y2="13" />
       </svg>
     ),
   },
   {
     value: "coupe", arLabel: "كوبيه", enLabel: "Coupe",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
-        <path d="M24 23 L36 13 H72 L80 23" />
-        <path d="M38 14 H54 V23 H34 Z" /><path d="M56 14 H70 L76 23 H56 Z" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="24" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L17 34 M83 34 L97 34" />
+        <path d="M3 34 L8 27 H92 L97 34" />
+        <path d="M25 27 C28 27 36 14 42 13 H68 C73 13 78 24 81 27" />
+        <line x1="55" y1="13" x2="55" y2="27" />
       </svg>
     ),
   },
   {
     value: "hatchback", arLabel: "هاتشباك", enLabel: "Hatchback",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
-        <path d="M22 23 L30 13 H72 L78 23" />
-        <path d="M32 14 H50 V23 H28 Z" /><path d="M52 14 H70 V23 H52 Z" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="24" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L17 34 M83 34 L97 34" />
+        <path d="M3 34 L8 27 H92 L97 34" />
+        <path d="M24 27 C26 27 32 14 38 13 H70 L78 27" />
+        <line x1="52" y1="13" x2="52" y2="27" />
+        <line x1="38" y1="13" x2="38" y2="27" />
       </svg>
     ),
   },
   {
     value: "pickup", arLabel: "بيكأب", enLabel: "Pickup",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H92 M4 31 L8 23 H92" />
-        <path d="M50 23 H92 V31" />
-        <path d="M18 23 L22 13 H46 L50 23" />
-        <path d="M24 14 H44 V23 H22 Z" />
-        <line x1="50" y1="26" x2="90" y2="26" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="24" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L17 34 M83 34 L97 34" />
+        <path d="M3 34 L7 27 H53 L53 34" />
+        <path d="M53 27 H97 L97 34 H53" />
+        <path d="M20 27 L22 14 H48 L53 27" />
+        <line x1="35" y1="14" x2="35" y2="27" />
+        <line x1="55" y1="30" x2="95" y2="30" />
       </svg>
     ),
   },
   {
     value: "van", arLabel: "فان", enLabel: "Van",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="20" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H90 M4 31 L4 14 H82 L90 31" />
-        <path d="M6 14 H26 V23 H6 Z" />
-        <path d="M28 14 H80 V23 H28 Z" />
-        <line x1="54" y1="14" x2="54" y2="23" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="22" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L15 34 M83 34 L97 34" />
+        <path d="M3 34 L3 15 H85 L97 27 L97 34" />
+        <line x1="3" y1="15" x2="85" y2="15" />
+        <line x1="30" y1="15" x2="30" y2="34" />
+        <line x1="60" y1="15" x2="60" y2="34" />
+        <path d="M85 15 L97 27" />
       </svg>
     ),
   },
   {
     value: "truck", arLabel: "شاحنة", enLabel: "Truck",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="18" cy="37" r="5" /><circle cx="30" cy="37" r="5" /><circle cx="76" cy="37" r="5" />
-        <path d="M4 31 H90 M4 31 L4 12 H40 L44 31" />
-        <path d="M44 18 H90 L90 31" />
-        <path d="M6 13 H38 V23 H6 Z" />
-        <line x1="46" y1="18" x2="88" y2="18" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="16" cy="41" r="6" /><circle cx="28" cy="41" r="6" /><circle cx="78" cy="41" r="6" />
+        <path d="M3 34 L10 34 M34 34 L72 34 M84 34 L97 34" />
+        <path d="M3 34 L3 13 H42 L42 34" />
+        <path d="M42 20 H97 L97 34 H42" />
+        <line x1="3" y1="13" x2="42" y2="13" />
+        <line x1="22" y1="13" x2="22" y2="34" />
+        <line x1="44" y1="20" x2="95" y2="20" />
       </svg>
     ),
   },
   {
     value: "convertible", arLabel: "مكشوفة", enLabel: "Convertible",
     svg: (
-      <svg viewBox="0 0 96 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="22" cy="37" r="6" /><circle cx="74" cy="37" r="6" />
-        <path d="M4 31 H92 M4 31 L8 23 H88 L92 31" />
-        <path d="M28 23 L36 17" />
-        <path d="M36 17 H62" />
-        <path d="M62 17 L68 23" />
+      <svg viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="24" cy="41" r="7" /><circle cx="76" cy="41" r="7" />
+        <path d="M3 34 L17 34 M83 34 L97 34" />
+        <path d="M3 34 L8 27 H92 L97 34" />
+        <path d="M30 27 L38 19 H62 L70 27" />
+        <path d="M38 19 H62" strokeDasharray="3 2" />
+        <line x1="50" y1="19" x2="50" y2="27" />
       </svg>
     ),
   },
@@ -194,18 +208,21 @@ export default function CarsForSale() {
         {/* Modern page header */}
         <div className="flex items-end justify-between gap-4 mb-8 flex-wrap">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="inline-block w-1 h-6 rounded-full bg-primary" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-                {language === "ar" ? "المعرض" : "Showroom"}
-              </span>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold text-foreground leading-tight" data-testid="text-cars-for-sale-title">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
+              <span className="w-6 h-px bg-primary inline-block" />
+              {language === "ar" ? "المعرض" : "Showroom"}
+              <span className="w-6 h-px bg-primary inline-block" />
+            </span>
+            <h1
+              className="text-3xl md:text-5xl font-black leading-tight"
+              data-testid="text-cars-for-sale-title"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--foreground)) 55%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+            >
               {t("marketplace.title")}
             </h1>
-            <p className="text-muted-foreground mt-1.5 text-sm md:text-base flex items-center gap-2">
+            <p className="text-muted-foreground mt-2 text-sm md:text-base flex items-center gap-2">
               {t("marketplace.subtitle")}
-              <span className="inline-flex items-center justify-center bg-primary/10 text-primary font-bold text-xs px-2.5 py-0.5 rounded-full">
+              <span className="inline-flex items-center justify-center bg-primary text-primary-foreground font-bold text-xs px-2.5 py-0.5 rounded-full">
                 {filteredListings.length}
               </span>
             </p>
@@ -281,22 +298,22 @@ export default function CarsForSale() {
               </span>
               <div className="flex-1 h-px bg-border" />
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <div className="flex flex-wrap justify-center gap-2">
               {BODY_TYPES_QUICK.map((bt) => {
                 const active = filters.bodyType === bt.value;
                 return (
                   <button
                     key={bt.value}
                     onClick={() => setFilters(f => ({ ...f, bodyType: active ? "" : bt.value }))}
-                    className={`flex flex-col items-center gap-1.5 min-w-[72px] px-2 py-2.5 rounded-xl border transition-all cursor-pointer ${
+                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
                       active
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
                     }`}
                     data-testid={`button-body-type-${bt.value}`}
                   >
-                    <span className="w-14 h-8">{bt.svg}</span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wide leading-none">
+                    <span className="w-16 h-9">{bt.svg}</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-wide leading-none">
                       {language === "ar" ? bt.arLabel : bt.enLabel}
                     </span>
                   </button>
@@ -313,14 +330,14 @@ export default function CarsForSale() {
               </span>
               <div className="flex-1 h-px bg-border" />
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <div className="flex flex-wrap justify-center gap-2">
               {CAR_MAKES_QUICK.map((make) => {
                 const active = filters.make === make.value;
                 return (
                   <button
                     key={make.value}
                     onClick={() => setFilters(f => ({ ...f, make: active ? "" : make.value }))}
-                    className={`flex flex-col items-center gap-1.5 min-w-[72px] px-2 py-2.5 rounded-xl border transition-all cursor-pointer ${
+                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
                       active
                         ? "border-primary bg-primary/10"
                         : "border-border bg-card hover:border-primary/50"
@@ -330,10 +347,10 @@ export default function CarsForSale() {
                     <img
                       src={`https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${make.slug}.png`}
                       alt={make.value}
-                      className="w-10 h-10 object-contain"
+                      className="w-12 h-12 object-contain"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
-                    <span className={`text-[10px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>
+                    <span className={`text-[11px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>
                       {language === "ar" ? make.arLabel : make.value}
                     </span>
                   </button>
