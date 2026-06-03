@@ -15,166 +15,130 @@ import logoImage from "@assets/image_1769171762465.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
 import type { Listing } from "@shared/schema";
 
-/* ── Body-type icons – each has a clearly unique silhouette ── */
-const S = { w: 2.2 } as const; // shared strokeWidth shorthand
+/* ── Body-type icons – thin-stroke side-profile silhouettes ── */
+const SW = 1.8;
 
 const BODY_TYPES_QUICK = [
   {
-    value: "sedan", arLabel: "سيدان", enLabel: "Sedan",
-    // 3-box: distinct horizontal trunk deck separate from cabin
+    value: "coupe", arLabel: "كوبيه", enLabel: "Coupe",
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="26" cy="45" r="8" /><circle cx="84" cy="45" r="8" />
-        {/* body base rail */}
-        <path d="M5 37 H18 M34 37 H76 M92 37 H105" />
-        {/* full body outline */}
-        <path d="M5 37 L10 30 H20 L28 18 L35 12 H62 L68 20 H76 L80 30 H105 L105 37" />
-        {/* trunk lid – key feature: horizontal deck at y=20, lower than roof y=12 */}
-        <line x1="68" y1="20" x2="76" y2="20" />
-        {/* windows */}
-        <path d="M30 18 L36 13 H52 V18 Z" />
-        <path d="M54 13 H60 L66 20 H54 Z" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="20" cy="39" r="6"/><circle cx="74" cy="39" r="6"/>
+        <path d="M2 33 H14 M26 33 H68 M80 33 H98"/>
+        <path d="M2 33 L6 30 H14 L22 23 L32 15 H56 Q68 15 78 29 L82 33"/>
+        <path d="M24 23 L34 16 H54 Q64 16 72 28 H22 Z"/>
+        <line x1="6" y1="30" x2="14" y2="30"/>
+      </svg>
+    ),
+  },
+  {
+    value: "sedan", arLabel: "سيدان", enLabel: "Sedan",
+    svg: (
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="21" cy="39" r="6"/><circle cx="76" cy="39" r="6"/>
+        <path d="M2 33 H15 M27 33 H70 M82 33 H98"/>
+        <path d="M2 33 L7 28 H16 L24 20 L32 13 H60 L65 21 H72 L76 28 H98 L98 33"/>
+        <line x1="65" y1="21" x2="72" y2="21"/>
+        <path d="M26 20 L34 14 H48 V20 Z"/>
+        <path d="M50 14 H58 L63 21 H50 Z"/>
       </svg>
     ),
   },
   {
     value: "suv", arLabel: "SUV", enLabel: "SUV",
-    // tall upright boxy – no sloping hood, high roof, large glass area
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="26" cy="45" r="8" /><circle cx="84" cy="45" r="8" />
-        <path d="M5 37 H18 M34 37 H76 M92 37 H105" />
-        {/* tall boxy body – very upright sides */}
-        <path d="M5 37 L8 30 H18 L20 10 H90 L92 30 H105 L105 37" />
-        {/* flat roof */}
-        <line x1="20" y1="10" x2="90" y2="10" />
-        {/* 3 window bays */}
-        <path d="M22 11 H38 V28 H22 Z" />
-        <path d="M40 11 H60 V28 H40 Z" />
-        <path d="M62 11 H86 V28 H62 Z" />
-        {/* roof rails */}
-        <line x1="22" y1="9" x2="86" y2="9" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="20" cy="39" r="6"/><circle cx="78" cy="39" r="6"/>
+        <path d="M2 33 H14 M26 33 H72 M84 33 H98"/>
+        <path d="M2 33 L6 28 H14 L16 10 H84 L86 28 H98 L98 33"/>
+        <line x1="16" y1="10" x2="84" y2="10"/>
+        <line x1="18" y1="9" x2="82" y2="9"/>
+        <path d="M18 11 H34 V26 H18 Z"/>
+        <path d="M36 11 H56 V26 H36 Z"/>
+        <path d="M58 11 H82 V26 H58 Z"/>
       </svg>
     ),
   },
   {
-    value: "coupe", arLabel: "كوبيه", enLabel: "Coupe",
-    // very long low sloping roofline – fastback style, sporty
+    value: "hatchback", arLabel: "هاتش", enLabel: "Hatch",
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="24" cy="45" r="8" /><circle cx="86" cy="45" r="8" />
-        <path d="M3 37 H16 M32 37 H78 M94 37 H107" />
-        {/* long swept body – low at both ends */}
-        <path d="M3 37 L8 33 H18 L32 15 H68 L88 30 H107 L107 37" />
-        {/* single wide window */}
-        <path d="M34 15 L52 15 L70 29 H36 Z" />
-        {/* long hood line */}
-        <line x1="8" y1="33" x2="18" y2="33" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="21" cy="39" r="6"/><circle cx="76" cy="39" r="6"/>
+        <path d="M2 33 H15 M27 33 H70 M82 33 H98"/>
+        <path d="M2 33 L7 28 H16 L24 20 L32 13 H60 L72 33 H98 L98 33"/>
+        <line x1="60" y1="13" x2="72" y2="33" strokeWidth="2"/>
+        <path d="M26 20 L34 14 H48 V20 Z"/>
+        <path d="M50 14 H58 L68 30 H50 Z"/>
       </svg>
     ),
   },
   {
-    value: "hatchback", arLabel: "هاتشباك", enLabel: "Hatchback",
-    // steep near-vertical rear hatch – roof goes directly to bumper
+    value: "van", arLabel: "واجن", enLabel: "Wagon",
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="26" cy="45" r="8" /><circle cx="82" cy="45" r="8" />
-        <path d="M5 37 H18 M34 37 H74 M90 37 H105" />
-        {/* body: short hood, cabin, then STEEP rear (no trunk deck) */}
-        <path d="M5 37 L10 30 H20 L26 20 L34 13 H64 L74 37 H105 L105 37" />
-        {/* steep rear hatch line (the defining feature) */}
-        <line x1="64" y1="13" x2="74" y2="37" strokeWidth="2.5" />
-        {/* windows */}
-        <path d="M28 20 L35 14 H50 V20 Z" />
-        <path d="M52 14 H62 L70 30 H52 Z" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="21" cy="39" r="6"/><circle cx="76" cy="39" r="6"/>
+        <path d="M2 33 H15 M27 33 H70 M82 33 H98"/>
+        <path d="M2 33 L7 28 H16 L24 20 L32 13 H76 L80 20 L82 28 H98 L98 33"/>
+        <line x1="32" y1="13" x2="76" y2="13"/>
+        <path d="M26 20 L34 14 H48 V20 Z"/>
+        <path d="M50 14 H74 L78 20 H50 Z"/>
       </svg>
     ),
   },
   {
     value: "pickup", arLabel: "بيكأب", enLabel: "Pickup",
-    // cabin + fully open flat bed with rails
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="24" cy="45" r="8" /><circle cx="84" cy="45" r="8" />
-        <path d="M3 37 H16 M32 37 H76 M92 37 H107" />
-        {/* cab section (left half) */}
-        <path d="M3 37 L7 30 H18 L24 18 L30 12 H52 L56 20 L58 30 H72 L72 37" />
-        {/* open flat bed (right half) – just side rails top and bottom */}
-        <path d="M72 30 H107 L107 37 H72" />
-        {/* bed rail at top */}
-        <line x1="72" y1="26" x2="107" y2="26" />
-        {/* cab window */}
-        <path d="M26 18 L32 13 H48 V18 Z" />
-        {/* tailgate */}
-        <line x1="107" y1="26" x2="107" y2="37" strokeWidth="2.5" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="20" cy="39" r="6"/><circle cx="78" cy="39" r="6"/>
+        <path d="M2 33 H14 M26 33 H72 M84 33 H98"/>
+        <path d="M2 33 L6 28 H15 L22 18 L28 12 H50 L54 20 H56 L56 33"/>
+        <path d="M56 28 H98 L98 33 H56 Z"/>
+        <line x1="56" y1="24" x2="98" y2="24"/>
+        <path d="M24 18 L30 13 H46 V18 Z"/>
+        <line x1="98" y1="24" x2="98" y2="33" strokeWidth="2.2"/>
       </svg>
     ),
   },
   {
-    value: "van", arLabel: "فان", enLabel: "Van",
-    // no hood, flat nose, very tall box with sliding door
+    value: "minivan", arLabel: "ميني فان", enLabel: "Minivan",
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="20" cy="45" r="8" /><circle cx="84" cy="45" r="8" />
-        <path d="M3 37 H12 M28 37 H76 M92 37 H107" />
-        {/* flat-nosed tall box */}
-        <path d="M5 37 L5 10 H96 L100 18 L100 37" />
-        {/* roof line */}
-        <line x1="5" y1="10" x2="96" y2="10" />
-        {/* windscreen (flat / near-vertical) */}
-        <path d="M5 10 L5 30 L14 30 L16 10 Z" />
-        {/* cab door */}
-        <line x1="26" y1="10" x2="26" y2="37" />
-        {/* sliding side door */}
-        <rect x="38" y="15" width="28" height="22" rx="1" />
-        <line x1="52" y1="15" x2="52" y2="37" />
-        {/* rear door */}
-        <line x1="78" y1="10" x2="78" y2="37" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="17" cy="39" r="6"/><circle cx="78" cy="39" r="6"/>
+        <path d="M2 33 H11 M23 33 H72 M84 33 H98"/>
+        <path d="M2 33 L5 28 H12 L14 11 H82 L86 20 L88 28 H98 L98 33"/>
+        <line x1="14" y1="11" x2="82" y2="11"/>
+        <path d="M12 28 L14 11 H28 V28 H12 Z"/>
+        <path d="M40 12 H70 V28 H40 Z"/>
+        <line x1="54" y1="12" x2="54" y2="28"/>
+        <line x1="72" y1="11" x2="72" y2="33"/>
       </svg>
     ),
   },
   {
-    value: "truck", arLabel: "شاحنة", enLabel: "Truck",
-    // high cab with large cargo box / semi style
+    value: "truck", arLabel: "تجاري", enLabel: "Commercial",
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="16" cy="45" r="7" /><circle cx="30" cy="45" r="7" /><circle cx="92" cy="45" r="7" />
-        <path d="M3 37 H9 M37 37 H85 M99 37 H107" />
-        {/* high cab */}
-        <path d="M5 37 L5 9 H42 L44 18 L44 37" />
-        <line x1="5" y1="9" x2="42" y2="9" />
-        {/* cab window */}
-        <path d="M7 10 H30 V25 H7 Z" />
-        <line x1="20" y1="10" x2="20" y2="25" />
-        {/* large cargo box */}
-        <path d="M44 10 H107 L107 37 H44 Z" />
-        {/* cargo box panels */}
-        <line x1="44" y1="10" x2="107" y2="10" />
-        <line x1="72" y1="10" x2="72" y2="37" />
+      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="13" cy="39" r="5"/><circle cx="25" cy="39" r="5"/><circle cx="82" cy="39" r="5"/>
+        <path d="M2 33 H8 M30 33 H77 M87 33 H98"/>
+        <path d="M2 33 L2 10 H36 L40 18 V33"/>
+        <line x1="2" y1="10" x2="36" y2="10"/>
+        <path d="M4 11 H28 V24 H4 Z"/>
+        <line x1="18" y1="11" x2="18" y2="24"/>
+        <path d="M40 11 H98 V33 H40 Z"/>
+        <line x1="40" y1="11" x2="98" y2="11"/>
+        <line x1="68" y1="11" x2="68" y2="33"/>
       </svg>
     ),
   },
   {
-    value: "convertible", arLabel: "مكشوفة", enLabel: "Convertible",
-    // completely open top – just door frames and windscreen, no roof
+    value: "", arLabel: "أخرى", enLabel: "Other",
     svg: (
-      <svg viewBox="0 0 110 54" fill="none" stroke="currentColor" strokeWidth={S.w} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="26" cy="45" r="8" /><circle cx="84" cy="45" r="8" />
-        <path d="M5 37 H18 M34 37 H76 M92 37 H105" />
-        {/* low body / sill */}
-        <path d="M5 37 L10 30 H100 L105 37" />
-        {/* windscreen only – A-pillar, no roof */}
-        <path d="M28 30 L32 18 H52 L54 30" />
-        {/* rear windscreen stub – no roof connecting them */}
-        <path d="M70 30 L74 18 H82 L84 30" />
-        {/* door sill lines */}
-        <line x1="28" y1="30" x2="70" y2="30" />
-        <line x1="54" y1="30" x2="70" y2="30" />
-        {/* open-top indication: dashed sky area */}
-        <path d="M32 18 H74" strokeDasharray="4 3" strokeWidth="1.5" />
-        {/* roll bars */}
-        <line x1="52" y1="18" x2="52" y2="30" strokeWidth="2.5" />
-        <line x1="74" y1="18" x2="74" y2="30" strokeWidth="2.5" />
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <circle cx="50" cy="50" r="34"/>
+        <circle cx="50" cy="50" r="10"/>
+        <line x1="50" y1="40" x2="50" y2="16"/>
+        <line x1="41" y1="44" x2="22" y2="29"/>
+        <line x1="59" y1="44" x2="78" y2="29"/>
       </svg>
     ),
   },
@@ -356,10 +320,10 @@ export default function CarsForSale() {
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {BODY_TYPES_QUICK.map((bt) => {
-                const active = filters.bodyType === bt.value;
+                const active = bt.value !== "" && filters.bodyType === bt.value;
                 return (
                   <button
-                    key={bt.value}
+                    key={bt.value || "other"}
                     onClick={() => setFilters(f => ({ ...f, bodyType: active ? "" : bt.value }))}
                     className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
                       active
