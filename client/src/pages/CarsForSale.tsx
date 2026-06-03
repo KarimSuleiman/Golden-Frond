@@ -15,130 +15,149 @@ import logoImage from "@assets/image_1769171762465.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
 import type { Listing } from "@shared/schema";
 
-/* ── Body-type icons – thin-stroke side-profile silhouettes ── */
-const SW = 1.8;
+/* ── Body-type icons – solid-fill silhouettes ── */
+const CUT = { fill: "hsl(var(--card))" } as const;
 
 const BODY_TYPES_QUICK = [
   {
     value: "coupe", arLabel: "كوبيه", enLabel: "Coupe",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="20" cy="39" r="6"/><circle cx="74" cy="39" r="6"/>
-        <path d="M2 33 H14 M26 33 H68 M80 33 H98"/>
-        <path d="M2 33 L6 30 H14 L22 23 L32 15 H56 Q68 15 78 29 L82 33"/>
-        <path d="M24 23 L34 16 H54 Q64 16 72 28 H22 Z"/>
-        <line x1="6" y1="30" x2="14" y2="30"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* very low, long hood, swept fastback rear */}
+        <path fill="currentColor" d="M4 60 Q8 52 16 48 L28 45 L44 38 Q54 22 68 14 L96 10 L140 10 Q162 10 172 30 L178 46 Q182 54 188 58 L192 60 Z"/>
+        <path style={CUT} d="M70 16 L80 12 H136 Q156 12 166 28 L164 46 H72 Z"/>
+        <circle fill="currentColor" cx="44" cy="70" r="15"/>
+        <circle style={CUT} cx="44" cy="70" r="6"/>
+        <circle fill="currentColor" cx="156" cy="70" r="15"/>
+        <circle style={CUT} cx="156" cy="70" r="6"/>
       </svg>
     ),
   },
   {
     value: "sedan", arLabel: "سيدان", enLabel: "Sedan",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="21" cy="39" r="6"/><circle cx="76" cy="39" r="6"/>
-        <path d="M2 33 H15 M27 33 H70 M82 33 H98"/>
-        <path d="M2 33 L7 28 H16 L24 20 L32 13 H60 L65 21 H72 L76 28 H98 L98 33"/>
-        <line x1="65" y1="21" x2="72" y2="21"/>
-        <path d="M26 20 L34 14 H48 V20 Z"/>
-        <path d="M50 14 H58 L63 21 H50 Z"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* 3-box: short hood, cabin, distinct trunk deck step */}
+        <path fill="currentColor" d="M4 60 Q8 54 14 50 L28 47 L38 38 Q46 24 60 18 L86 14 L132 14 Q144 14 150 24 L158 40 L163 46 Q167 50 172 50 Q178 52 184 56 L190 60 Z"/>
+        <path style={CUT} d="M50 36 Q44 28 42 38 H84 V20 Z"/>
+        <path style={CUT} d="M88 16 H130 Q142 16 148 26 L146 38 H88 Z"/>
+        <circle fill="currentColor" cx="44" cy="70" r="14"/>
+        <circle style={CUT} cx="44" cy="70" r="5"/>
+        <circle fill="currentColor" cx="153" cy="70" r="14"/>
+        <circle style={CUT} cx="153" cy="70" r="5"/>
       </svg>
     ),
   },
   {
     value: "suv", arLabel: "SUV", enLabel: "SUV",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="20" cy="39" r="6"/><circle cx="78" cy="39" r="6"/>
-        <path d="M2 33 H14 M26 33 H72 M84 33 H98"/>
-        <path d="M2 33 L6 28 H14 L16 10 H84 L86 28 H98 L98 33"/>
-        <line x1="16" y1="10" x2="84" y2="10"/>
-        <line x1="18" y1="9" x2="82" y2="9"/>
-        <path d="M18 11 H34 V26 H18 Z"/>
-        <path d="M36 11 H56 V26 H36 Z"/>
-        <path d="M58 11 H82 V26 H58 Z"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* tall upright body, short nose, high clearance */}
+        <path fill="currentColor" d="M4 62 Q8 56 14 52 L22 50 L24 8 H174 L176 50 L184 54 Q190 58 193 62 Z"/>
+        <path style={CUT} d="M26 10 H72 V46 H26 Z"/>
+        <path style={CUT} d="M76 10 H120 V46 H76 Z"/>
+        <path style={CUT} d="M124 10 H172 V46 H124 Z"/>
+        <circle fill="currentColor" cx="44" cy="72" r="16"/>
+        <circle style={CUT} cx="44" cy="72" r="6"/>
+        <circle fill="currentColor" cx="156" cy="72" r="16"/>
+        <circle style={CUT} cx="156" cy="72" r="6"/>
       </svg>
     ),
   },
   {
     value: "hatchback", arLabel: "هاتش", enLabel: "Hatch",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="21" cy="39" r="6"/><circle cx="76" cy="39" r="6"/>
-        <path d="M2 33 H15 M27 33 H70 M82 33 H98"/>
-        <path d="M2 33 L7 28 H16 L24 20 L32 13 H60 L72 33 H98 L98 33"/>
-        <line x1="60" y1="13" x2="72" y2="33" strokeWidth="2"/>
-        <path d="M26 20 L34 14 H48 V20 Z"/>
-        <path d="M50 14 H58 L68 30 H50 Z"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* like sedan front, steep rear hatch — no trunk deck */}
+        <path fill="currentColor" d="M4 60 Q8 54 14 50 L28 47 L38 38 Q46 24 60 18 L86 14 L134 14 Q144 14 150 24 L162 60 Z"/>
+        <path style={CUT} d="M50 36 Q44 28 42 38 H84 V20 Z"/>
+        <path style={CUT} d="M88 16 H132 Q142 16 148 26 L158 54 H88 Z"/>
+        <circle fill="currentColor" cx="44" cy="70" r="14"/>
+        <circle style={CUT} cx="44" cy="70" r="5"/>
+        <circle fill="currentColor" cx="148" cy="70" r="14"/>
+        <circle style={CUT} cx="148" cy="70" r="5"/>
       </svg>
     ),
   },
   {
     value: "van", arLabel: "واجن", enLabel: "Wagon",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="21" cy="39" r="6"/><circle cx="76" cy="39" r="6"/>
-        <path d="M2 33 H15 M27 33 H70 M82 33 H98"/>
-        <path d="M2 33 L7 28 H16 L24 20 L32 13 H76 L80 20 L82 28 H98 L98 33"/>
-        <line x1="32" y1="13" x2="76" y2="13"/>
-        <path d="M26 20 L34 14 H48 V20 Z"/>
-        <path d="M50 14 H74 L78 20 H50 Z"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* flat roof extending all the way to vertical rear — estate/wagon */}
+        <path fill="currentColor" d="M4 60 Q8 54 14 50 L28 47 L38 38 Q46 24 60 18 L86 14 L156 14 Q162 14 164 18 L168 40 Q170 50 174 54 L186 58 L190 60 Z"/>
+        <path style={CUT} d="M50 36 Q44 28 42 38 H84 V20 Z"/>
+        <path style={CUT} d="M88 16 H154 Q160 16 162 20 L160 36 H88 Z"/>
+        <circle fill="currentColor" cx="44" cy="70" r="14"/>
+        <circle style={CUT} cx="44" cy="70" r="5"/>
+        <circle fill="currentColor" cx="155" cy="70" r="14"/>
+        <circle style={CUT} cx="155" cy="70" r="5"/>
       </svg>
     ),
   },
   {
     value: "pickup", arLabel: "بيكأب", enLabel: "Pickup",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="20" cy="39" r="6"/><circle cx="78" cy="39" r="6"/>
-        <path d="M2 33 H14 M26 33 H72 M84 33 H98"/>
-        <path d="M2 33 L6 28 H15 L22 18 L28 12 H50 L54 20 H56 L56 33"/>
-        <path d="M56 28 H98 L98 33 H56 Z"/>
-        <line x1="56" y1="24" x2="98" y2="24"/>
-        <path d="M24 18 L30 13 H46 V18 Z"/>
-        <line x1="98" y1="24" x2="98" y2="33" strokeWidth="2.2"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* cab on left + open flatbed with rails on right */}
+        <path fill="currentColor" d="M4 60 Q8 54 14 50 L24 48 L32 36 Q40 20 54 14 H92 Q98 14 100 22 L102 42 Q104 50 106 54 L108 60 Z"/>
+        <path fill="currentColor" d="M108 46 H184 Q188 46 190 50 L192 60 H108 Z"/>
+        <line stroke="currentColor" strokeWidth="4" x1="108" y1="46" x2="192" y2="46"/>
+        <path style={CUT} d="M34 36 Q40 22 54 16 H88 L94 36 H34 Z"/>
+        <circle fill="currentColor" cx="40" cy="70" r="14"/>
+        <circle style={CUT} cx="40" cy="70" r="5"/>
+        <circle fill="currentColor" cx="162" cy="70" r="14"/>
+        <circle style={CUT} cx="162" cy="70" r="5"/>
       </svg>
     ),
   },
   {
     value: "minivan", arLabel: "ميني فان", enLabel: "Minivan",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="17" cy="39" r="6"/><circle cx="78" cy="39" r="6"/>
-        <path d="M2 33 H11 M23 33 H72 M84 33 H98"/>
-        <path d="M2 33 L5 28 H12 L14 11 H82 L86 20 L88 28 H98 L98 33"/>
-        <line x1="14" y1="11" x2="82" y2="11"/>
-        <path d="M12 28 L14 11 H28 V28 H12 Z"/>
-        <path d="M40 12 H70 V28 H40 Z"/>
-        <line x1="54" y1="12" x2="54" y2="28"/>
-        <line x1="72" y1="11" x2="72" y2="33"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* CUV/crossover — taller than sedan, softer than SUV, rounded roof */}
+        <path fill="currentColor" d="M4 62 Q8 56 14 52 L22 50 Q26 12 34 8 H162 Q168 8 172 16 L176 50 Q180 56 186 60 L192 62 Z"/>
+        <path style={CUT} d="M36 10 H86 V46 H36 Z"/>
+        <path style={CUT} d="M90 10 H136 V46 H90 Z"/>
+        <path style={CUT} d="M140 10 H168 V46 H140 Z"/>
+        <circle fill="currentColor" cx="42" cy="72" r="15"/>
+        <circle style={CUT} cx="42" cy="72" r="6"/>
+        <circle fill="currentColor" cx="158" cy="72" r="15"/>
+        <circle style={CUT} cx="158" cy="72" r="6"/>
       </svg>
     ),
   },
   {
     value: "truck", arLabel: "تجاري", enLabel: "Commercial",
     svg: (
-      <svg viewBox="0 0 100 46" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="13" cy="39" r="5"/><circle cx="25" cy="39" r="5"/><circle cx="82" cy="39" r="5"/>
-        <path d="M2 33 H8 M30 33 H77 M87 33 H98"/>
-        <path d="M2 33 L2 10 H36 L40 18 V33"/>
-        <line x1="2" y1="10" x2="36" y2="10"/>
-        <path d="M4 11 H28 V24 H4 Z"/>
-        <line x1="18" y1="11" x2="18" y2="24"/>
-        <path d="M40 11 H98 V33 H40 Z"/>
-        <line x1="40" y1="11" x2="98" y2="11"/>
-        <line x1="68" y1="11" x2="68" y2="33"/>
+      <svg viewBox="0 0 200 90" className="w-full h-full">
+        {/* high cab + large cargo box, dual rear axle */}
+        <path fill="currentColor" d="M4 62 L4 8 H52 L56 18 L56 62 Z"/>
+        <path fill="currentColor" d="M56 16 H194 V62 H56 Z"/>
+        <path style={CUT} d="M6 10 H46 V42 H6 Z"/>
+        <line stroke="hsl(var(--card))" strokeWidth="3" x1="26" y1="10" x2="26" y2="42"/>
+        <line stroke="hsl(var(--card))" strokeWidth="3" x1="58" y1="16" x2="192" y2="16"/>
+        <line stroke="hsl(var(--card))" strokeWidth="3" x1="124" y1="16" x2="124" y2="62"/>
+        <circle fill="currentColor" cx="22" cy="70" r="12"/>
+        <circle style={CUT} cx="22" cy="70" r="5"/>
+        <circle fill="currentColor" cx="136" cy="70" r="12"/>
+        <circle style={CUT} cx="136" cy="70" r="5"/>
+        <circle fill="currentColor" cx="160" cy="70" r="12"/>
+        <circle style={CUT} cx="160" cy="70" r="5"/>
       </svg>
     ),
   },
   {
     value: "", arLabel: "أخرى", enLabel: "Other",
     svg: (
-      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth={SW} strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        <circle cx="50" cy="50" r="34"/>
-        <circle cx="50" cy="50" r="10"/>
-        <line x1="50" y1="40" x2="50" y2="16"/>
-        <line x1="41" y1="44" x2="22" y2="29"/>
-        <line x1="59" y1="44" x2="78" y2="29"/>
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        {/* steering wheel */}
+        <circle fill="currentColor" cx="50" cy="50" r="40"/>
+        <circle style={CUT} cx="50" cy="50" r="32"/>
+        <circle fill="currentColor" cx="50" cy="50" r="10"/>
+        <rect fill="currentColor" x="46" y="18" width="8" height="22"/>
+        <rect fill="currentColor" x="46" y="60" width="8" height="22"/>
+        <rect fill="currentColor" x="18" y="46" width="22" height="8"/>
+        <rect fill="currentColor" x="60" y="46" width="22" height="8"/>
       </svg>
     ),
   },
