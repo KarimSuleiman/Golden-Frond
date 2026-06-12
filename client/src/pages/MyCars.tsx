@@ -63,7 +63,7 @@ export default function MyCars() {
             {t("dashboard.title")}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {t("dashboard.welcome")} {user?.firstName || t("dashboard.welcomeSuffix")} dd
+            {t("dashboard.welcome")} {user?.firstName || t("dashboard.welcomeSuffix")}
           </p>
         </div>
 
