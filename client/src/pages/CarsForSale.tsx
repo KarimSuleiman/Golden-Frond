@@ -165,7 +165,7 @@ export default function CarsForSale() {
               <span className="w-6 h-px bg-primary inline-block" />
             </span>
             <h1
-              className="text-3xl md:text-5xl font-black leading-tight mt-[0px] mb-[0px] pt-[6px] pb-[6px]"
+              className="text-3xl md:text-5xl font-black leading-tight mt-[0px] mb-[0px] pt-[8px] pb-[8px]"
               data-testid="text-cars-for-sale-title"
               style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--foreground)) 55%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
             >
