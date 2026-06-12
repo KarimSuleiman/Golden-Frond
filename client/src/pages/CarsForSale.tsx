@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone, ArrowUpDown, ChevronDown, ChevronRight, ArrowUp, ArrowDown } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone, ArrowUpDown, ArrowUp, ArrowDown, Tag, Clock } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/image_1769171762465.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
@@ -370,78 +369,150 @@ export default function CarsForSale() {
 
 function SortPopover({ sortBy, setSortBy, language }: { sortBy: string; setSortBy: (v: string) => void; language: string }) {
   const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const ar = language === "ar";
 
   const categories = [
     {
+      key: "posted",
+      icon: Clock,
+      label: ar ? "تاريخ النشر" : "Posted",
+      color: "from-violet-500/20 to-violet-500/5",
+      iconColor: "text-violet-500",
+      high: { value: "newest", label: ar ? "الأحدث" : "Newest" },
+      low:  { value: "oldest", label: ar ? "الأقدم" : "Oldest" },
+    },
+    {
       key: "year",
-      label: language === "ar" ? "السنة" : "Year",
-      high: { value: "yearNew", label: language === "ar" ? "الأحدث" : "Highest" },
-      low:  { value: "yearOld", label: language === "ar" ? "الأقدم" : "Lowest" },
+      icon: Calendar,
+      label: ar ? "سنة الصنع" : "Year",
+      color: "from-blue-500/20 to-blue-500/5",
+      iconColor: "text-blue-500",
+      high: { value: "yearNew", label: ar ? "الأحدث" : "Newest" },
+      low:  { value: "yearOld", label: ar ? "الأقدم" : "Oldest" },
     },
     {
       key: "price",
-      label: language === "ar" ? "السعر" : "Price",
-      high: { value: "priceHigh", label: language === "ar" ? "الأعلى" : "Highest" },
-      low:  { value: "priceLow",  label: language === "ar" ? "الأقل"  : "Lowest" },
+      icon: Tag,
+      label: ar ? "السعر" : "Price",
+      color: "from-emerald-500/20 to-emerald-500/5",
+      iconColor: "text-emerald-500",
+      high: { value: "priceHigh", label: ar ? "الأعلى" : "Highest" },
+      low:  { value: "priceLow",  label: ar ? "الأقل"  : "Lowest" },
     },
     {
       key: "mileage",
-      label: language === "ar" ? "الكيلومترات" : "Mileage",
-      high: { value: "mileageHigh", label: language === "ar" ? "الأعلى" : "Highest" },
-      low:  { value: "mileageLow",  label: language === "ar" ? "الأقل"  : "Lowest" },
+      icon: Gauge,
+      label: ar ? "الكيلومترات" : "Mileage",
+      color: "from-orange-500/20 to-orange-500/5",
+      iconColor: "text-orange-500",
+      high: { value: "mileageHigh", label: ar ? "الأعلى" : "Highest" },
+      low:  { value: "mileageLow",  label: ar ? "الأقل"  : "Lowest" },
     },
   ];
 
+  const isActive = sortBy !== "newest";
+
   const activeLabel = (() => {
+    if (!isActive) return ar ? "ترتيب" : "Sort";
     for (const c of categories) {
       if (sortBy === c.high.value) return `${c.label} · ${c.high.label}`;
       if (sortBy === c.low.value)  return `${c.label} · ${c.low.label}`;
     }
-    return language === "ar" ? "ترتيب" : "Sort";
+    return ar ? "ترتيب" : "Sort";
   })();
 
   return (
-    <Popover open={open} onOpenChange={(v) => { setOpen(v); if (!v) setExpanded(null); }}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2 whitespace-nowrap" data-testid="button-sort">
-          <ArrowUpDown className="w-4 h-4" />
-          <span>{activeLabel}</span>
-          <ChevronDown className="w-3 h-3 opacity-60" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-52 p-1">
-        {categories.map((cat) => (
-          <div key={cat.key}>
-            <button
-              onClick={() => setExpanded(expanded === cat.key ? null : cat.key)}
-              className="flex items-center justify-between w-full px-3 py-2 rounded-md text-sm font-medium hover:bg-accent transition-colors"
-            >
-              <span>{cat.label}</span>
-              <ChevronRight className={`w-4 h-4 opacity-50 transition-transform ${expanded === cat.key ? "rotate-90" : ""}`} />
-            </button>
-            {expanded === cat.key && (
-              <div className="flex gap-1 px-3 pb-2">
+    <>
+      <Button
+        variant="outline"
+        onClick={() => setOpen(true)}
+        className={`gap-2 whitespace-nowrap transition-all ${isActive ? "border-primary text-primary bg-primary/5" : ""}`}
+        data-testid="button-sort"
+      >
+        <ArrowUpDown className="w-4 h-4" />
+        <span>{activeLabel}</span>
+      </Button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
+
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-sm bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-primary" />
+                <h2 className="font-bold text-base text-foreground">{ar ? "ترتيب حسب" : "Sort By"}</h2>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Categories grid */}
+            <div className="p-4 grid grid-cols-2 gap-3">
+              {categories.map((cat) => {
+                const Icon = cat.icon;
+                const isHighActive = sortBy === cat.high.value;
+                const isLowActive  = sortBy === cat.low.value;
+                const isCatActive  = isHighActive || isLowActive;
+                return (
+                  <div
+                    key={cat.key}
+                    className={`rounded-xl border-2 overflow-hidden transition-all ${isCatActive ? "border-primary" : "border-border"}`}
+                  >
+                    {/* Category header */}
+                    <div className={`bg-gradient-to-br ${cat.color} px-3 py-3 flex items-center gap-2`}>
+                      <div className={`w-7 h-7 rounded-lg bg-background/60 flex items-center justify-center`}>
+                        <Icon className={`w-4 h-4 ${cat.iconColor}`} />
+                      </div>
+                      <span className="text-sm font-bold text-foreground">{cat.label}</span>
+                    </div>
+                    {/* High / Low buttons */}
+                    <div className="flex border-t border-border">
+                      <button
+                        onClick={() => { setSortBy(cat.high.value); setOpen(false); }}
+                        className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-semibold transition-colors border-r border-border ${isHighActive ? "bg-primary text-primary-foreground" : "hover:bg-accent text-muted-foreground hover:text-foreground"}`}
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                        {cat.high.label}
+                      </button>
+                      <button
+                        onClick={() => { setSortBy(cat.low.value); setOpen(false); }}
+                        className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-semibold transition-colors ${isLowActive ? "bg-primary text-primary-foreground" : "hover:bg-accent text-muted-foreground hover:text-foreground"}`}
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                        {cat.low.label}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Reset footer */}
+            {isActive && (
+              <div className="px-4 pb-4">
                 <button
-                  onClick={() => { setSortBy(cat.high.value); setOpen(false); setExpanded(null); }}
-                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-md text-xs font-semibold border transition-colors ${sortBy === cat.high.value ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-accent"}`}
+                  onClick={() => { setSortBy("newest"); setOpen(false); }}
+                  className="w-full py-2 rounded-xl border border-dashed border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
                 >
-                  <ArrowDown className="w-3 h-3" />
-                  {cat.high.label}
-                </button>
-                <button
-                  onClick={() => { setSortBy(cat.low.value); setOpen(false); setExpanded(null); }}
-                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-md text-xs font-semibold border transition-colors ${sortBy === cat.low.value ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-accent"}`}
-                >
-                  <ArrowUp className="w-3 h-3" />
-                  {cat.low.label}
+                  {ar ? "إعادة تعيين الترتيب" : "Reset Sort"}
                 </button>
               </div>
             )}
           </div>
-        ))}
-      </PopoverContent>
-    </Popover>
+        </div>
+      )}
+    </>
   );
 }
 
