@@ -155,7 +155,6 @@ export default function CarsForSale() {
   return (
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
-
       <main className="flex-grow container mx-auto px-4 py-8">
         {/* Modern page header */}
         <div className="flex items-end justify-between gap-4 mb-8 flex-wrap">
@@ -166,7 +165,7 @@ export default function CarsForSale() {
               <span className="w-6 h-px bg-primary inline-block" />
             </span>
             <h1
-              className="text-3xl md:text-5xl font-black leading-tight"
+              className="text-3xl md:text-5xl font-black leading-tight mt-[0px] mb-[0px] pt-[4px] pb-[4px]"
               data-testid="text-cars-for-sale-title"
               style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--foreground)) 55%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
             >
@@ -329,7 +328,6 @@ export default function CarsForSale() {
           </div>
         )}
       </main>
-
       <footer className="py-6 border-t border-border bg-secondary">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -354,7 +352,6 @@ export default function CarsForSale() {
           </div>
         </div>
       </footer>
-
       <FilterPanel
         open={showFilterPanel}
         onClose={() => setShowFilterPanel(false)}
