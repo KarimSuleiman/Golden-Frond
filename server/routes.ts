@@ -12,26 +12,45 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import nodemailer from "nodemailer";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const MAIN_ADMIN_EMAIL = "muhanad_gf@yahoo.com";
 
-const uploadDir = "./uploads";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+const R2_BUCKET = "golden-frond-photos";
+const R2_PUBLIC_URL = "https://pub-69ab086d5de5477d99a2b68dbbf360bc.r2.dev";
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
   },
 });
 
+async function uploadToR2(buffer: Buffer, originalName: string, mimetype: string): Promise<string> {
+  const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+  const key = uniqueSuffix + path.extname(originalName);
+  await r2.send(new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+    Body: buffer,
+    ContentType: mimetype,
+  }));
+  return `${R2_PUBLIC_URL}/${key}`;
+}
+
+async function deleteFromR2(url: string): Promise<void> {
+  try {
+    const key = url.replace(`${R2_PUBLIC_URL}/`, "");
+    await r2.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key }));
+  } catch (e) {
+    console.error("R2 delete error:", e);
+  }
+}
+
 const upload = multer({
-  storage: multerStorage,
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -44,7 +63,7 @@ const upload = multer({
 });
 
 const uploadPdf = multer({
-  storage: multerStorage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const extname = path.extname(file.originalname).toLowerCase() === ".pdf";
@@ -389,23 +408,32 @@ export async function registerRoutes(
     }
   });
 
-  // === Upload Route ===
-  app.use("/uploads", express.static(uploadDir));
+  // === Upload Route (Cloudflare R2) ===
 
-  app.post("/api/upload", isAuthenticated, upload.single("image"), (req: any, res) => {
+  app.post("/api/upload", isAuthenticated, upload.single("image"), async (req: any, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    const imageUrl = `/uploads/${req.file.filename}`;
-    res.json({ imageUrl });
+    try {
+      const imageUrl = await uploadToR2(req.file.buffer, req.file.originalname, req.file.mimetype);
+      res.json({ imageUrl });
+    } catch (err: any) {
+      console.error("R2 upload error:", err);
+      res.status(500).json({ message: "فشل رفع الصورة: " + err.message });
+    }
   });
 
-  app.post("/api/upload-pdf", isAuthenticated, uploadPdf.single("pdf"), (req: any, res) => {
+  app.post("/api/upload-pdf", isAuthenticated, uploadPdf.single("pdf"), async (req: any, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    const pdfUrl = `/uploads/${req.file.filename}`;
-    res.json({ pdfUrl });
+    try {
+      const pdfUrl = await uploadToR2(req.file.buffer, req.file.originalname, req.file.mimetype);
+      res.json({ pdfUrl });
+    } catch (err: any) {
+      console.error("R2 upload error:", err);
+      res.status(500).json({ message: "فشل رفع الملف: " + err.message });
+    }
   });
 
   // === Listings (Cars for Sale) Routes ===
@@ -937,8 +965,10 @@ export async function registerRoutes(
 
       if (!mainImage) return res.status(400).json({ message: "Main image required" });
 
-      const imageUrl = `/uploads/${mainImage.filename}`;
-      const imagesArr = additionalImages.map((f: Express.Multer.File) => `/uploads/${f.filename}`);
+      const imageUrl = await uploadToR2(mainImage.buffer, mainImage.originalname, mainImage.mimetype);
+      const imagesArr = await Promise.all(
+        additionalImages.map((f: Express.Multer.File) => uploadToR2(f.buffer, f.originalname, f.mimetype))
+      );
 
       const b = req.body;
       const car = await storage.createIncomingCar({
