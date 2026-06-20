@@ -122,6 +122,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteListing(id: number): Promise<void> {
+    await db.delete(favorites).where(eq(favorites.listingId, id));
     await db.delete(listings).where(eq(listings.id, id));
   }
 
@@ -167,6 +168,7 @@ export class DatabaseStorage implements IStorage {
   async getFavoritesCountByUser(userId: string): Promise<number> {
     const [result] = await db.select({ count: count() })
       .from(favorites)
+      .innerJoin(listings, eq(favorites.listingId, listings.id))
       .where(eq(favorites.userId, userId));
     return result?.count ?? 0;
   }
