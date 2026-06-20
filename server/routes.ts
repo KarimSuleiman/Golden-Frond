@@ -401,6 +401,9 @@ export async function registerRoutes(
       if (!car) return res.status(404).json({ message: "Car not found" });
       if (car.userId !== req.user.claims.sub) return res.status(401).json({ message: "Unauthorized" });
 
+      if (car.imageUrl?.includes(R2_PUBLIC_URL)) await deleteFromR2(car.imageUrl);
+      for (const img of car.images || []) if (img?.includes(R2_PUBLIC_URL)) await deleteFromR2(img);
+
       await storage.deleteCar(id);
       res.status(204).send();
     } catch (error) {
@@ -535,6 +538,9 @@ export async function registerRoutes(
       if (listing.sellerId !== req.user.claims.sub && !isAdminUser) {
         return res.status(403).json({ message: "غير مصرح" });
       }
+
+      if (listing.imageUrl?.includes(R2_PUBLIC_URL)) await deleteFromR2(listing.imageUrl);
+      for (const img of (listing.images as string[] | null) || []) if (img?.includes(R2_PUBLIC_URL)) await deleteFromR2(img);
 
       await storage.deleteListing(id);
       res.status(204).send();
@@ -733,7 +739,10 @@ export async function registerRoutes(
       const id = Number(req.params.id);
       const car = await storage.getCar(id);
       if (!car) return res.status(404).json({ message: "السيارة غير موجودة" });
-      
+
+      if (car.imageUrl?.includes(R2_PUBLIC_URL)) await deleteFromR2(car.imageUrl);
+      for (const img of car.images || []) if (img?.includes(R2_PUBLIC_URL)) await deleteFromR2(img);
+
       await storage.deleteCar(id);
       res.status(204).send();
     } catch (error) {
@@ -1025,6 +1034,11 @@ export async function registerRoutes(
       const user = req.user;
       if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
       const id = parseInt(req.params.id);
+      const incomingCar = await storage.getIncomingCar(id);
+      if (incomingCar) {
+        if (incomingCar.imageUrl?.includes(R2_PUBLIC_URL)) await deleteFromR2(incomingCar.imageUrl);
+        for (const img of (incomingCar.images as string[] | null) || []) if (img?.includes(R2_PUBLIC_URL)) await deleteFromR2(img);
+      }
       await storage.deleteIncomingCar(id);
       res.json({ message: "Deleted" });
     } catch (error) {
