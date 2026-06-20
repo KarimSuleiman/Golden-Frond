@@ -471,20 +471,6 @@ export default function CarDetail() {
               </h3>
               <ul className="space-y-4">
                 <li>
-                  <span className="text-xs text-muted-foreground block mb-1">{t("contact.email")}</span>
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-muted-foreground" />
-                    <button
-                      onClick={() => { navigator.clipboard.writeText("muhanad_gf@yahoo.com"); }}
-                      className="text-foreground hover:text-primary transition-colors text-sm cursor-pointer"
-                      dir="ltr"
-                      data-testid="footer-contact-email"
-                    >
-                      muhanad_gf@yahoo.com
-                    </button>
-                  </div>
-                </li>
-                <li>
                   <span className="text-xs text-muted-foreground block mb-1">{t("contact.whatsapp")}</span>
                   <div className="flex items-center gap-2">
                     <SiWhatsapp className="w-4 h-4 text-muted-foreground" />

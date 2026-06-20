@@ -179,12 +179,6 @@ export default function MyCars() {
               <ul className="space-y-4">
                 <li>
                   <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-muted-foreground" />
-                    <button onClick={() => { navigator.clipboard.writeText("muhanad_gf@yahoo.com"); }} className="text-foreground hover:text-primary transition-colors text-sm cursor-pointer" dir="ltr">muhanad_gf@yahoo.com</button>
-                  </div>
-                </li>
-                <li>
-                  <div className="flex items-center gap-2">
                     <SiWhatsapp className="w-4 h-4 text-muted-foreground" />
                     <a href="https://wa.me/962796796108" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors text-sm" dir="ltr">+962-796796108</a>
                   </div>

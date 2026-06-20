@@ -130,13 +130,6 @@ export function Navbar() {
       color: "text-green-500",
     },
     {
-      icon: Mail,
-      label: t("landing.email"),
-      value: "muhanad_gf@yahoo.com",
-      href: "mailto:muhanad_gf@yahoo.com",
-      color: "text-red-500",
-    },
-    {
       icon: SiFacebook,
       label: t("landing.facebook"),
       value: "golden.frond.gallery",
