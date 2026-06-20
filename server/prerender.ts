@@ -9,6 +9,8 @@ interface RouteMeta {
   canonical?: string;
 }
 
+type JsonLdObject = Record<string, unknown>;
+
 const SITE_NAME = "السعفة الذهبية";
 const DEFAULT_OG_IMAGE = "/og-image.png";
 const BASE_URL = "https://golden-palm.replit.app";
@@ -110,6 +112,210 @@ async function getRouteMeta(
   }
 
   return null;
+}
+
+async function getRouteJsonLd(pathname: string): Promise<JsonLdObject | null> {
+  if (pathname === "/" || pathname === "") {
+    return {
+      "@context": "https://schema.org",
+      "@type": "AutoDealer",
+      "name": "السعفة الذهبية",
+      "alternateName": "Golden Palm Car Trading",
+      "description": "شركة رائدة في تجارة واستيراد السيارات في الأردن. نستورد السيارات من المزادات الأمريكية والأوروبية وكوريا.",
+      "url": BASE_URL,
+      "telephone": "+962796796108",
+      "email": "muhanad_gf@yahoo.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "عمان",
+        "addressCountry": "JO",
+      },
+      "areaServed": { "@type": "Country", "name": "Jordan" },
+      "sameAs": [
+        "https://www.facebook.com/golden.frond.gallery",
+        "https://wa.me/962796796108",
+      ],
+    };
+  }
+
+  if (pathname === "/cars-for-sale") {
+    try {
+      const rows = await db
+        .select({
+          id: listings.id,
+          make: listings.make,
+          model: listings.model,
+          year: listings.year,
+          color: listings.color,
+          price: listings.price,
+          imageUrl: listings.imageUrl,
+        })
+        .from(listings);
+
+      return {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "سيارات للبيع - السعفة الذهبية",
+        "description": "تصفح السيارات المعروضة للبيع في معرض السعفة الذهبية في الأردن",
+        "url": `${BASE_URL}/cars-for-sale`,
+        "numberOfItems": rows.length,
+        "itemListElement": rows.slice(0, 50).map((l, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "url": `${BASE_URL}/listing/${l.id}`,
+          "name": [l.make, l.model, l.year].filter(Boolean).join(" "),
+          "item": {
+            "@type": "Vehicle",
+            "name": [l.make, l.model, l.year].filter(Boolean).join(" "),
+            "brand": l.make ? { "@type": "Brand", "name": l.make } : undefined,
+            "model": l.model ?? undefined,
+            "modelDate": l.year ? String(l.year) : undefined,
+            "color": l.color ?? undefined,
+            "image": l.imageUrl.startsWith("http") ? l.imageUrl : `${BASE_URL}${l.imageUrl}`,
+            "url": `${BASE_URL}/listing/${l.id}`,
+            "offers": l.price ? {
+              "@type": "Offer",
+              "priceCurrency": "JOD",
+              "price": l.price,
+              "availability": "https://schema.org/InStock",
+            } : undefined,
+          },
+        })),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  if (pathname === "/incoming-cars") {
+    try {
+      const rows = await db
+        .select({
+          id: incomingCars.id,
+          make: incomingCars.make,
+          model: incomingCars.model,
+          year: incomingCars.year,
+          color: incomingCars.color,
+          imageUrl: incomingCars.imageUrl,
+        })
+        .from(incomingCars);
+
+      return {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "سيارات قيد التحميل - السعفة الذهبية",
+        "description": "سيارات قادمة من المزادات الأمريكية والأوروبية إلى معرض السعفة الذهبية في الأردن",
+        "url": `${BASE_URL}/incoming-cars`,
+        "numberOfItems": rows.length,
+        "itemListElement": rows.map((c, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "url": `${BASE_URL}/incoming-cars/${c.id}`,
+          "name": [c.make, c.model, c.year].filter(Boolean).join(" "),
+          "item": {
+            "@type": "Vehicle",
+            "name": [c.make, c.model, c.year].filter(Boolean).join(" "),
+            "brand": c.make ? { "@type": "Brand", "name": c.make } : undefined,
+            "model": c.model,
+            "modelDate": c.year ? String(c.year) : undefined,
+            "color": c.color ?? undefined,
+            "image": c.imageUrl.startsWith("http") ? c.imageUrl : `${BASE_URL}${c.imageUrl}`,
+            "url": `${BASE_URL}/incoming-cars/${c.id}`,
+          },
+        })),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  const incomingCarMatch = pathname.match(/^\/incoming-cars\/(\d+)$/);
+  if (incomingCarMatch) {
+    const id = parseInt(incomingCarMatch[1], 10);
+    try {
+      const [car] = await db.select().from(incomingCars).where(eq(incomingCars.id, id)).limit(1);
+      if (!car) return null;
+      const carName = [car.make, car.model, car.year].filter(Boolean).join(" ");
+      const allImages: string[] = [];
+      if (car.imageUrl) allImages.push(car.imageUrl.startsWith("http") ? car.imageUrl : `${BASE_URL}${car.imageUrl}`);
+      if (car.images) {
+        for (const img of car.images) {
+          allImages.push(img.startsWith("http") ? img : `${BASE_URL}${img}`);
+        }
+      }
+      return {
+        "@context": "https://schema.org",
+        "@type": "Vehicle",
+        "name": carName,
+        "brand": car.make ? { "@type": "Brand", "name": car.make } : undefined,
+        "model": car.model,
+        "modelDate": car.year ? String(car.year) : undefined,
+        "color": car.color ?? undefined,
+        "image": allImages.length === 1 ? allImages[0] : allImages.length > 1 ? allImages : undefined,
+        "description": car.details ?? undefined,
+        "url": `${BASE_URL}/incoming-cars/${car.id}`,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  const listingMatch = pathname.match(/^\/listing\/(\d+)$/);
+  if (listingMatch) {
+    const id = parseInt(listingMatch[1], 10);
+    try {
+      const [listing] = await db.select().from(listings).where(eq(listings.id, id)).limit(1);
+      if (!listing) return null;
+      const listingName = [listing.make, listing.model, listing.year].filter(Boolean).join(" ");
+      const allImages: string[] = [];
+      if (listing.imageUrl) allImages.push(listing.imageUrl.startsWith("http") ? listing.imageUrl : `${BASE_URL}${listing.imageUrl}`);
+      if (listing.images) {
+        for (const img of listing.images) {
+          allImages.push(img.startsWith("http") ? img : `${BASE_URL}${img}`);
+        }
+      }
+      return {
+        "@context": "https://schema.org",
+        "@type": "Vehicle",
+        "name": listingName,
+        "brand": listing.make ? { "@type": "Brand", "name": listing.make } : undefined,
+        "model": listing.model ?? undefined,
+        "modelDate": listing.year ? String(listing.year) : undefined,
+        "color": listing.color ?? undefined,
+        "image": allImages.length === 1 ? allImages[0] : allImages.length > 1 ? allImages : undefined,
+        "description": listing.description ?? undefined,
+        "vehicleTransmission": listing.transmission ?? undefined,
+        "fuelType": listing.fuelType ?? undefined,
+        "mileageFromOdometer": listing.mileage ? {
+          "@type": "QuantitativeValue",
+          "value": listing.mileage,
+          "unitCode": "SMI",
+        } : undefined,
+        "vehicleSeatingCapacity": listing.seats ?? undefined,
+        "bodyType": listing.bodyType ?? undefined,
+        "url": `${BASE_URL}/listing/${listing.id}`,
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "JOD",
+          "price": listing.price ?? undefined,
+          "availability": listing.status === "active"
+            ? "https://schema.org/InStock"
+            : "https://schema.org/SoldOut",
+          "seller": { "@type": "Organization", "name": "السعفة الذهبية" },
+        },
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+function injectJsonLd(html: string, jsonLd: JsonLdObject): string {
+  const sanitized = JSON.stringify(jsonLd).replace(/<\//g, "<\\/");
+  const scriptTag = `<script type="application/ld+json">${sanitized}</script>`;
+  return html.replace("</head>", `  ${scriptTag}\n  </head>`);
 }
 
 function escapeHtml(str: string): string {
@@ -220,9 +426,10 @@ export async function injectRouteMetadata(
   html: string,
   pathname: string,
 ): Promise<{ html: string; notFound: boolean }> {
-  const [meta, linkBlock] = await Promise.all([
+  const [meta, linkBlock, jsonLd] = await Promise.all([
     getRouteMeta(pathname),
     buildInventoryLinkBlock(pathname),
+    getRouteJsonLd(pathname),
   ]);
 
   if (meta === NOT_FOUND) {
@@ -230,6 +437,10 @@ export async function injectRouteMetadata(
   }
 
   let result = meta ? injectMeta(html, meta) : html;
+
+  if (jsonLd) {
+    result = injectJsonLd(result, jsonLd);
+  }
 
   if (linkBlock) {
     result = result.replace("</body>", `${linkBlock}\n</body>`);
