@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { useJsonLd } from "@/hooks/use-json-ld";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Trash2, Upload, X, Truck, Package, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Upload, X, Truck, Package, Calendar } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
@@ -34,6 +36,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+
+
+const SITE_ORIGIN = "https://golden-palm.replit.app";
+
 export default function IncomingCars() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
@@ -47,8 +53,6 @@ export default function IncomingCars() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [selectedCar, setSelectedCar] = useState<IncomingCar | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
     queryKey: ["/api/auth/is-admin"],
@@ -58,6 +62,31 @@ export default function IncomingCars() {
   const { data: cars, isLoading } = useQuery<IncomingCar[]>({
     queryKey: ["/api/incoming-cars"],
   });
+
+  useJsonLd(cars?.length ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "سيارات قيد التحميل - السعفة الذهبية",
+    "description": "سيارات قادمة من المزادات الأمريكية والأوروبية إلى معرض السعفة الذهبية في الأردن",
+    "url": `${SITE_ORIGIN}/incoming-cars`,
+    "numberOfItems": cars.length,
+    "itemListElement": cars.map((car, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `${SITE_ORIGIN}/incoming-cars/${car.id}`,
+      "name": `${car.make} ${car.model} ${car.year}`,
+      "item": {
+        "@type": "Vehicle",
+        "name": `${car.make} ${car.model} ${car.year}`,
+        "brand": { "@type": "Brand", "name": car.make },
+        "model": car.model,
+        "modelDate": String(car.year),
+        "color": car.color ?? undefined,
+        "image": car.imageUrl.startsWith("http") ? car.imageUrl : `${SITE_ORIGIN}${car.imageUrl}`,
+        "url": `${SITE_ORIGIN}/incoming-cars/${car.id}`,
+      },
+    })),
+  } : null);
 
   // Add form state
   const [form, setForm] = useState({
@@ -206,92 +235,45 @@ export default function IncomingCars() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {cars.map((car, i) => (
               <motion.div key={car.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Card className="overflow-hidden rounded-2xl border border-border hover:shadow-lg transition-all cursor-pointer group"
-                  onClick={() => { setSelectedCar(car); setCurrentImageIndex(0); }}>
-                  <div className="relative h-52 overflow-hidden bg-muted">
-                    <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <Badge className={`absolute top-3 ${language === "ar" ? "right-3" : "left-3"} text-xs font-semibold ${car.status === "arrived" ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"}`}>
-                      {car.status === "arrived" ? t("incoming.status.arrived") : t("incoming.status.coming")}
-                    </Badge>
-                    {authInfo?.isAdmin && (
-                      <button
-                        onClick={e => { e.stopPropagation(); setDeleteId(car.id); }}
-                        className="absolute top-3 end-3 w-8 h-8 bg-destructive/90 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        data-testid={`button-delete-incoming-${car.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                  <CardContent className="p-4 space-y-2">
-                    <h3 className="font-bold text-lg text-foreground">{car.make} {car.model}</h3>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{car.year}</span>
-                      {car.color && <span>{language === "ar" ? car.color : car.color}</span>}
+                <Link href={`/incoming-cars/${car.id}`} className="block group">
+                  <Card className="overflow-hidden rounded-2xl border border-border hover:shadow-lg transition-all cursor-pointer">
+                    <div className="relative h-52 overflow-hidden bg-muted">
+                      <img src={car.imageUrl} alt={`${car.make} ${car.model} ${car.year}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <Badge className={`absolute top-3 ${language === "ar" ? "right-3" : "left-3"} text-xs font-semibold ${car.status === "arrived" ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"}`}>
+                        {car.status === "arrived" ? t("incoming.status.arrived") : t("incoming.status.coming")}
+                      </Badge>
+                      {authInfo?.isAdmin && (
+                        <button
+                          onClick={e => { e.preventDefault(); e.stopPropagation(); setDeleteId(car.id); }}
+                          className="absolute top-3 end-3 w-8 h-8 bg-destructive/90 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          data-testid={`button-delete-incoming-${car.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
-                    {car.estimatedArrival && (
-                      <p className="text-xs text-primary font-medium flex items-center gap-1">
-                        <Truck className="w-3.5 h-3.5" />
-                        {t("incoming.estimatedArrival")}: {car.estimatedArrival}
-                      </p>
-                    )}
-                    {car.details && <p className="text-xs text-muted-foreground line-clamp-2">{car.details}</p>}
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-4 space-y-2">
+                      <h3 className="font-bold text-lg text-foreground">{car.make} {car.model}</h3>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{car.year}</span>
+                        {car.color && <span>{car.color}</span>}
+                      </div>
+                      {car.estimatedArrival && (
+                        <p className="text-xs text-primary font-medium flex items-center gap-1">
+                          <Truck className="w-3.5 h-3.5" />
+                          {t("incoming.estimatedArrival")}: {car.estimatedArrival}
+                        </p>
+                      )}
+                      {car.details && <p className="text-xs text-muted-foreground line-clamp-2">{car.details}</p>}
+                    </CardContent>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Car detail dialog */}
-      {selectedCar && (
-        <Dialog open={!!selectedCar} onOpenChange={() => setSelectedCar(null)}>
-          <DialogContent className="max-w-lg p-0 overflow-hidden rounded-2xl" dir={dir}>
-            <div className="relative h-64 bg-muted">
-              {(() => {
-                const imgs = allImages(selectedCar);
-                return (
-                  <>
-                    <img src={imgs[currentImageIndex]} alt="" className="w-full h-full object-cover" />
-                    {imgs.length > 1 && (
-                      <>
-                        <button onClick={() => setCurrentImageIndex(i => (i - 1 + imgs.length) % imgs.length)}
-                          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center">
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setCurrentImageIndex(i => (i + 1) % imgs.length)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center">
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                          {imgs.map((_, i) => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === currentImageIndex ? "bg-white" : "bg-white/40"}`} />)}
-                        </div>
-                      </>
-                    )}
-                    <Badge className={`absolute top-3 start-3 text-xs ${selectedCar.status === "arrived" ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"}`}>
-                      {selectedCar.status === "arrived" ? t("incoming.status.arrived") : t("incoming.status.coming")}
-                    </Badge>
-                  </>
-                );
-              })()}
-            </div>
-            <div className="p-5 space-y-3">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-bold">{selectedCar.make} {selectedCar.model} {selectedCar.year}</DialogTitle>
-              </DialogHeader>
-              {selectedCar.color && <p className="text-sm text-muted-foreground">{selectedCar.color}</p>}
-              {selectedCar.estimatedArrival && (
-                <p className="text-sm font-medium text-primary flex items-center gap-1.5">
-                  <Truck className="w-4 h-4" />
-                  {t("incoming.estimatedArrival")}: {selectedCar.estimatedArrival}
-                </p>
-              )}
-              {selectedCar.details && <p className="text-sm text-foreground/80 leading-relaxed">{selectedCar.details}</p>}
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
 
       {/* Add modal */}
       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>

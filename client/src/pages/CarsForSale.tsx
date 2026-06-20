@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { useJsonLd } from "@/hooks/use-json-ld";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,16 +100,50 @@ export default function CarsForSale() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({ ...emptyFilters });
 
+  const SITE_ORIGIN = "https://golden-palm.replit.app";
+
   usePageMeta({
     title: "سيارات للبيع - السعفة الذهبية | سوق السيارات في الأردن",
     description: "تصفح مئات السيارات المعروضة للبيع في السعفة الذهبية. سيارات مستوردة بأسعار تنافسية مع خيارات تصفية متقدمة للبحث عن سيارتك المثالية.",
   });
+
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
 
   const { data: listings = [], isLoading } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
   });
+
+  useJsonLd(listings.length ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "سيارات للبيع - السعفة الذهبية",
+    "description": "تصفح السيارات المعروضة للبيع في معرض السعفة الذهبية في الأردن",
+    "url": `${SITE_ORIGIN}/cars-for-sale`,
+    "numberOfItems": listings.length,
+    "itemListElement": listings.slice(0, 50).map((listing, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `${SITE_ORIGIN}/listing/${listing.id}`,
+      "name": [listing.make, listing.model, listing.year].filter(Boolean).join(" "),
+      "item": {
+        "@type": "Vehicle",
+        "name": [listing.make, listing.model, listing.year].filter(Boolean).join(" "),
+        "brand": listing.make ? { "@type": "Brand", "name": listing.make } : undefined,
+        "model": listing.model ?? undefined,
+        "modelDate": listing.year ? String(listing.year) : undefined,
+        "color": listing.color ?? undefined,
+        "image": listing.imageUrl.startsWith("http") ? listing.imageUrl : `${SITE_ORIGIN}${listing.imageUrl}`,
+        "url": `${SITE_ORIGIN}/listing/${listing.id}`,
+        "offers": listing.price ? {
+          "@type": "Offer",
+          "priceCurrency": "JOD",
+          "price": listing.price,
+          "availability": "https://schema.org/InStock",
+        } : undefined,
+      },
+    })),
+  } : null);
 
   const filteredListings = useMemo(() => {
     const filtered = applyFilters(listings, filters, searchQuery);

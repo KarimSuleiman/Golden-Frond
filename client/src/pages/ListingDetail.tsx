@@ -3,6 +3,7 @@ import { useParams, Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { useJsonLd } from "@/hooks/use-json-ld";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -202,6 +203,38 @@ export default function ListingDetail() {
     description: listingMetaDescription,
     ogImage: listing?.imageUrl || "/og-image.png",
   });
+
+  const SITE_ORIGIN = "https://golden-palm.replit.app";
+  const listingImages = listing ? [listing.imageUrl, ...(listing.images || [])].filter(Boolean) : [];
+
+  useJsonLd(listing ? {
+    "@context": "https://schema.org",
+    "@type": "Vehicle",
+    "name": [listing.make, listing.model, listing.year].filter(Boolean).join(" "),
+    "brand": listing.make ? { "@type": "Brand", "name": listing.make } : undefined,
+    "model": listing.model ?? undefined,
+    "modelDate": listing.year ? String(listing.year) : undefined,
+    "color": listing.color ?? undefined,
+    "image": listingImages.map(img => img.startsWith("http") ? img : `${SITE_ORIGIN}${img}`),
+    "description": listing.description ?? undefined,
+    "vehicleTransmission": listing.transmission ?? undefined,
+    "fuelType": listing.fuelType ?? undefined,
+    "mileageFromOdometer": listing.mileage ? {
+      "@type": "QuantitativeValue",
+      "value": listing.mileage,
+      "unitCode": "SMI",
+    } : undefined,
+    "vehicleSeatingCapacity": listing.seats ?? undefined,
+    "bodyType": listing.bodyType ?? undefined,
+    "url": `${SITE_ORIGIN}/listing/${params.id}`,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "JOD",
+      "price": listing.price ?? undefined,
+      "availability": listing.status === "active" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      "seller": { "@type": "Organization", "name": "السعفة الذهبية" },
+    },
+  } : null);
 
   if (isLoading) {
     return (

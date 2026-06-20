@@ -913,6 +913,19 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/incoming-cars/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const car = await storage.getIncomingCar(id);
+      if (!car) return res.status(404).json({ message: "Not found" });
+      res.json(car);
+    } catch (error) {
+      console.error("Get incoming car error:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
   app.post("/api/admin/incoming-cars", isAuthenticated, upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }]), async (req: any, res) => {
     try {
       const user = req.user;

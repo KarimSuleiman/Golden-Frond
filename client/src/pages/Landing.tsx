@@ -4,6 +4,7 @@ import { useLanguage } from "@/lib/i18n";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { usePageMeta } from "@/hooks/use-page-meta";
+import { useJsonLd } from "@/hooks/use-json-ld";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -37,6 +38,32 @@ export default function Landing() {
   usePageMeta({
     title: "السعفة الذهبية - منصة تداول السيارات في الأردن",
     description: "السعفة الذهبية شركة رائدة في تجارة السيارات واستيرادها. تتبع شحناتك وتصفح أحدث السيارات المستوردة من أمريكا وأوروبا وكوريا.",
+  });
+
+  useJsonLd({
+    "@context": "https://schema.org",
+    "@type": "AutoDealer",
+    "name": "السعفة الذهبية",
+    "alternateName": "Golden Palm Car Trading",
+    "description": "شركة رائدة في تجارة واستيراد السيارات في الأردن. نستورد السيارات من المزادات الأمريكية والأوروبية وكوريا.",
+    "url": "https://golden-palm.replit.app",
+    "telephone": "+962796796108",
+    "email": "muhanad_gf@yahoo.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "عمان",
+      "addressCountry": "JO",
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "addressCountry": "JO",
+    },
+    "areaServed": { "@type": "Country", "name": "Jordan" },
+    "sameAs": [
+      "https://www.facebook.com/golden.frond.gallery",
+      "https://wa.me/962796796108",
+    ],
+    "openingHoursSpecification": [],
   });
 
 

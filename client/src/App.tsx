@@ -16,6 +16,7 @@ import ListingDetail from "@/pages/ListingDetail";
 import AddListing from "@/pages/AddListing";
 import MyCars from "@/pages/MyCars";
 import IncomingCars from "@/pages/IncomingCars";
+import IncomingCarDetail from "@/pages/IncomingCarDetail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/listing/:id" component={ListingDetail} />
       <Route path="/add-listing" component={AddListing} />
       <Route path="/incoming-cars" component={IncomingCars} />
+      <Route path="/incoming-cars/:id" component={IncomingCarDetail} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
