@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -188,6 +189,19 @@ export default function ListingDetail() {
   };
 
   const canDelete = authInfo?.isAdmin || (user && listing && listing.sellerId === user.id);
+
+  const listingMetaTitle = listing
+    ? `${[listing.make, listing.model, listing.year].filter(Boolean).join(" ")} - السعفة الذهبية`
+    : "سيارة للبيع - السعفة الذهبية";
+  const listingMetaDescription = listing
+    ? `${[listing.make, listing.model, listing.year].filter(Boolean).join(" ")} بسعر ${listing.price ? listing.price.toLocaleString("ar-JO") + " دينار" : "يُحدد عند التواصل"}. ${listing.description ? listing.description.slice(0, 120) : "سيارة مستوردة معروضة للبيع في السعفة الذهبية - الأردن."}`
+    : "سيارة مستوردة معروضة للبيع في السعفة الذهبية - الأردن.";
+
+  usePageMeta({
+    title: listingMetaTitle,
+    description: listingMetaDescription,
+    ogImage: listing?.imageUrl || "/og-image.png",
+  });
 
   if (isLoading) {
     return (

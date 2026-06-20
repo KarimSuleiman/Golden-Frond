@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -32,6 +33,11 @@ export default function Landing() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
+
+  usePageMeta({
+    title: "السعفة الذهبية - منصة تداول السيارات في الأردن",
+    description: "السعفة الذهبية شركة رائدة في تجارة السيارات واستيرادها. تتبع شحناتك وتصفح أحدث السيارات المستوردة من أمريكا وأوروبا وكوريا.",
+  });
 
 
   const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({

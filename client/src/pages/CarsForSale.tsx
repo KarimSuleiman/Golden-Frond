@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,6 +98,11 @@ export default function CarsForSale() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({ ...emptyFilters });
+
+  usePageMeta({
+    title: "سيارات للبيع - السعفة الذهبية | سوق السيارات في الأردن",
+    description: "تصفح مئات السيارات المعروضة للبيع في السعفة الذهبية. سيارات مستوردة بأسعار تنافسية مع خيارات تصفية متقدمة للبحث عن سيارتك المثالية.",
+  });
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
 

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,6 +39,11 @@ export default function IncomingCars() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  usePageMeta({
+    title: "سيارات قيد التحميل - السعفة الذهبية | وصول قريب",
+    description: "تعرف على آخر السيارات القادمة من المزادات الأمريكية والأوروبية. شاهد السيارات التي ستصل قريباً إلى معرض السعفة الذهبية في الأردن.",
+  });
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
