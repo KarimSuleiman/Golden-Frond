@@ -11,9 +11,7 @@ interface RouteMeta {
 
 const SITE_NAME = "السعفة الذهبية";
 const DEFAULT_OG_IMAGE = "/og-image.png";
-const BASE_URL = process.env.REPL_SLUG
-  ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
-  : "";
+const BASE_URL = "https://golden-palm.replit.app";
 
 const NOT_FOUND = Symbol("NOT_FOUND");
 
@@ -26,6 +24,7 @@ async function getRouteMeta(
       description:
         "السعفة الذهبية شركة رائدة في تجارة السيارات واستيرادها منذ 2004. تتبع شحناتك وتصفح أحدث السيارات المستوردة من أمريكا وأوروبا وكوريا.",
       ogImage: DEFAULT_OG_IMAGE,
+      canonical: `${BASE_URL}/`,
     };
   }
 
@@ -35,6 +34,7 @@ async function getRouteMeta(
       description:
         "تصفح مئات السيارات المعروضة للبيع في السعفة الذهبية. سيارات مستوردة بأسعار تنافسية مع خيارات تصفية متقدمة للبحث عن سيارتك المثالية.",
       ogImage: DEFAULT_OG_IMAGE,
+      canonical: `${BASE_URL}/cars-for-sale`,
     };
   }
 
@@ -44,6 +44,7 @@ async function getRouteMeta(
       description:
         "تعرف على آخر السيارات القادمة من المزادات الأمريكية والأوروبية. شاهد السيارات التي ستصل قريباً إلى معرض السعفة الذهبية في الأردن.",
       ogImage: DEFAULT_OG_IMAGE,
+      canonical: `${BASE_URL}/incoming-cars`,
     };
   }
 
