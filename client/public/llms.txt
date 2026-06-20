@@ -1,0 +1,29 @@
+# Golden Palm Car Trading Platform (السعفة الذهبية)
+
+> An Arabic-language car marketplace and import-tracking platform based in Amman, Jordan.
+
+## About
+
+Golden Palm (السعفة الذهبية) is a car trading platform where users can browse vehicles for sale, track imported cars in transit from auction, and connect with traders. The entire interface is in Arabic with right-to-left layout.
+
+## Primary Language
+
+Arabic (ar)
+
+## Key Public Pages
+
+- / — Landing page with hero, testimonials, about us, and contact information
+- /cars-for-sale — Marketplace listing page; browse all available cars for purchase with filters (make, model, year, price, body type, fuel, transmission, color, and more)
+- /listing/:id — Individual car listing detail page with full specs, photos, and seller contact
+- /incoming-cars — Cars currently in transit from auction; shows shipping status and estimated arrival
+
+## Sitemap
+
+https://golden-palm-cars.replit.app/sitemap.xml
+
+## Contact
+
+- Phone: 796796108
+- WhatsApp: +962796796108
+- Email: muhanad_gf@yahoo.com
+- Location: Amman, Jordan

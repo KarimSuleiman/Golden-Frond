@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Allow: /cars-for-sale
+Allow: /listing/
+Allow: /incoming-cars
+Disallow: /api/
+Disallow: /admin
+Disallow: /my-cars
+Disallow: /add-listing
+Disallow: /profile
+Disallow: /favorites
+
+User-agent: GPTBot
+Allow: /
+Allow: /cars-for-sale
+Allow: /listing/
+Allow: /incoming-cars
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /cars-for-sale
+Allow: /listing/
+Allow: /incoming-cars
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /cars-for-sale
+Allow: /listing/
+Allow: /incoming-cars
+
+Sitemap: https://golden-palm-cars.replit.app/sitemap.xml

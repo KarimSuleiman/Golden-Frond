@@ -140,12 +140,44 @@ const trackLastActive = async (req: any, _res: any, next: any) => {
   next();
 };
 
+const SITE_ORIGIN = "https://golden-palm-cars.replit.app";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   await setupAuth(app);
   registerAuthRoutes(app);
+
+  // === Dynamic Sitemap ===
+  app.get("/sitemap.xml", async (_req, res) => {
+    try {
+      const allListings = await storage.getListings();
+      const staticUrls = [
+        { loc: `${SITE_ORIGIN}/`, changefreq: "weekly", priority: "1.0" },
+        { loc: `${SITE_ORIGIN}/cars-for-sale`, changefreq: "daily", priority: "0.9" },
+        { loc: `${SITE_ORIGIN}/incoming-cars`, changefreq: "daily", priority: "0.8" },
+      ];
+      const listingUrls = allListings.map((l) => ({
+        loc: `${SITE_ORIGIN}/listing/${l.id}`,
+        changefreq: "weekly",
+        priority: "0.7",
+      }));
+      const allUrls = [...staticUrls, ...listingUrls];
+      const urlEntries = allUrls
+        .map(
+          (u) =>
+            `  <url>\n    <loc>${u.loc}</loc>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`
+        )
+        .join("\n");
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlEntries}\n</urlset>`;
+      res.setHeader("Content-Type", "application/xml; charset=utf-8");
+      res.send(xml);
+    } catch (error) {
+      console.error("Sitemap generation error:", error);
+      res.status(500).type("text/plain").send("Error generating sitemap");
+    }
+  });
 
   app.use(trackLastActive);
 
