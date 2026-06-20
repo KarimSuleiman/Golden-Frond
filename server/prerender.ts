@@ -15,7 +15,11 @@ const BASE_URL = process.env.REPL_SLUG
   ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
   : "";
 
-async function getRouteMeta(pathname: string): Promise<RouteMeta | null> {
+const NOT_FOUND = Symbol("NOT_FOUND");
+
+async function getRouteMeta(
+  pathname: string,
+): Promise<RouteMeta | typeof NOT_FOUND | null> {
   if (pathname === "/" || pathname === "") {
     return {
       title: `${SITE_NAME} - منصة تداول السيارات في الأردن`,
@@ -72,11 +76,7 @@ async function getRouteMeta(pathname: string): Promise<RouteMeta | null> {
       }
     } catch {
     }
-    return {
-      title: `سيارة للبيع - ${SITE_NAME}`,
-      description: "سيارة مستوردة معروضة للبيع في السعفة الذهبية - الأردن.",
-      ogImage: DEFAULT_OG_IMAGE,
-    };
+    return NOT_FOUND;
   }
 
   return null;
@@ -153,8 +153,13 @@ function injectMeta(html: string, meta: RouteMeta): string {
 export async function injectRouteMetadata(
   html: string,
   pathname: string,
-): Promise<string> {
+): Promise<{ html: string; notFound: boolean }> {
   const meta = await getRouteMeta(pathname);
-  if (!meta) return html;
-  return injectMeta(html, meta);
+  if (meta === NOT_FOUND) {
+    return { html, notFound: true };
+  }
+  if (!meta) {
+    return { html, notFound: false };
+  }
+  return { html: injectMeta(html, meta), notFound: false };
 }

@@ -51,7 +51,7 @@ export async function setupVite(server: Server, app: Express) {
       );
       let page = await vite.transformIndexHtml(url, template);
       const pathname = req.originalUrl.split("?")[0];
-      page = await injectRouteMetadata(page, pathname);
+      ({ html: page } = await injectRouteMetadata(page, pathname));
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
