@@ -180,7 +180,7 @@ export default function MyCars() {
                 <li>
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-muted-foreground" />
-                    <a href="mailto:muhanad_gf@yahoo.com" className="text-foreground hover:text-primary transition-colors text-sm" dir="ltr">muhanad_gf@yahoo.com</a>
+                    <button onClick={() => { navigator.clipboard.writeText("muhanad_gf@yahoo.com"); }} className="text-foreground hover:text-primary transition-colors text-sm cursor-pointer" dir="ltr">muhanad_gf@yahoo.com</button>
                   </div>
                 </li>
                 <li>

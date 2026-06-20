@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
@@ -32,7 +33,13 @@ import logoEdge from "@assets/f5fb237d-2ede-4658-83b0-4a985539352a_1775085234273
 export default function Landing() {
   const { t, language, dir } = useLanguage();
   const { user } = useAuth();
+  const { toast } = useToast();
   const ArrowIcon = language === "ar" ? ArrowRight : ArrowLeft;
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText("muhanad_gf@yahoo.com");
+    toast({ title: language === "ar" ? "تم نسخ الإيميل ✓" : "Email copied ✓" });
+  };
 
 
   const { data: isAdminCheck } = useQuery<{ isAdmin: boolean }>({
@@ -455,13 +462,13 @@ export default function Landing() {
               </p>
             </motion.a>
 
-            <motion.a
-              href="mailto:muhanad_gf@yahoo.com"
+            <motion.button
+              onClick={copyEmail}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               viewport={{ once: true }}
-              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-red-500/30 transition-all group"
+              className="flex flex-col items-center p-6 rounded-2xl bg-card border border-border hover:shadow-lg hover:border-red-500/30 transition-all group cursor-pointer w-full"
               data-testid="link-email"
             >
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
@@ -476,7 +483,7 @@ export default function Landing() {
               >
                 muhanad_gf@yahoo.com
               </p>
-            </motion.a>
+            </motion.button>
 
             <motion.a
               href="https://www.facebook.com/golden.frond.gallery"
@@ -622,14 +629,14 @@ export default function Landing() {
                   <span className="text-xs text-muted-foreground block mb-1">{t("contact.email")}</span>
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-muted-foreground" />
-                    <a 
-                      href="mailto:muhanad_gf@yahoo.com" 
-                      className="text-foreground hover:text-primary transition-colors text-sm"
+                    <button
+                      onClick={copyEmail}
+                      className="text-foreground hover:text-primary transition-colors text-sm cursor-pointer"
                       dir="ltr"
                       data-testid="footer-contact-email"
                     >
                       muhanad_gf@yahoo.com
-                    </a>
+                    </button>
                   </div>
                 </li>
                 <li>
