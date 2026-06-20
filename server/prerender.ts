@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { listings } from "@shared/schema";
+import { listings, incomingCars } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 interface RouteMeta {
@@ -45,6 +45,35 @@ async function getRouteMeta(
         "تعرف على آخر السيارات القادمة من المزادات الأمريكية والأوروبية. شاهد السيارات التي ستصل قريباً إلى معرض السعفة الذهبية في الأردن.",
       ogImage: DEFAULT_OG_IMAGE,
     };
+  }
+
+  const incomingCarMatch = pathname.match(/^\/incoming-cars\/(\d+)$/);
+  if (incomingCarMatch) {
+    const id = parseInt(incomingCarMatch[1], 10);
+    try {
+      const [car] = await db
+        .select()
+        .from(incomingCars)
+        .where(eq(incomingCars.id, id))
+        .limit(1);
+
+      if (car) {
+        const nameParts = [car.make, car.model, car.year]
+          .filter(Boolean)
+          .join(" ");
+        const descBase = car.details
+          ? car.details.slice(0, 140)
+          : `سيارة ${nameParts} قادمة قريباً إلى معرض السعفة الذهبية`;
+        return {
+          title: `${nameParts} - قيد الشحن | ${SITE_NAME}`,
+          description: descBase,
+          ogImage: car.imageUrl || DEFAULT_OG_IMAGE,
+          canonical: `${BASE_URL}/incoming-cars/${id}`,
+        };
+      }
+    } catch {
+    }
+    return NOT_FOUND;
   }
 
   const listingMatch = pathname.match(/^\/listing\/(\d+)$/);
@@ -150,16 +179,60 @@ function injectMeta(html: string, meta: RouteMeta): string {
   return result;
 }
 
+async function buildInventoryLinkBlock(pathname: string): Promise<string> {
+  if (pathname === "/cars-for-sale") {
+    try {
+      const rows = await db.select({ id: listings.id, make: listings.make, model: listings.model, year: listings.year }).from(listings);
+      if (rows.length === 0) return "";
+      const anchors = rows
+        .map((l) => {
+          const label = [l.make, l.model, l.year].filter(Boolean).join(" ") || `سيارة ${l.id}`;
+          return `<a href="/listing/${l.id}">${escapeHtml(label)}</a>`;
+        })
+        .join("\n");
+      return `\n<nav aria-label="inventory-links" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">\n${anchors}\n</nav>`;
+    } catch {
+      return "";
+    }
+  }
+
+  if (pathname === "/incoming-cars") {
+    try {
+      const rows = await db.select({ id: incomingCars.id, make: incomingCars.make, model: incomingCars.model, year: incomingCars.year }).from(incomingCars);
+      if (rows.length === 0) return "";
+      const anchors = rows
+        .map((c) => {
+          const label = [c.make, c.model, c.year].filter(Boolean).join(" ") || `سيارة ${c.id}`;
+          return `<a href="/incoming-cars/${c.id}">${escapeHtml(label)}</a>`;
+        })
+        .join("\n");
+      return `\n<nav aria-label="inventory-links" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">\n${anchors}\n</nav>`;
+    } catch {
+      return "";
+    }
+  }
+
+  return "";
+}
+
 export async function injectRouteMetadata(
   html: string,
   pathname: string,
 ): Promise<{ html: string; notFound: boolean }> {
-  const meta = await getRouteMeta(pathname);
+  const [meta, linkBlock] = await Promise.all([
+    getRouteMeta(pathname),
+    buildInventoryLinkBlock(pathname),
+  ]);
+
   if (meta === NOT_FOUND) {
     return { html, notFound: true };
   }
-  if (!meta) {
-    return { html, notFound: false };
+
+  let result = meta ? injectMeta(html, meta) : html;
+
+  if (linkBlock) {
+    result = result.replace("</body>", `${linkBlock}\n</body>`);
   }
-  return { html: injectMeta(html, meta), notFound: false };
+
+  return { html: result, notFound: false };
 }

@@ -171,7 +171,10 @@ export async function registerRoutes(
   // === Dynamic Sitemap ===
   app.get("/sitemap.xml", async (_req, res) => {
     try {
-      const allListings = await storage.getListings();
+      const [allListings, allIncomingCars] = await Promise.all([
+        storage.getListings(),
+        storage.getIncomingCars(),
+      ]);
       const staticUrls = [
         { loc: `${SITE_ORIGIN}/`, changefreq: "weekly", priority: "1.0" },
         { loc: `${SITE_ORIGIN}/cars-for-sale`, changefreq: "daily", priority: "0.9" },
@@ -181,13 +184,20 @@ export async function registerRoutes(
         loc: `${SITE_ORIGIN}/listing/${l.id}`,
         changefreq: "weekly",
         priority: "0.7",
+        lastmod: l.createdAt ? new Date(l.createdAt).toISOString().split("T")[0] : undefined,
       }));
-      const allUrls = [...staticUrls, ...listingUrls];
+      const incomingCarUrls = allIncomingCars.map((c) => ({
+        loc: `${SITE_ORIGIN}/incoming-cars/${c.id}`,
+        changefreq: "weekly" as const,
+        priority: "0.6",
+        lastmod: c.createdAt ? new Date(c.createdAt).toISOString().split("T")[0] : undefined,
+      }));
+      const allUrls = [...staticUrls, ...listingUrls, ...incomingCarUrls];
       const urlEntries = allUrls
-        .map(
-          (u) =>
-            `  <url>\n    <loc>${u.loc}</loc>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`
-        )
+        .map((u) => {
+          const lastmodTag = (u as any).lastmod ? `\n    <lastmod>${(u as any).lastmod}</lastmod>` : "";
+          return `  <url>\n    <loc>${u.loc}</loc>${lastmodTag}\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`;
+        })
         .join("\n");
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlEntries}\n</urlset>`;
       res.setHeader("Content-Type", "application/xml; charset=utf-8");
