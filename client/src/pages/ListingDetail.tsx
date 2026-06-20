@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, ArrowLeft, Heart, Phone, MapPin, Calendar, Gauge, Share2, Copy, Mail, Trash2, Edit, Upload, X, ChevronLeft, ChevronRight, Fuel, Users, Settings2, Zap, Car } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";

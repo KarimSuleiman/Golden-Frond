@@ -9,7 +9,7 @@ import { Car as CarIcon, Package, Ship, ExternalLink, Mail } from "lucide-react"
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Redirect } from "wouter";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 import type { Car } from "@shared/schema";
 
 export default function MyCars() {

@@ -8,7 +8,7 @@ import { Heart, Mail } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 import type { Listing } from "@shared/schema";
 
 interface FavoriteWithListing {

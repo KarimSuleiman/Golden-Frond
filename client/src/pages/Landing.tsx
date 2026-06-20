@@ -19,7 +19,7 @@ import {
   Car,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 import heroCarImage from "@assets/1fe806ff-fb76-4c76-bb40-24697774b8e9_1774627254576.JPG";
 import showroomImage from "@assets/a6631636-3d18-4929-bb1b-64efeac1259e_1775085031189.JPG";
 import logoImpact from "@assets/5c2b7587-b6f3-4754-923d-fb3aceda9632_1775085234273.JPG";

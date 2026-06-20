@@ -24,7 +24,7 @@ import {
   Mail
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 

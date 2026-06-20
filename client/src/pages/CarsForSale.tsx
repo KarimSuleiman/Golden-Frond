@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone, ArrowUpDown, ArrowUp, ArrowDown, Tag, Clock } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
 import type { Listing } from "@shared/schema";
 

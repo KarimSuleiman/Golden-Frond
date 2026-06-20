@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/i18n";
 import { Loader2, Car, Lock, Mail, Eye, EyeOff, Globe } from "lucide-react";
-import logoImage from "@assets/image_1769171762465.png";
+import logoImage from "@assets/logo_optimized.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
