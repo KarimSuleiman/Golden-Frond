@@ -132,8 +132,8 @@ export function Navbar() {
     {
       icon: Mail,
       label: t("landing.email"),
-      value: "amairehkareem@gmail.com",
-      href: "mailto:amairehkareem@gmail.com",
+      value: "muhanad_gf@yahoo.com",
+      href: "mailto:muhanad_gf@yahoo.com",
       color: "text-red-500",
     },
     {

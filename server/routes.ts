@@ -13,7 +13,7 @@ import path from "path";
 import fs from "fs";
 import nodemailer from "nodemailer";
 
-const MAIN_ADMIN_EMAIL = "amairehkareem@gmail.com";
+const MAIN_ADMIN_EMAIL = "muhanad_gf@yahoo.com";
 
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) {
@@ -59,14 +59,14 @@ const uploadPdf = multer({
 const emailTransporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "amairehkareem@gmail.com",
+    user: "muhanad_gf@yahoo.com",
     pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
 
 async function sendResetEmail(toEmail: string, resetCode: string) {
   const mailOptions = {
-    from: '"السعفة الذهبية - Golden Palm" <amairehkareem@gmail.com>',
+    from: '"السعفة الذهبية - Golden Palm" <muhanad_gf@yahoo.com>',
     to: toEmail,
     subject: "رمز إعادة تعيين كلمة المرور - Password Reset Code",
     html: `

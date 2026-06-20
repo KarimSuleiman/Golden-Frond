@@ -134,7 +134,7 @@ Preferred communication style: Simple, everyday language.
 ### Contact Methods
 - Phone: 796796108
 - WhatsApp: +962796796108
-- Email: amairehkareem@gmail.com
+- Email: muhanad_gf@yahoo.com
 - Facebook: golden.frond.gallery
 - Location: Amman, Jordan
 

@@ -475,12 +475,12 @@ export default function CarDetail() {
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-muted-foreground" />
                     <a 
-                      href="mailto:amairehkareem@gmail.com" 
+                      href="mailto:muhanad_gf@yahoo.com" 
                       className="text-foreground hover:text-primary transition-colors text-sm"
                       dir="ltr"
                       data-testid="footer-contact-email"
                     >
-                      amairehkareem@gmail.com
+                      muhanad_gf@yahoo.com
                     </a>
                   </div>
                 </li>

@@ -8,7 +8,7 @@ if (!PROD_URL) {
   process.exit(1);
 }
 
-const ADMIN_EMAIL = "amairehkareem@gmail.com";
+const ADMIN_EMAIL = "muhanad_gf@yahoo.com";
 const ADMIN_PASSWORD = "Karim123";
 
 const devPool = new Pool({ connectionString: process.env.DATABASE_URL });

@@ -456,7 +456,7 @@ export default function Landing() {
             </motion.a>
 
             <motion.a
-              href="mailto:amairehkareem@gmail.com"
+              href="mailto:muhanad_gf@yahoo.com"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
@@ -474,7 +474,7 @@ export default function Landing() {
                 className="text-muted-foreground text-center text-sm"
                 dir="ltr"
               >
-                amairehkareem@gmail.com
+                muhanad_gf@yahoo.com
               </p>
             </motion.a>
 
@@ -623,12 +623,12 @@ export default function Landing() {
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-muted-foreground" />
                     <a 
-                      href="mailto:amairehkareem@gmail.com" 
+                      href="mailto:muhanad_gf@yahoo.com" 
                       className="text-foreground hover:text-primary transition-colors text-sm"
                       dir="ltr"
                       data-testid="footer-contact-email"
                     >
-                      amairehkareem@gmail.com
+                      muhanad_gf@yahoo.com
                     </a>
                   </div>
                 </li>
