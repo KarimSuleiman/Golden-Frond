@@ -91,32 +91,23 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
-      {/* Hero Section — full-bleed cinematic */}
-      <section className="relative w-full overflow-hidden" style={{ minHeight: "calc(100vh - 4rem)" }}>
-        {/* Full-bleed background image */}
+      {/* Hero Section — full image visible */}
+      <section className="relative w-full overflow-hidden">
+        {/* Full image — natural size, no cropping */}
         <img
           src={heroCarImage}
           alt={t("landing.heroImageAlt")}
-          className={`absolute inset-0 w-full h-full object-cover object-center ${language === "ar" ? "hero-pan-rtl" : "hero-pan-ltr"}`}
+          className="w-full h-auto block"
         />
 
-        {/* Mobile overlay: car shows clearly at top, dark at bottom for text readability */}
+        {/* Overlay for text readability */}
         <div
-          className="absolute inset-0 md:hidden"
-          style={{ background: "linear-gradient(to top, rgba(10,8,5,0.92) 0%, rgba(10,8,5,0.70) 40%, rgba(10,8,5,0.20) 70%, transparent 100%)" }}
-        />
-        {/* Desktop overlay: directional side gradient */}
-        <div
-          className="absolute inset-0 hidden md:block"
-          style={{
-            background: language === "ar"
-              ? "linear-gradient(to left, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.60) 40%, rgba(10,8,5,0.10) 75%, transparent 100%)"
-              : "linear-gradient(to right, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.60) 40%, rgba(10,8,5,0.10) 75%, transparent 100%)"
-          }}
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to top, rgba(10,8,5,0.85) 0%, rgba(10,8,5,0.50) 50%, rgba(10,8,5,0.10) 100%)" }}
         />
 
-        {/* Content — bottom on mobile, centered on desktop */}
-        <div className="relative z-10 flex items-end md:items-center min-h-[calc(100vh-4rem)] px-5 sm:px-8 md:px-12 lg:px-20 pb-10 md:py-16">
+        {/* Content — overlaid on image */}
+        <div className="absolute inset-0 z-10 flex items-end md:items-center px-5 sm:px-8 md:px-12 lg:px-20 pb-8 md:py-16">
           <motion.div
             variants={containerVariants}
             initial="hidden"
