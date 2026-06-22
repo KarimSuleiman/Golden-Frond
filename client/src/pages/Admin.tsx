@@ -482,12 +482,12 @@ export default function Admin() {
 
   // Get unique values for filter dropdowns
   const uniqueMakes = useMemo(() => {
-    const makes = Array.from(new Set(cars.map((car) => car.make)));
+    const makes = Array.from(new Set(cars.map((car) => car.make).filter(m => m && m.trim() !== "")));
     return makes.sort();
   }, [cars]);
 
   const uniqueYears = useMemo(() => {
-    const years = Array.from(new Set(cars.map((car) => car.year)));
+    const years = Array.from(new Set(cars.map((car) => car.year).filter(y => y && !isNaN(y))));
     return years.sort((a, b) => b - a);
   }, [cars]);
 
@@ -876,7 +876,7 @@ export default function Admin() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">{t("admin.filter.allMakes")}</SelectItem>
-                      {uniqueMakes.map((make) => (
+                      {uniqueMakes.filter(m => m && m.trim() !== "").map((make) => (
                         <SelectItem key={make} value={make}>{make}</SelectItem>
                       ))}
                     </SelectContent>
