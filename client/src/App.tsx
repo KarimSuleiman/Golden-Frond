@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Switch, Route } from "wouter";
+import { Loader2 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -23,7 +24,7 @@ const MyCars = lazy(() => import("@/pages/MyCars"));
 
 function Router() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/cars-for-sale" component={CarsForSale} />
