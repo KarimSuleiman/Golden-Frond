@@ -103,6 +103,8 @@ export default function Admin() {
     interiorColor: "",
     regionalSpecs: "",
     countryOfOrigin: "",
+    interiorFeatures: [] as string[],
+    exteriorFeatures: [] as string[],
   });
 
   const [pdfFiles, setPdfFiles] = useState<File[]>([]);
@@ -356,6 +358,8 @@ export default function Admin() {
       interiorColor: "",
       regionalSpecs: "",
       countryOfOrigin: "",
+      interiorFeatures: [],
+      exteriorFeatures: [],
     });
     setSelectedUserId("");
     setImageFile(null);
@@ -475,6 +479,8 @@ export default function Admin() {
       interiorColor: carForm.interiorColor || null,
       regionalSpecs: carForm.regionalSpecs || null,
       countryOfOrigin: carForm.countryOfOrigin || null,
+      interiorFeatures: carForm.interiorFeatures?.length > 0 ? carForm.interiorFeatures : null,
+      exteriorFeatures: carForm.exteriorFeatures?.length > 0 ? carForm.exteriorFeatures : null,
     };
 
     if (editingCar) {
@@ -511,6 +517,8 @@ export default function Admin() {
       interiorColor: (car as any).interiorColor || "",
       regionalSpecs: (car as any).regionalSpecs || "",
       countryOfOrigin: (car as any).countryOfOrigin || "",
+      interiorFeatures: (car as any).interiorFeatures || [],
+      exteriorFeatures: (car as any).exteriorFeatures || [],
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
@@ -1385,6 +1393,42 @@ export default function Admin() {
                       <div className="space-y-2">
                         <Label>{language === "ar" ? "المواصفات الإقليمية" : "Regional Specs"}</Label>
                         <Input value={carForm.regionalSpecs} onChange={(e) => setCarForm({ ...carForm, regionalSpecs: e.target.value })} placeholder={language === "ar" ? "خليجي / أمريكي..." : "Gulf / American..."} data-testid="input-regional-specs" />
+                      </div>
+                    </div>
+
+                    {/* Interior Features */}
+                    <div className="space-y-2">
+                      <Label>{t("filter.interiorSpecs")}</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {["auxUsb","airbags","powerSeats","steeringControl","seatMemory","powerWindows","centralLock","heatedSeats","cdPlayer","leatherSeats","sportSeats","heatedSteering","rearElectric","cooledSeats","ac","alarm"].map(f => {
+                          const selected = (carForm.interiorFeatures || []).includes(f);
+                          return (
+                            <button key={f} type="button"
+                              onClick={() => setCarForm(prev => ({ ...prev, interiorFeatures: selected ? prev.interiorFeatures.filter(i => i !== f) : [...(prev.interiorFeatures || []), f] }))}
+                              className={`px-3 py-1.5 rounded-md text-xs border transition-colors ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}
+                              data-testid={`chip-int-${f}`}>
+                              {t(`filter.int${f.charAt(0).toUpperCase() + f.slice(1)}`)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Exterior Features */}
+                    <div className="space-y-2">
+                      <Label>{t("filter.exteriorSpecs")}</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {["sunroof","panoramicRoof","rearCamera","360Camera","parkingSensors","frontCamera","ledLights","adaptiveLights","remoteStart","keylessEntry","spareWheel","towHook","roofRack","runFlatTires"].map(f => {
+                          const selected = (carForm.exteriorFeatures || []).includes(f);
+                          return (
+                            <button key={f} type="button"
+                              onClick={() => setCarForm(prev => ({ ...prev, exteriorFeatures: selected ? prev.exteriorFeatures.filter(i => i !== f) : [...(prev.exteriorFeatures || []), f] }))}
+                              className={`px-3 py-1.5 rounded-md text-xs border transition-colors ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}
+                              data-testid={`chip-ext-${f}`}>
+                              {t(`filter.ext${f.charAt(0).toUpperCase() + f.slice(1)}`)}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
