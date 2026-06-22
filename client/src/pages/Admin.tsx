@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Navbar } from "@/components/Navbar";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,6 +42,8 @@ interface AdminUser {
 export default function Admin() {
   const { toast } = useToast();
   const { t, language, dir } = useLanguage();
+  const { user, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [showAddCar, setShowAddCar] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
@@ -520,10 +524,25 @@ export default function Admin() {
 
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
-  if (checkingAdmin) {
+  if (authLoading || checkingAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background" dir="rtl">
+        <Navbar />
+        <div className="container py-20 text-center">
+          <h1 className="text-2xl font-bold text-foreground">يرجى تسجيل الدخول أولاً</h1>
+          <p className="text-muted-foreground mt-4">هذه الصفحة للمسؤولين فقط</p>
+          <Button className="mt-6" onClick={() => setLocation("/login")}>
+            تسجيل الدخول
+          </Button>
+        </div>
       </div>
     );
   }

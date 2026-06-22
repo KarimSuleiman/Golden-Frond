@@ -45,7 +45,7 @@ export default function Login() {
       const isAdminRes = await fetch("/api/auth/is-admin", { credentials: "include" });
       const isAdminData = await isAdminRes.json();
       if (isAdminData.isAdmin) {
-        setLocation("/");
+        setLocation("/admin");
       } else {
         setLocation("/dashboard");
       }
