@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Navbar } from "@/components/Navbar";
@@ -531,6 +531,12 @@ export default function Admin() {
 
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setLocation("/login?redirect=/admin");
+    }
+  }, [authLoading, user, setLocation]);
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
@@ -541,15 +547,8 @@ export default function Admin() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background" dir="rtl">
-        <Navbar />
-        <div className="container py-20 text-center">
-          <h1 className="text-2xl font-bold text-foreground">يرجى تسجيل الدخول أولاً</h1>
-          <p className="text-muted-foreground mt-4">هذه الصفحة للمسؤولين فقط</p>
-          <Button className="mt-6" onClick={() => setLocation("/login")}>
-            تسجيل الدخول
-          </Button>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }

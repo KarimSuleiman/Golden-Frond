@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ import logoImage from "@assets/logo_optimized.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
+  const search = useSearch();
+  const redirectTo = new URLSearchParams(search).get("redirect") || null;
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { t, language, setLanguage, dir } = useLanguage();
@@ -55,7 +57,9 @@ export default function Login() {
         description: t("login.success"),
       });
 
-      if (isAdminData.isAdmin) {
+      if (redirectTo) {
+        setLocation(redirectTo);
+      } else if (isAdminData.isAdmin) {
         setLocation("/admin");
       } else {
         setLocation("/dashboard");
