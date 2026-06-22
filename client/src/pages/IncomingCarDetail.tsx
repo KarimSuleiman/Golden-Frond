@@ -295,6 +295,55 @@ export default function IncomingCarDetail() {
                   ))}
                 </div>
               )}
+
+              {/* ── Features ── */}
+              {((car.interiorFeatures as string[] | null)?.length || (car.exteriorFeatures as string[] | null)?.length) ? (
+                <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+                  <h2 className="font-bold text-foreground text-base">
+                    {language === "ar" ? "المواصفات" : "Specifications"}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {((car.interiorFeatures as string[] | null) || []).length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 pb-2 border-b border-border">
+                          {t("filter.interiorSpecs")}
+                        </p>
+                        <ul className="space-y-2">
+                          {((car.interiorFeatures as string[]) || []).map(feat => (
+                            <li key={feat} className="flex items-center gap-2.5 text-sm text-foreground" data-testid={`feature-int-${feat}`}>
+                              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                <svg className="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </span>
+                              {t(`filter.int${feat.charAt(0).toUpperCase() + feat.slice(1)}`)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {((car.exteriorFeatures as string[] | null) || []).length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 pb-2 border-b border-border">
+                          {t("filter.exteriorSpecs")}
+                        </p>
+                        <ul className="space-y-2">
+                          {((car.exteriorFeatures as string[]) || []).map(feat => (
+                            <li key={feat} className="flex items-center gap-2.5 text-sm text-foreground" data-testid={`feature-ext-${feat}`}>
+                              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                <svg className="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </span>
+                              {t(`filter.ext${feat.charAt(0).toUpperCase() + feat.slice(1)}`)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             {/* ── Info Panel ── */}
