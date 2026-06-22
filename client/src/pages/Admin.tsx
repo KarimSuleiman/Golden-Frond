@@ -1354,7 +1354,18 @@ export default function Admin() {
                       </div>
                       <div className="space-y-2">
                         <Label>{t("marketplace.fuelType")}</Label>
-                        <Input value={carForm.fuelType} onChange={(e) => setCarForm({ ...carForm, fuelType: e.target.value })} placeholder={language === "ar" ? "بنزين / ديزل / هجين..." : "Gasoline / Diesel / Hybrid..."} data-testid="input-fuel-type" />
+                        <Select value={carForm.fuelType || "none"} onValueChange={(v) => setCarForm({ ...carForm, fuelType: v === "none" ? "" : v })}>
+                          <SelectTrigger data-testid="select-fuel-type"><SelectValue placeholder={language === "ar" ? "اختر..." : "Select..."} /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">{language === "ar" ? "اختر..." : "Select..."}</SelectItem>
+                            <SelectItem value="petrol">{t("filter.fuelPetrol")}</SelectItem>
+                            <SelectItem value="diesel">{t("filter.fuelDiesel")}</SelectItem>
+                            <SelectItem value="electric">{t("filter.fuelElectric")}</SelectItem>
+                            <SelectItem value="mild_hybrid">{t("filter.fuelMildHybrid")}</SelectItem>
+                            <SelectItem value="hybrid">{t("filter.fuelHybrid")}</SelectItem>
+                            <SelectItem value="plugin_hybrid">{t("filter.fuelPluginHybrid")}</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>{t("marketplace.engineSize")}</Label>
@@ -1366,7 +1377,20 @@ export default function Admin() {
                       </div>
                       <div className="space-y-2">
                         <Label>{t("marketplace.bodyType")}</Label>
-                        <Input value={carForm.bodyType} onChange={(e) => setCarForm({ ...carForm, bodyType: e.target.value })} placeholder="SUV / سيدان..." data-testid="input-body-type" />
+                        <Select value={carForm.bodyType || "none"} onValueChange={(v) => setCarForm({ ...carForm, bodyType: v === "none" ? "" : v })}>
+                          <SelectTrigger data-testid="select-body-type"><SelectValue placeholder={language === "ar" ? "اختر..." : "Select..."} /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">{language === "ar" ? "اختر..." : "Select..."}</SelectItem>
+                            <SelectItem value="suv">{t("filter.bodySUV")}</SelectItem>
+                            <SelectItem value="sedan">{t("filter.bodySedan")}</SelectItem>
+                            <SelectItem value="van">{t("filter.bodyVan")}</SelectItem>
+                            <SelectItem value="pickup">{t("filter.bodyPickup")}</SelectItem>
+                            <SelectItem value="truck">{t("filter.bodyTruck")}</SelectItem>
+                            <SelectItem value="convertible">{t("filter.bodyConvertible")}</SelectItem>
+                            <SelectItem value="coupe">{t("filter.bodyCoupe")}</SelectItem>
+                            <SelectItem value="hatchback">{t("filter.bodyHatchback")}</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>{language === "ar" ? "لون الداخلية" : "Interior Color"}</Label>
