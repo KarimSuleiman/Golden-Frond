@@ -735,8 +735,7 @@ export async function registerRoutes(
       const car = await storage.getCar(id);
       if (!car) return res.status(404).json({ message: "السيارة غير موجودة" });
       
-      const { userId, ...updateData } = req.body;
-      const input = api.cars.update.input.parse(updateData);
+      const input = api.cars.update.input.parse(req.body);
       const updated = await storage.updateCar(id, input);
       res.json(updated);
     } catch (err) {

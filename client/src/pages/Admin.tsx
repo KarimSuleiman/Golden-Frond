@@ -93,6 +93,16 @@ export default function Admin() {
     trackingUrl: "",
     customUrl: "",
     customUrlReason: "",
+    condition: "",
+    mileage: 0,
+    bodyType: "",
+    transmission: "",
+    fuelType: "",
+    engineSize: "",
+    seats: 0,
+    interiorColor: "",
+    regionalSpecs: "",
+    countryOfOrigin: "",
   });
 
   const [pdfFiles, setPdfFiles] = useState<File[]>([]);
@@ -336,6 +346,16 @@ export default function Admin() {
       trackingUrl: "",
       customUrl: "",
       customUrlReason: "",
+      condition: "",
+      mileage: 0,
+      bodyType: "",
+      transmission: "",
+      fuelType: "",
+      engineSize: "",
+      seats: 0,
+      interiorColor: "",
+      regionalSpecs: "",
+      countryOfOrigin: "",
     });
     setSelectedUserId("");
     setImageFile(null);
@@ -445,6 +465,16 @@ export default function Admin() {
       details: carForm.details || null,
       pdfUrl: uploadedPdfUrls[0] || null,
       pdfUrls: uploadedPdfUrls.length > 0 ? uploadedPdfUrls : null,
+      condition: carForm.condition || null,
+      mileage: carForm.mileage || null,
+      bodyType: carForm.bodyType || null,
+      transmission: carForm.transmission || null,
+      fuelType: carForm.fuelType || null,
+      engineSize: carForm.engineSize || null,
+      seats: carForm.seats || null,
+      interiorColor: carForm.interiorColor || null,
+      regionalSpecs: carForm.regionalSpecs || null,
+      countryOfOrigin: carForm.countryOfOrigin || null,
     };
 
     if (editingCar) {
@@ -471,6 +501,16 @@ export default function Admin() {
       trackingUrl: car.trackingUrl || "",
       customUrl: car.customUrl || "",
       customUrlReason: car.customUrlReason || "",
+      condition: (car as any).condition || "",
+      mileage: (car as any).mileage || 0,
+      bodyType: (car as any).bodyType || "",
+      transmission: (car as any).transmission || "",
+      fuelType: (car as any).fuelType || "",
+      engineSize: (car as any).engineSize || "",
+      seats: (car as any).seats || 0,
+      interiorColor: (car as any).interiorColor || "",
+      regionalSpecs: (car as any).regionalSpecs || "",
+      countryOfOrigin: (car as any).countryOfOrigin || "",
     });
     setImagePreview(car.imageUrl);
     setExistingAdditionalImages(car.images || []);
@@ -1288,6 +1328,65 @@ export default function Admin() {
                       dir="ltr"
                       data-testid="input-vin"
                     />
+                  </div>
+
+                  {/* ── Car Specs ── */}
+                  <div className="border-t border-border pt-4">
+                    <p className="text-sm font-medium text-muted-foreground mb-3">{language === "ar" ? "مواصفات إضافية (اختياري)" : "Additional Specs (optional)"}</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.transmission")}</Label>
+                        <Select value={carForm.transmission} onValueChange={(v) => setCarForm({ ...carForm, transmission: v })}>
+                          <SelectTrigger data-testid="select-transmission"><SelectValue placeholder={language === "ar" ? "اختر..." : "Select..."} /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="automatic">{language === "ar" ? "أوتوماتيك" : "Automatic"}</SelectItem>
+                            <SelectItem value="manual">{language === "ar" ? "يدوي" : "Manual"}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.fuelType")}</Label>
+                        <Input value={carForm.fuelType} onChange={(e) => setCarForm({ ...carForm, fuelType: e.target.value })} placeholder={language === "ar" ? "بنزين / ديزل / هجين..." : "Gasoline / Diesel / Hybrid..."} data-testid="input-fuel-type" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.engineSize")}</Label>
+                        <Input value={carForm.engineSize} onChange={(e) => setCarForm({ ...carForm, engineSize: e.target.value })} placeholder="2000cc / 3.5L" data-testid="input-engine-size" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.seats")}</Label>
+                        <Input type="number" value={carForm.seats || ""} onChange={(e) => setCarForm({ ...carForm, seats: parseInt(e.target.value) || 0 })} placeholder="5" data-testid="input-seats" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.bodyType")}</Label>
+                        <Input value={carForm.bodyType} onChange={(e) => setCarForm({ ...carForm, bodyType: e.target.value })} placeholder="SUV / سيدان..." data-testid="input-body-type" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{language === "ar" ? "لون الداخلية" : "Interior Color"}</Label>
+                        <Input value={carForm.interiorColor} onChange={(e) => setCarForm({ ...carForm, interiorColor: e.target.value })} placeholder={language === "ar" ? "بيج / أسود..." : "Beige / Black..."} data-testid="input-interior-color" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.mileage")}</Label>
+                        <Input type="number" value={carForm.mileage || ""} onChange={(e) => setCarForm({ ...carForm, mileage: parseInt(e.target.value) || 0 })} placeholder="50000" data-testid="input-mileage" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t("marketplace.condition")}</Label>
+                        <Select value={carForm.condition} onValueChange={(v) => setCarForm({ ...carForm, condition: v })}>
+                          <SelectTrigger data-testid="select-condition"><SelectValue placeholder={language === "ar" ? "اختر..." : "Select..."} /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="new">{language === "ar" ? "جديد" : "New"}</SelectItem>
+                            <SelectItem value="used">{language === "ar" ? "مستعمل" : "Used"}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{language === "ar" ? "بلد المنشأ" : "Country of Origin"}</Label>
+                        <Input value={carForm.countryOfOrigin} onChange={(e) => setCarForm({ ...carForm, countryOfOrigin: e.target.value })} placeholder={language === "ar" ? "الولايات المتحدة..." : "USA..."} data-testid="input-country" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{language === "ar" ? "المواصفات الإقليمية" : "Regional Specs"}</Label>
+                        <Input value={carForm.regionalSpecs} onChange={(e) => setCarForm({ ...carForm, regionalSpecs: e.target.value })} placeholder={language === "ar" ? "خليجي / أمريكي..." : "Gulf / American..."} data-testid="input-regional-specs" />
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
