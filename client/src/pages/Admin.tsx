@@ -110,7 +110,7 @@ export default function Admin() {
     enabled: !!user,
   });
 
-  const { data: isAdminCheck, isLoading: checkingAdmin, isFetching: fetchingAdmin } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
+  const { data: isAdminCheck, isLoading: checkingAdmin } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
     queryKey: ["/api/auth/is-admin"],
     queryFn: async () => {
       const res = await fetch("/api/auth/is-admin", { credentials: "include" });
@@ -119,7 +119,7 @@ export default function Admin() {
       return res.json();
     },
     enabled: !!user,
-    staleTime: 0,
+    staleTime: Infinity,
   });
 
   const uploadMutation = useMutation({
@@ -534,7 +534,7 @@ export default function Admin() {
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
   const isAuthDetermining = authLoading || authFetching;
-  const isAdminDetermining = !!user && (checkingAdmin || fetchingAdmin || isAdminCheck === undefined);
+  const isAdminDetermining = !!user && (checkingAdmin || isAdminCheck === undefined);
 
   if (isAuthDetermining || isAdminDetermining) {
     return (
