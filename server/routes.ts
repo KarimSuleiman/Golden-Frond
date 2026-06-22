@@ -975,16 +975,27 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/incoming-cars", isAuthenticated, isAdmin, upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }]), async (req: any, res) => {
+  app.post("/api/admin/incoming-cars", isAuthenticated, isAdmin, (req: any, res: any, next: any) => {
+    upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }])(req, res, (err: any) => {
+      if (err) {
+        console.error("Multer error on incoming-cars upload:", err);
+        return res.status(400).json({ message: err.message || "File upload error" });
+      }
+      next();
+    });
+  }, async (req: any, res) => {
     try {
-
+      console.log("POST /api/admin/incoming-cars — handler reached");
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       const mainImage = files?.image?.[0];
       const additionalImages = files?.images || [];
 
-      if (!mainImage) return res.status(400).json({ message: "Main image required" });
+      if (!mainImage) return res.status(400).json({ message: "صورة السيارة مطلوبة" });
 
+      console.log("Uploading main image to R2...");
       const imageUrl = await uploadToR2(mainImage.buffer, mainImage.originalname, mainImage.mimetype);
+      console.log("Main image uploaded:", imageUrl);
+
       const imagesArr = await Promise.all(
         additionalImages.map((f: Express.Multer.File) => uploadToR2(f.buffer, f.originalname, f.mimetype))
       );
@@ -1019,10 +1030,11 @@ export async function registerRoutes(
         location: b.location || null,
         contactPhone: b.contactPhone || null,
       });
+      console.log("Incoming car created:", car.id);
       res.json(car);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Create incoming car error:", error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: error?.message || "Server error" });
     }
   });
 

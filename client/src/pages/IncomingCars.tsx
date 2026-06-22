@@ -163,7 +163,10 @@ export default function IncomingCars() {
       additionalFiles.forEach(f => fd.append("images", f));
 
       const res = await fetch("/api/admin/incoming-cars", { method: "POST", body: fd, credentials: "include" });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `HTTP ${res.status}`);
+      }
       await queryClient.invalidateQueries({ queryKey: ["/api/incoming-cars"] });
       toast({ title: language === "ar" ? "تم إضافة السيارة" : "Car added successfully" });
       setShowAddModal(false);
@@ -176,8 +179,8 @@ export default function IncomingCars() {
       });
       setImageFile(null); setImagePreview("");
       setAdditionalFiles([]); setAdditionalPreviews([]);
-    } catch {
-      toast({ title: language === "ar" ? "فشل الإضافة" : "Failed to add car", variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: language === "ar" ? "فشل الإضافة" : "Failed to add car", description: err?.message || "", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
