@@ -98,6 +98,9 @@ app.use((req, res, next) => {
     },
     () => {
       log(`serving on port ${port}`);
+      log(`R2_ACCESS_KEY_ID: ${process.env.R2_ACCESS_KEY_ID ? "SET" : "MISSING"}`);
+      log(`R2_SECRET_ACCESS_KEY: ${process.env.R2_SECRET_ACCESS_KEY ? "SET" : "MISSING"}`);
+      log(`R2_ENDPOINT: ${process.env.R2_ENDPOINT ? "SET" : "MISSING"}`);
     },
   );
 })();

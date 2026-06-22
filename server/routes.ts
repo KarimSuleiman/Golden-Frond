@@ -114,14 +114,22 @@ async function sendResetEmail(toEmail: string, resetCode: string) {
 }
 
 const isAdmin = async (req: any, res: any, next: any) => {
-  if (!req.user?.claims?.sub) {
-    return res.status(401).json({ message: "غير مصرح" });
+  try {
+    const sub = req.user?.claims?.sub;
+    if (!sub) {
+      console.log("[isAdmin] No sub in req.user.claims");
+      return res.status(401).json({ message: "غير مصرح - يرجى تسجيل الدخول" });
+    }
+    const user = await authStorage.getUser(sub);
+    console.log(`[isAdmin] user=${user?.email} isAdmin=${user?.isAdmin} role=${user?.role}`);
+    if (!user || user.isAdmin !== "true") {
+      return res.status(403).json({ message: "غير مصرح - للمسؤولين فقط" });
+    }
+    next();
+  } catch (err: any) {
+    console.error("[isAdmin] error:", err);
+    return res.status(500).json({ message: "خطأ في التحقق من الصلاحيات" });
   }
-  const user = await authStorage.getUser(req.user.claims.sub);
-  if (!user || user.isAdmin !== "true") {
-    return res.status(403).json({ message: "غير مصرح - للمسؤولين فقط" });
-  }
-  next();
 };
 
 const isMainAdmin = async (req: any, res: any, next: any) => {

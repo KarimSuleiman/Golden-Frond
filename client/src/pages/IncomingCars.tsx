@@ -180,7 +180,12 @@ export default function IncomingCars() {
       setImageFile(null); setImagePreview("");
       setAdditionalFiles([]); setAdditionalPreviews([]);
     } catch (err: any) {
-      toast({ title: language === "ar" ? "فشل الإضافة" : "Failed to add car", description: err?.message || "", variant: "destructive" });
+      const msg = err?.message || "";
+      toast({
+        title: msg ? msg : (language === "ar" ? "فشل الإضافة" : "Failed to add car"),
+        description: msg ? (language === "ar" ? "فشل إضافة السيارة" : "Failed to add car") : "",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
