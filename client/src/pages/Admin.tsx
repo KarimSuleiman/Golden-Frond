@@ -97,14 +97,17 @@ export default function Admin() {
 
   const { data: users = [], isLoading: loadingUsers } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
+    enabled: !!user,
   });
 
   const { data: cars = [], isLoading: loadingCars } = useQuery<CarType[]>({
     queryKey: ["/api/admin/cars"],
+    enabled: !!user,
   });
 
   const { data: allListings = [], isLoading: loadingListings } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
+    enabled: !!user,
   });
 
   const { data: isAdminCheck, isLoading: checkingAdmin, isFetching: fetchingAdmin } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
@@ -531,7 +534,7 @@ export default function Admin() {
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
   const isAuthDetermining = authLoading || authFetching;
-  const isAdminDetermining = !!user && (checkingAdmin || fetchingAdmin);
+  const isAdminDetermining = !!user && (checkingAdmin || fetchingAdmin || isAdminCheck === undefined);
 
   if (isAuthDetermining || isAdminDetermining) {
     return (

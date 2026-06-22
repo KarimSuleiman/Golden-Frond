@@ -38,6 +38,8 @@ export default function Login() {
     onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/is-admin"] });
+      queryClient.removeQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.removeQueries({ queryKey: ["/api/admin/cars"] });
       toast({
         title: t("login.welcome"),
         description: t("login.success"),
