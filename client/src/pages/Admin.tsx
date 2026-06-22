@@ -42,7 +42,7 @@ interface AdminUser {
 export default function Admin() {
   const { toast } = useToast();
   const { t, language, dir } = useLanguage();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, isFetching: authFetching } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [showAddCar, setShowAddCar] = useState(false);
@@ -107,8 +107,16 @@ export default function Admin() {
     queryKey: ["/api/listings"],
   });
 
-  const { data: isAdminCheck, isLoading: checkingAdmin } = useQuery<{ isAdmin: boolean }>({
+  const { data: isAdminCheck, isLoading: checkingAdmin, isFetching: fetchingAdmin } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
     queryKey: ["/api/auth/is-admin"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/is-admin", { credentials: "include" });
+      if (res.status === 401) return { isAdmin: false, role: "user", isMainAdmin: false };
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    enabled: !!user,
+    staleTime: 0,
   });
 
   const uploadMutation = useMutation({
@@ -139,9 +147,7 @@ export default function Admin() {
     },
   });
 
-  const { data: adminInfo } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
-    queryKey: ["/api/auth/is-admin"],
-  });
+  const adminInfo = isAdminCheck;
 
   const changeRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
@@ -524,7 +530,10 @@ export default function Admin() {
 
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
-  if (authLoading || checkingAdmin) {
+  const isAuthDetermining = authLoading || authFetching;
+  const isAdminDetermining = !!user && (checkingAdmin || fetchingAdmin);
+
+  if (isAuthDetermining || isAdminDetermining) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
