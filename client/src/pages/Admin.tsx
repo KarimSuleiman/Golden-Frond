@@ -110,17 +110,13 @@ export default function Admin() {
     enabled: !!user,
   });
 
-  const { data: isAdminCheck, isLoading: checkingAdmin } = useQuery<{ isAdmin: boolean; role: string; isMainAdmin: boolean }>({
-    queryKey: ["/api/auth/is-admin"],
-    queryFn: async () => {
-      const res = await fetch("/api/auth/is-admin", { credentials: "include" });
-      if (res.status === 401) return { isAdmin: false, role: "user", isMainAdmin: false };
-      if (!res.ok) throw new Error(`${res.status}`);
-      return res.json();
-    },
-    enabled: !!user,
-    staleTime: Infinity,
-  });
+  const isAdminUser = user?.isAdmin === "true";
+  const isMainAdminUser = user?.role === "main_admin";
+  const adminInfo = {
+    isAdmin: isAdminUser,
+    isMainAdmin: isMainAdminUser,
+    role: user?.role ?? "user",
+  };
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -150,7 +146,6 @@ export default function Admin() {
     },
   });
 
-  const adminInfo = isAdminCheck;
 
   const changeRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
@@ -533,10 +528,7 @@ export default function Admin() {
 
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
-  const isAuthDetermining = authLoading || authFetching;
-  const isAdminDetermining = !!user && (checkingAdmin || isAdminCheck === undefined);
-
-  if (isAuthDetermining || isAdminDetermining) {
+  if (authLoading || authFetching) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -559,7 +551,7 @@ export default function Admin() {
     );
   }
 
-  if (!isAdminCheck?.isAdmin) {
+  if (!isAdminUser) {
     return (
       <div className="min-h-screen bg-background" dir="rtl">
         <Navbar />
