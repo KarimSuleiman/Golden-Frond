@@ -162,7 +162,7 @@ export default function IncomingCars() {
       fd.append("image", imageFile);
       additionalFiles.forEach(f => fd.append("images", f));
 
-      const res = await fetch("/api/admin/incoming-cars", { method: "POST", body: fd });
+      const res = await fetch("/api/admin/incoming-cars", { method: "POST", body: fd, credentials: "include" });
       if (!res.ok) throw new Error("Failed");
       await queryClient.invalidateQueries({ queryKey: ["/api/incoming-cars"] });
       toast({ title: language === "ar" ? "تم إضافة السيارة" : "Car added successfully" });

@@ -247,33 +247,35 @@ export default function CarDetail() {
               </div>
             )}
 
-            {car.status === "In Transit" && (car.containerNumber || car.bookingNumber) && (
+            {(car.containerNumber || car.bookingNumber || car.trackingUrl) && (
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-4">
                 <div className="flex items-center gap-2 text-blue-600 font-semibold">
                   <Ship className="w-5 h-5" />
                   <span>{t("carDetail.shippingInfo")}</span>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {car.containerNumber && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                      <Package className="w-4 h-4 text-blue-500" />
-                      <div>
-                        <span className="text-xs text-muted-foreground block">{t("car.container")}</span>
-                        <span className="font-mono font-medium" data-testid="text-container">{car.containerNumber}</span>
+                {(car.containerNumber || car.bookingNumber) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {car.containerNumber && (
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
+                        <Package className="w-4 h-4 text-blue-500" />
+                        <div>
+                          <span className="text-xs text-muted-foreground block">{t("car.container")}</span>
+                          <span className="font-mono font-medium" data-testid="text-container">{car.containerNumber}</span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {car.bookingNumber && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                      <Fingerprint className="w-4 h-4 text-blue-500" />
-                      <div>
-                        <span className="text-xs text-muted-foreground block">{t("car.booking")}</span>
-                        <span className="font-mono font-medium" data-testid="text-booking">{car.bookingNumber}</span>
+                    )}
+                    {car.bookingNumber && (
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
+                        <Fingerprint className="w-4 h-4 text-blue-500" />
+                        <div>
+                          <span className="text-xs text-muted-foreground block">{t("car.booking")}</span>
+                          <span className="font-mono font-medium" data-testid="text-booking">{car.bookingNumber}</span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
 
                 {car.trackingUrl && (
                   <a

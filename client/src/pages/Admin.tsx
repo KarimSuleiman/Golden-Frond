@@ -75,6 +75,10 @@ export default function Admin() {
   // Expanded user states
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
 
+  // Confirmation dialog states
+  const [deleteCarId, setDeleteCarId] = useState<number | null>(null);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
   const [carForm, setCarForm] = useState({
     make: "",
     model: "",
@@ -384,7 +388,7 @@ export default function Admin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!editingCar && !selectedUserId) {
+    if (!selectedUserId) {
       toast({ title: "خطأ", description: "يرجى اختيار المستخدم", variant: "destructive" });
       return;
     }
@@ -429,7 +433,7 @@ export default function Admin() {
 
     const carData = {
       ...carForm,
-      userId: editingCar ? editingCar.userId : selectedUserId,
+      userId: selectedUserId,
       imageUrl,
       images: uploadedAdditionalImages.length > 0 ? uploadedAdditionalImages : null,
       price: carForm.price || null,
@@ -452,6 +456,7 @@ export default function Admin() {
 
   const handleEdit = (car: CarType) => {
     setEditingCar(car);
+    setSelectedUserId(car.userId);
     setCarForm({
       make: car.make,
       model: car.model,
@@ -962,7 +967,7 @@ export default function Admin() {
                             size="sm"
                             variant="destructive"
                             className="h-7 text-xs px-2"
-                            onClick={() => deleteCarMutation.mutate(car.id)}
+                            onClick={() => setDeleteCarId(car.id)}
                             disabled={deleteCarMutation.isPending}
                             data-testid={`button-delete-car-${car.id}`}
                           >
@@ -1148,23 +1153,21 @@ export default function Admin() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {!editingCar && (
-                    <div className="space-y-2">
-                      <Label>{t("admin.form.user")} *</Label>
-                      <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                        <SelectTrigger data-testid="select-user">
-                          <SelectValue placeholder={t("admin.form.selectUser")} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {users.map((user) => (
-                            <SelectItem key={user.id} value={user.id}>
-                              {user.firstName} {user.lastName} ({user.email})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    <Label>{t("admin.form.user")} *</Label>
+                    <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                      <SelectTrigger data-testid="select-user">
+                        <SelectValue placeholder={t("admin.form.selectUser")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {users.map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {user.firstName} {user.lastName} ({user.email})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                   <div className="space-y-2">
                     <Label>{t("admin.form.mainImage")}</Label>
@@ -1464,6 +1467,50 @@ export default function Admin() {
           </div>
         )}
 
+        {/* Delete Car Confirmation Dialog */}
+        <AlertDialog open={deleteCarId !== null} onOpenChange={(open) => !open && setDeleteCarId(null)}>
+          <AlertDialogContent dir={dir}>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{language === "ar" ? "هل أنت متأكد؟" : "Are you sure?"}</AlertDialogTitle>
+              <AlertDialogDescription>{language === "ar" ? "سيتم حذف السيارة نهائياً ولا يمكن التراجع عن هذا الإجراء." : "This car will be permanently deleted and cannot be undone."}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteCarId(null)}>{language === "ar" ? "لا" : "No"}</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => { if (deleteCarId !== null) { deleteCarMutation.mutate(deleteCarId); setDeleteCarId(null); } }}
+              >
+                {language === "ar" ? "نعم، احذف" : "Yes, delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Password Change Confirmation Dialog */}
+        <AlertDialog open={showPasswordConfirm} onOpenChange={setShowPasswordConfirm}>
+          <AlertDialogContent dir={dir}>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{language === "ar" ? "هل أنت متأكد؟" : "Are you sure?"}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {language === "ar"
+                  ? `سيتم تغيير كلمة المرور لـ ${selectedUserForPassword?.firstName || ""} ${selectedUserForPassword?.lastName || ""}`
+                  : `Password will be changed for ${selectedUserForPassword?.firstName || ""} ${selectedUserForPassword?.lastName || ""}`}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{language === "ar" ? "لا" : "No"}</AlertDialogCancel>
+              <AlertDialogAction onClick={() => {
+                if (selectedUserForPassword && newPassword.length >= 6) {
+                  changePasswordMutation.mutate({ userId: selectedUserForPassword.id, password: newPassword });
+                }
+                setShowPasswordConfirm(false);
+              }}>
+                {language === "ar" ? "نعم، غيّر" : "Yes, change"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Password Change Modal */}
         {showPasswordModal && selectedUserForPassword && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -1518,10 +1565,7 @@ export default function Admin() {
                   disabled={changePasswordMutation.isPending || newPassword.length < 6}
                   onClick={() => {
                     if (selectedUserForPassword && newPassword.length >= 6) {
-                      changePasswordMutation.mutate({
-                        userId: selectedUserForPassword.id,
-                        password: newPassword,
-                      });
+                      setShowPasswordConfirm(true);
                     }
                   }}
                   data-testid="button-submit-password-change"
