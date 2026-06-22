@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, Component, ReactNode, ErrorInfo } from "react";
 import { Switch, Route } from "wouter";
 import { Loader2 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
@@ -21,6 +21,32 @@ const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const CarDetail = lazy(() => import("@/pages/CarDetail"));
 const AddListing = lazy(() => import("@/pages/AddListing"));
 const MyCars = lazy(() => import("@/pages/MyCars"));
+
+interface ErrorBoundaryState { error: Error | null; }
+class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { error: null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[App ErrorBoundary]", error, info.componentStack);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div dir="rtl" className="min-h-screen flex flex-col items-center justify-center gap-4 p-8 text-center">
+          <h1 className="text-2xl font-bold text-red-600">حدث خطأ غير متوقع</h1>
+          <p className="text-muted-foreground text-sm max-w-md break-all">{this.state.error.message}</p>
+          <button
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+            onClick={() => { this.setState({ error: null }); window.location.reload(); }}
+          >
+            إعادة تحميل الصفحة
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function Router() {
   return (
@@ -50,7 +76,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
-          <Router />
+          <ErrorBoundary>
+            <Router />
+          </ErrorBoundary>
           <Toaster />
         </TooltipProvider>
       </LanguageProvider>

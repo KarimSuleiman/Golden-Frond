@@ -95,20 +95,23 @@ export default function Admin() {
   const [pdfFileNames, setPdfFileNames] = useState<string[]>([]);
   const [existingPdfUrls, setExistingPdfUrls] = useState<string[]>([]);
 
-  const { data: users = [], isLoading: loadingUsers } = useQuery<AdminUser[]>({
+  const { data: _users, isLoading: loadingUsers } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
     enabled: !!user,
   });
+  const users: AdminUser[] = _users ?? [];
 
-  const { data: cars = [], isLoading: loadingCars } = useQuery<CarType[]>({
+  const { data: _cars, isLoading: loadingCars } = useQuery<CarType[]>({
     queryKey: ["/api/admin/cars"],
     enabled: !!user,
   });
+  const cars: CarType[] = _cars ?? [];
 
-  const { data: allListings = [], isLoading: loadingListings } = useQuery<Listing[]>({
+  const { data: _listings, isLoading: loadingListings } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
     enabled: !!user,
   });
+  const allListings: Listing[] = _listings ?? [];
 
   const isAdminUser = user?.isAdmin === "true";
   const isMainAdminUser = user?.role === "main_admin";
@@ -528,7 +531,7 @@ export default function Admin() {
 
   const hasActiveFilters = filterByUserId || searchQuery || filterMake || filterYear || filterStatus;
 
-  if (authLoading || authFetching) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
