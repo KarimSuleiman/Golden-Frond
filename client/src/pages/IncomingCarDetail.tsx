@@ -1,18 +1,25 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { useJsonLd } from "@/hooks/use-json-ld";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowRight, ArrowLeft, Truck, ChevronLeft, ChevronRight,
   Gauge, Settings2, Fuel, Users, Car as CarIcon, X,
-  Palette, MapPin, Phone, DollarSign, FileText
+  Palette, MapPin, Phone, DollarSign, FileText, Pencil, Upload
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { IncomingCar } from "@shared/schema";
 
@@ -21,9 +28,86 @@ const SITE_ORIGIN = "https://golden-palm.replit.app";
 export default function IncomingCarDetail() {
   const params = useParams<{ id: string }>();
   const { t, language, dir } = useLanguage();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const BackIcon = language === "ar" ? ArrowLeft : ArrowRight;
+
+  // Edit state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    make: "", model: "", year: "", color: "", details: "", status: "coming", estimatedArrival: "",
+    price: "", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
+    engineSize: "", seats: "", interiorColor: "", interiorFeatures: [] as string[],
+    exteriorFeatures: [] as string[], regionalSpecs: "", countryOfOrigin: "", license: "",
+    insurance: "", customs: "", location: "", contactPhone: "",
+  });
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState("");
+  const [editExistingImages, setEditExistingImages] = useState<string[]>([]);
+  const [editAdditionalFiles, setEditAdditionalFiles] = useState<File[]>([]);
+  const [editAdditionalPreviews, setEditAdditionalPreviews] = useState<string[]>([]);
+  const editAdditionalInputRef = useRef<HTMLInputElement>(null);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+
+  const { data: authInfo } = useQuery<{ isAdmin: boolean }>({
+    queryKey: ["/api/auth/is-admin"],
+    enabled: !!user,
+  });
+
+  const handleEditOpen = (car: IncomingCar) => {
+    setEditForm({
+      make: car.make || "", model: car.model || "", year: String(car.year || ""),
+      color: car.color || "", details: car.details || "", status: car.status || "coming",
+      estimatedArrival: car.estimatedArrival || "", price: car.price ? String(car.price) : "",
+      condition: car.condition || "used", mileage: car.mileage ? String(car.mileage) : "",
+      bodyType: car.bodyType || "", transmission: car.transmission || "", fuelType: car.fuelType || "",
+      engineSize: car.engineSize || "", seats: car.seats ? String(car.seats) : "",
+      interiorColor: car.interiorColor || "",
+      interiorFeatures: (car.interiorFeatures as string[]) || [],
+      exteriorFeatures: (car.exteriorFeatures as string[]) || [],
+      regionalSpecs: car.regionalSpecs || "", countryOfOrigin: car.countryOfOrigin || "",
+      license: car.license || "", insurance: car.insurance || "", customs: car.customs || "",
+      location: car.location || "", contactPhone: car.contactPhone || "",
+    });
+    setEditImageFile(null);
+    setEditImagePreview(car.imageUrl || "");
+    setEditExistingImages((car.images as string[]) || []);
+    setEditAdditionalFiles([]);
+    setEditAdditionalPreviews([]);
+    setEditOpen(true);
+  };
+
+  const handleEditSubmit = async (car: IncomingCar) => {
+    if (!editForm.make || !editForm.model || !editForm.year) {
+      toast({ title: language === "ar" ? "الرجاء ملء الحقول المطلوبة" : "Please fill required fields", variant: "destructive" });
+      return;
+    }
+    setIsEditSubmitting(true);
+    try {
+      const fd = new FormData();
+      Object.entries(editForm).forEach(([k, v]) => {
+        if (Array.isArray(v)) fd.append(k, JSON.stringify(v));
+        else fd.append(k, v as string);
+      });
+      fd.append("existingImages", JSON.stringify(editExistingImages));
+      if (editImageFile) fd.append("image", editImageFile);
+      editAdditionalFiles.forEach(f => fd.append("images", f));
+
+      const res = await fetch(`/api/admin/incoming-cars/${car.id}`, { method: "PUT", body: fd, credentials: "include" });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `HTTP ${res.status}`); }
+      await queryClient.invalidateQueries({ queryKey: ["/api/incoming-cars", params.id] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/incoming-cars"] });
+      toast({ title: language === "ar" ? "تم تعديل السيارة بنجاح" : "Car updated successfully" });
+      setEditOpen(false);
+    } catch (err: any) {
+      toast({ title: err?.message || (language === "ar" ? "فشل التعديل" : "Failed to update"), variant: "destructive" });
+    } finally {
+      setIsEditSubmitting(false);
+    }
+  };
 
   const { data: car, isLoading, isError } = useQuery<IncomingCar>({
     queryKey: ["/api/incoming-cars", params.id],
@@ -127,12 +211,26 @@ export default function IncomingCarDetail() {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Link href="/incoming-cars">
-          <Button variant="ghost" className="mb-6 -ms-2" data-testid="button-back-incoming">
-            <BackIcon className="w-4 h-4 me-2" />
-            {language === "ar" ? "سيارات قيد التحميل" : "Incoming Cars"}
-          </Button>
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/incoming-cars">
+            <Button variant="ghost" className="-ms-2" data-testid="button-back-incoming">
+              <BackIcon className="w-4 h-4 me-2" />
+              {language === "ar" ? "سيارات قيد التحميل" : "Incoming Cars"}
+            </Button>
+          </Link>
+          {authInfo?.isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={() => handleEditOpen(car)}
+              data-testid="button-edit-car-detail"
+            >
+              <Pencil className="w-4 h-4" />
+              {language === "ar" ? "تعديل" : "Edit"}
+            </Button>
+          )}
+        </div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -351,6 +449,236 @@ export default function IncomingCarDetail() {
           </div>
         </motion.div>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editOpen} onOpenChange={open => !open && setEditOpen(false)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" dir={dir}>
+          <DialogHeader>
+            <DialogTitle>{language === "ar" ? "تعديل السيارة" : "Edit Car"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            {/* Main image */}
+            <div className="space-y-2">
+              <Label>{t("admin.form.mainImage")}</Label>
+              {editImagePreview ? (
+                <div className="relative">
+                  <img src={editImagePreview} alt="" className="w-full h-44 object-cover rounded-lg" />
+                  <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/50 text-white"
+                    onClick={() => { setEditImageFile(null); setEditImagePreview(""); }}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                  {editImageFile && <span className="absolute bottom-2 left-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">{language === "ar" ? "صورة جديدة" : "New image"}</span>}
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center h-44 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                  <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                  <span className="text-sm text-muted-foreground">{t("admin.form.selectImage")}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) { setEditImageFile(file); const r = new FileReader(); r.onloadend = () => setEditImagePreview(r.result as string); r.readAsDataURL(file); }
+                  }} />
+                </label>
+              )}
+            </div>
+
+            {/* Additional images */}
+            <div className="space-y-2">
+              <Label>{t("admin.form.additionalImages")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {editExistingImages.map((url, idx) => (
+                  <div key={`ex-${idx}`} className="relative w-16 h-16">
+                    <img src={url} alt="" className="w-full h-full object-cover rounded-md" />
+                    <button type="button" onClick={() => setEditExistingImages(a => a.filter((_, i) => i !== idx))}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                {editAdditionalPreviews.map((p, idx) => (
+                  <div key={`new-${idx}`} className="relative w-16 h-16">
+                    <img src={p} alt="" className="w-full h-full object-cover rounded-md border-2 border-primary" />
+                    <button type="button" onClick={() => { setEditAdditionalFiles(a => a.filter((_, i) => i !== idx)); setEditAdditionalPreviews(a => a.filter((_, i) => i !== idx)); }}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => editAdditionalInputRef.current?.click()}
+                  className="w-16 h-16 border-2 border-dashed border-border rounded-md flex items-center justify-center hover:border-primary/50 transition-colors bg-transparent">
+                  <Upload className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <input ref={editAdditionalInputRef} type="file" accept="image/*" multiple className="hidden" onChange={e => {
+                  const files = Array.from(e.target.files || []);
+                  setEditAdditionalFiles(prev => [...prev, ...files]);
+                  files.forEach(f => { const r = new FileReader(); r.onloadend = () => setEditAdditionalPreviews(prev => [...prev, r.result as string]); r.readAsDataURL(f); });
+                }} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2"><Label>{t("marketplace.brand")} *</Label>
+                <Input value={editForm.make} onChange={e => setEditForm(f => ({ ...f, make: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("marketplace.model")} *</Label>
+                <Input value={editForm.model} onChange={e => setEditForm(f => ({ ...f, model: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("marketplace.yearLabel")} *</Label>
+                <Input type="number" value={editForm.year} onChange={e => setEditForm(f => ({ ...f, year: e.target.value }))} placeholder="2025" /></div>
+              <div className="space-y-2"><Label>{t("marketplace.priceLabel")}</Label>
+                <Input type="number" value={editForm.price} onChange={e => setEditForm(f => ({ ...f, price: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("filter.exteriorColor")}</Label>
+                <Select value={editForm.color || "none"} onValueChange={v => setEditForm(f => ({ ...f, color: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                      <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.condition")}</Label>
+                <Select value={editForm.condition} onValueChange={v => setEditForm(f => ({ ...f, condition: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">{t("marketplace.conditionNew")}</SelectItem>
+                    <SelectItem value="used">{t("marketplace.conditionUsed")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.mileage")}</Label>
+                <Input type="number" value={editForm.mileage} onChange={e => setEditForm(f => ({ ...f, mileage: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("marketplace.bodyType")}</Label>
+                <Select value={editForm.bodyType || "none"} onValueChange={v => setEditForm(f => ({ ...f, bodyType: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="suv">{t("filter.bodySUV")}</SelectItem>
+                    <SelectItem value="van">{t("filter.bodyVan")}</SelectItem>
+                    <SelectItem value="pickup">{t("filter.bodyPickup")}</SelectItem>
+                    <SelectItem value="truck">{t("filter.bodyTruck")}</SelectItem>
+                    <SelectItem value="sedan">{t("filter.bodySedan")}</SelectItem>
+                    <SelectItem value="convertible">{t("filter.bodyConvertible")}</SelectItem>
+                    <SelectItem value="coupe">{t("filter.bodyCoupe")}</SelectItem>
+                    <SelectItem value="hatchback">{t("filter.bodyHatchback")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.transmission")}</Label>
+                <Select value={editForm.transmission || "none"} onValueChange={v => setEditForm(f => ({ ...f, transmission: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="automatic">{t("marketplace.automatic")}</SelectItem>
+                    <SelectItem value="manual">{t("marketplace.manual")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.fuelType")}</Label>
+                <Select value={editForm.fuelType || "none"} onValueChange={v => setEditForm(f => ({ ...f, fuelType: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="petrol">{t("filter.fuelPetrol")}</SelectItem>
+                    <SelectItem value="diesel">{t("filter.fuelDiesel")}</SelectItem>
+                    <SelectItem value="electric">{t("filter.fuelElectric")}</SelectItem>
+                    <SelectItem value="mild_hybrid">{t("filter.fuelMildHybrid")}</SelectItem>
+                    <SelectItem value="hybrid">{t("filter.fuelHybrid")}</SelectItem>
+                    <SelectItem value="plugin_hybrid">{t("filter.fuelPluginHybrid")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.engineSize")}</Label>
+                <Input value={editForm.engineSize} onChange={e => setEditForm(f => ({ ...f, engineSize: e.target.value }))} placeholder="2.0L" /></div>
+              <div className="space-y-2"><Label>{t("filter.seats")}</Label>
+                <Input type="number" value={editForm.seats} onChange={e => setEditForm(f => ({ ...f, seats: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("filter.interiorColor")}</Label>
+                <Select value={editForm.interiorColor || "none"} onValueChange={v => setEditForm(f => ({ ...f, interiorColor: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                      <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.regionalSpecs")}</Label>
+                <Select value={editForm.regionalSpecs || "none"} onValueChange={v => setEditForm(f => ({ ...f, regionalSpecs: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="american">{t("filter.specAmerican")}</SelectItem>
+                    <SelectItem value="european">{t("filter.specEuropean")}</SelectItem>
+                    <SelectItem value="gulf">{t("filter.specGulf")}</SelectItem>
+                    <SelectItem value="chinese">{t("filter.specChinese")}</SelectItem>
+                    <SelectItem value="korean">{t("filter.specKorean")}</SelectItem>
+                    <SelectItem value="japanese">{t("filter.specJapanese")}</SelectItem>
+                    <SelectItem value="other">{t("filter.specOther")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.countryOfOrigin")}</Label>
+                <Select value={editForm.countryOfOrigin || "none"} onValueChange={v => setEditForm(f => ({ ...f, countryOfOrigin: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="germany">{t("filter.originGermany")}</SelectItem>
+                    <SelectItem value="india">{t("filter.originIndia")}</SelectItem>
+                    <SelectItem value="japan">{t("filter.originJapan")}</SelectItem>
+                    <SelectItem value="usa">{t("filter.originUSA")}</SelectItem>
+                    <SelectItem value="iran">{t("filter.originIran")}</SelectItem>
+                    <SelectItem value="spain">{t("filter.originSpain")}</SelectItem>
+                    <SelectItem value="uae">{t("filter.originUAE")}</SelectItem>
+                    <SelectItem value="sweden">{t("filter.originSweden")}</SelectItem>
+                    <SelectItem value="china">{t("filter.originChina")}</SelectItem>
+                    <SelectItem value="italy">{t("filter.originItaly")}</SelectItem>
+                    <SelectItem value="uk">{t("filter.originUK")}</SelectItem>
+                    <SelectItem value="russia">{t("filter.originRussia")}</SelectItem>
+                    <SelectItem value="france">{t("filter.originFrance")}</SelectItem>
+                    <SelectItem value="korea">{t("filter.originKorea")}</SelectItem>
+                    <SelectItem value="malaysia">{t("filter.originMalaysia")}</SelectItem>
+                    <SelectItem value="netherlands">{t("filter.originNetherlands")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("incoming.form.status")}</Label>
+              <Select value={editForm.status} onValueChange={v => setEditForm(f => ({ ...f, status: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="coming">{t("incoming.status.coming")}</SelectItem>
+                  <SelectItem value="arrived">{t("incoming.status.arrived")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("incoming.estimatedArrival")}</Label>
+              <Input value={editForm.estimatedArrival} onChange={e => setEditForm(f => ({ ...f, estimatedArrival: e.target.value }))}
+                placeholder={language === "ar" ? "مثال: خلال أسبوعين" : "e.g. 2 weeks"} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("marketplace.location")}</Label>
+              <Input value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("marketplace.contactPhone")}</Label>
+              <Input value={editForm.contactPhone} onChange={e => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} dir="ltr" />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("incoming.details")}</Label>
+              <Textarea value={editForm.details} onChange={e => setEditForm(f => ({ ...f, details: e.target.value }))} className="min-h-[80px]" />
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              <Button className="flex-1" onClick={() => car && handleEditSubmit(car)} disabled={isEditSubmitting} data-testid="button-save-edit-detail">
+                {isEditSubmitting ? (language === "ar" ? "جاري الحفظ..." : "Saving...") : (language === "ar" ? "حفظ التعديلات" : "Save Changes")}
+              </Button>
+              <Button variant="outline" onClick={() => setEditOpen(false)}>{t("admin.form.cancel")}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Fullscreen gallery */}
       <AnimatePresence>
