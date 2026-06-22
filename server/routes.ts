@@ -975,10 +975,8 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/incoming-cars", isAuthenticated, upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }]), async (req: any, res) => {
+  app.post("/api/admin/incoming-cars", isAuthenticated, isAdmin, upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }]), async (req: any, res) => {
     try {
-      const user = req.user;
-      if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
 
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       const mainImage = files?.image?.[0];
@@ -1028,10 +1026,8 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/admin/incoming-cars/:id", isAuthenticated, async (req: any, res) => {
+  app.put("/api/admin/incoming-cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const user = req.user;
-      if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
       const id = parseInt(req.params.id);
       const updated = await storage.updateIncomingCar(id, req.body);
       res.json(updated);
@@ -1041,10 +1037,8 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/incoming-cars/:id", isAuthenticated, async (req: any, res) => {
+  app.delete("/api/admin/incoming-cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const user = req.user;
-      if (!user?.isAdmin) return res.status(403).json({ message: "Forbidden" });
       const id = parseInt(req.params.id);
       const incomingCar = await storage.getIncomingCar(id);
       if (incomingCar) {
