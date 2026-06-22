@@ -384,7 +384,8 @@ export default function Admin() {
       try {
         const result = await uploadMutation.mutateAsync(imageFile);
         imageUrl = result.imageUrl;
-      } catch {
+      } catch (err: any) {
+        toast({ title: "خطأ في رفع الصورة", description: err?.message || "فشل رفع الصورة الرئيسية، حاول مرة أخرى", variant: "destructive" });
         return;
       }
     }
@@ -397,7 +398,8 @@ export default function Admin() {
       try {
         const result = await uploadMutation.mutateAsync(file);
         uploadedAdditionalImages.push(result.imageUrl);
-      } catch {
+      } catch (err: any) {
+        toast({ title: "خطأ في رفع الصور", description: err?.message || "فشل رفع إحدى الصور الإضافية، حاول مرة أخرى", variant: "destructive" });
         return;
       }
     }
