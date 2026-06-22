@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Trash2, Upload, X, Truck, Package, Calendar } from "lucide-react";
+import { Plus, Trash2, Upload, X, Truck, Package, Calendar, Pencil } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
@@ -105,6 +105,109 @@ export default function IncomingCars() {
   const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
   const additionalInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Edit state
+  const [editCar, setEditCar] = useState<IncomingCar | null>(null);
+  const [editForm, setEditForm] = useState({
+    make: "", model: "", year: "", color: "", details: "", status: "coming", estimatedArrival: "",
+    price: "", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
+    engineSize: "", seats: "", interiorColor: "", interiorFeatures: [] as string[],
+    exteriorFeatures: [] as string[], regionalSpecs: "", countryOfOrigin: "", license: "",
+    insurance: "", customs: "", location: "", contactPhone: "",
+  });
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState("");
+  const [editExistingImages, setEditExistingImages] = useState<string[]>([]);
+  const [editAdditionalFiles, setEditAdditionalFiles] = useState<File[]>([]);
+  const [editAdditionalPreviews, setEditAdditionalPreviews] = useState<string[]>([]);
+  const editAdditionalInputRef = useRef<HTMLInputElement>(null);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+
+  const handleEditOpen = (car: IncomingCar) => {
+    setEditCar(car);
+    setEditForm({
+      make: car.make || "", model: car.model || "", year: String(car.year || ""),
+      color: car.color || "", details: car.details || "", status: car.status || "coming",
+      estimatedArrival: car.estimatedArrival || "", price: car.price ? String(car.price) : "",
+      condition: car.condition || "used", mileage: car.mileage ? String(car.mileage) : "",
+      bodyType: car.bodyType || "", transmission: car.transmission || "", fuelType: car.fuelType || "",
+      engineSize: car.engineSize || "", seats: car.seats ? String(car.seats) : "",
+      interiorColor: car.interiorColor || "",
+      interiorFeatures: (car.interiorFeatures as string[]) || [],
+      exteriorFeatures: (car.exteriorFeatures as string[]) || [],
+      regionalSpecs: car.regionalSpecs || "", countryOfOrigin: car.countryOfOrigin || "",
+      license: car.license || "", insurance: car.insurance || "", customs: car.customs || "",
+      location: car.location || "", contactPhone: car.contactPhone || "",
+    });
+    setEditImageFile(null);
+    setEditImagePreview(car.imageUrl || "");
+    setEditExistingImages((car.images as string[]) || []);
+    setEditAdditionalFiles([]);
+    setEditAdditionalPreviews([]);
+  };
+
+  const handleEditAdditionalImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setEditAdditionalFiles(prev => [...prev, ...files]);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => setEditAdditionalPreviews(prev => [...prev, reader.result as string]);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editCar || !editForm.make || !editForm.model || !editForm.year) {
+      toast({ title: language === "ar" ? "الرجاء ملء الحقول المطلوبة" : "Please fill required fields", variant: "destructive" });
+      return;
+    }
+    setIsEditSubmitting(true);
+    try {
+      const fd = new FormData();
+      fd.append("make", editForm.make);
+      fd.append("model", editForm.model);
+      fd.append("year", editForm.year);
+      fd.append("color", editForm.color);
+      fd.append("details", editForm.details);
+      fd.append("status", editForm.status);
+      fd.append("estimatedArrival", editForm.estimatedArrival);
+      fd.append("price", editForm.price);
+      fd.append("condition", editForm.condition);
+      fd.append("mileage", editForm.mileage);
+      fd.append("bodyType", editForm.bodyType);
+      fd.append("transmission", editForm.transmission);
+      fd.append("fuelType", editForm.fuelType);
+      fd.append("engineSize", editForm.engineSize);
+      fd.append("seats", editForm.seats);
+      fd.append("interiorColor", editForm.interiorColor);
+      fd.append("interiorFeatures", JSON.stringify(editForm.interiorFeatures));
+      fd.append("exteriorFeatures", JSON.stringify(editForm.exteriorFeatures));
+      fd.append("regionalSpecs", editForm.regionalSpecs);
+      fd.append("countryOfOrigin", editForm.countryOfOrigin);
+      fd.append("license", editForm.license);
+      fd.append("insurance", editForm.insurance);
+      fd.append("customs", editForm.customs);
+      fd.append("location", editForm.location);
+      fd.append("contactPhone", editForm.contactPhone);
+      fd.append("existingImages", JSON.stringify(editExistingImages));
+      if (editImageFile) fd.append("image", editImageFile);
+      editAdditionalFiles.forEach(f => fd.append("images", f));
+
+      const res = await fetch(`/api/admin/incoming-cars/${editCar.id}`, { method: "PUT", body: fd, credentials: "include" });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `HTTP ${res.status}`);
+      }
+      await queryClient.invalidateQueries({ queryKey: ["/api/incoming-cars"] });
+      toast({ title: language === "ar" ? "تم تعديل السيارة" : "Car updated successfully" });
+      setEditCar(null);
+    } catch (err: any) {
+      const msg = err?.message || "";
+      toast({ title: msg || (language === "ar" ? "فشل التعديل" : "Failed to update"), variant: "destructive" });
+    } finally {
+      setIsEditSubmitting(false);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -251,13 +354,22 @@ export default function IncomingCars() {
                         {car.status === "arrived" ? t("incoming.status.arrived") : t("incoming.status.coming")}
                       </Badge>
                       {authInfo?.isAdmin && (
-                        <button
-                          onClick={e => { e.preventDefault(); e.stopPropagation(); setDeleteId(car.id); }}
-                          className="absolute top-3 end-3 w-8 h-8 bg-destructive/90 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          data-testid={`button-delete-incoming-${car.id}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="absolute top-3 end-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={e => { e.preventDefault(); e.stopPropagation(); handleEditOpen(car); }}
+                            className="w-8 h-8 bg-primary/90 text-white rounded-full flex items-center justify-center"
+                            data-testid={`button-edit-incoming-${car.id}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={e => { e.preventDefault(); e.stopPropagation(); setDeleteId(car.id); }}
+                            className="w-8 h-8 bg-destructive/90 text-white rounded-full flex items-center justify-center"
+                            data-testid={`button-delete-incoming-${car.id}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       )}
                     </div>
                     <CardContent className="p-4 space-y-2">
@@ -577,6 +689,288 @@ export default function IncomingCars() {
                 {isSubmitting ? (language === "ar" ? "جاري الإضافة..." : "Adding...") : t("incoming.addCar")}
               </Button>
               <Button variant="outline" onClick={() => setShowAddModal(false)}>{t("admin.form.cancel")}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit modal */}
+      <Dialog open={!!editCar} onOpenChange={open => !open && setEditCar(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" dir={dir}>
+          <DialogHeader>
+            <DialogTitle>{language === "ar" ? "تعديل السيارة" : "Edit Car"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            {/* Main image */}
+            <div className="space-y-2">
+              <Label>{t("admin.form.mainImage")}</Label>
+              {editImagePreview ? (
+                <div className="relative">
+                  <img src={editImagePreview} alt="" className="w-full h-44 object-cover rounded-lg" />
+                  <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/50 text-white"
+                    onClick={() => { setEditImageFile(null); setEditImagePreview(""); }}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                  {editImageFile && <span className="absolute bottom-2 left-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">{language === "ar" ? "صورة جديدة" : "New image"}</span>}
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center h-44 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                  <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                  <span className="text-sm text-muted-foreground">{t("admin.form.selectImage")}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) { setEditImageFile(file); const r = new FileReader(); r.onloadend = () => setEditImagePreview(r.result as string); r.readAsDataURL(file); }
+                  }} />
+                </label>
+              )}
+            </div>
+
+            {/* Additional images — existing + new */}
+            <div className="space-y-2">
+              <Label>{t("admin.form.additionalImages")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {editExistingImages.map((url, idx) => (
+                  <div key={`existing-${idx}`} className="relative w-16 h-16">
+                    <img src={url} alt="" className="w-full h-full object-cover rounded-md" />
+                    <button type="button" onClick={() => setEditExistingImages(a => a.filter((_, i) => i !== idx))}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                {editAdditionalPreviews.map((p, idx) => (
+                  <div key={`new-${idx}`} className="relative w-16 h-16">
+                    <img src={p} alt="" className="w-full h-full object-cover rounded-md border-2 border-primary" />
+                    <button type="button" onClick={() => { setEditAdditionalFiles(a => a.filter((_, i) => i !== idx)); setEditAdditionalPreviews(a => a.filter((_, i) => i !== idx)); }}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => editAdditionalInputRef.current?.click()}
+                  className="w-16 h-16 border-2 border-dashed border-border rounded-md flex items-center justify-center hover:border-primary/50 transition-colors bg-transparent">
+                  <Upload className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <input ref={editAdditionalInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleEditAdditionalImages} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2"><Label>{t("marketplace.brand")} *</Label>
+                <Input value={editForm.make} onChange={e => setEditForm(f => ({ ...f, make: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("marketplace.model")} *</Label>
+                <Input value={editForm.model} onChange={e => setEditForm(f => ({ ...f, model: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("marketplace.yearLabel")} *</Label>
+                <Input type="number" value={editForm.year} onChange={e => setEditForm(f => ({ ...f, year: e.target.value }))} placeholder="2025" /></div>
+              <div className="space-y-2"><Label>{t("marketplace.priceLabel")}</Label>
+                <Input type="number" value={editForm.price} onChange={e => setEditForm(f => ({ ...f, price: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("filter.exteriorColor")}</Label>
+                <Select value={editForm.color || "none"} onValueChange={v => setEditForm(f => ({ ...f, color: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                      <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.condition")}</Label>
+                <Select value={editForm.condition} onValueChange={v => setEditForm(f => ({ ...f, condition: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">{t("marketplace.conditionNew")}</SelectItem>
+                    <SelectItem value="used">{t("marketplace.conditionUsed")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.mileage")}</Label>
+                <Input type="number" value={editForm.mileage} onChange={e => setEditForm(f => ({ ...f, mileage: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("marketplace.bodyType")}</Label>
+                <Select value={editForm.bodyType || "none"} onValueChange={v => setEditForm(f => ({ ...f, bodyType: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="suv">{t("filter.bodySUV")}</SelectItem>
+                    <SelectItem value="van">{t("filter.bodyVan")}</SelectItem>
+                    <SelectItem value="pickup">{t("filter.bodyPickup")}</SelectItem>
+                    <SelectItem value="truck">{t("filter.bodyTruck")}</SelectItem>
+                    <SelectItem value="sedan">{t("filter.bodySedan")}</SelectItem>
+                    <SelectItem value="convertible">{t("filter.bodyConvertible")}</SelectItem>
+                    <SelectItem value="coupe">{t("filter.bodyCoupe")}</SelectItem>
+                    <SelectItem value="hatchback">{t("filter.bodyHatchback")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.transmission")}</Label>
+                <Select value={editForm.transmission || "none"} onValueChange={v => setEditForm(f => ({ ...f, transmission: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="automatic">{t("marketplace.automatic")}</SelectItem>
+                    <SelectItem value="manual">{t("marketplace.manual")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.fuelType")}</Label>
+                <Select value={editForm.fuelType || "none"} onValueChange={v => setEditForm(f => ({ ...f, fuelType: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="petrol">{t("filter.fuelPetrol")}</SelectItem>
+                    <SelectItem value="diesel">{t("filter.fuelDiesel")}</SelectItem>
+                    <SelectItem value="electric">{t("filter.fuelElectric")}</SelectItem>
+                    <SelectItem value="mild_hybrid">{t("filter.fuelMildHybrid")}</SelectItem>
+                    <SelectItem value="hybrid">{t("filter.fuelHybrid")}</SelectItem>
+                    <SelectItem value="plugin_hybrid">{t("filter.fuelPluginHybrid")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("marketplace.engineSize")}</Label>
+                <Input value={editForm.engineSize} onChange={e => setEditForm(f => ({ ...f, engineSize: e.target.value }))} placeholder="2.0L" /></div>
+              <div className="space-y-2"><Label>{t("filter.seats")}</Label>
+                <Input type="number" value={editForm.seats} onChange={e => setEditForm(f => ({ ...f, seats: e.target.value }))} /></div>
+              <div className="space-y-2"><Label>{t("filter.interiorColor")}</Label>
+                <Select value={editForm.interiorColor || "none"} onValueChange={v => setEditForm(f => ({ ...f, interiorColor: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    {["white","red","green","blue","lightBlue","gray","black","yellow","teal","silver","gold","brown","orange","beige","purple"].map(c => (
+                      <SelectItem key={c} value={c}>{t(`filter.color${c.charAt(0).toUpperCase() + c.slice(1)}`)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.regionalSpecs")}</Label>
+                <Select value={editForm.regionalSpecs || "none"} onValueChange={v => setEditForm(f => ({ ...f, regionalSpecs: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="american">{t("filter.specAmerican")}</SelectItem>
+                    <SelectItem value="european">{t("filter.specEuropean")}</SelectItem>
+                    <SelectItem value="gulf">{t("filter.specGulf")}</SelectItem>
+                    <SelectItem value="chinese">{t("filter.specChinese")}</SelectItem>
+                    <SelectItem value="korean">{t("filter.specKorean")}</SelectItem>
+                    <SelectItem value="japanese">{t("filter.specJapanese")}</SelectItem>
+                    <SelectItem value="other">{t("filter.specOther")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.countryOfOrigin")}</Label>
+                <Select value={editForm.countryOfOrigin || "none"} onValueChange={v => setEditForm(f => ({ ...f, countryOfOrigin: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="germany">{t("filter.originGermany")}</SelectItem>
+                    <SelectItem value="india">{t("filter.originIndia")}</SelectItem>
+                    <SelectItem value="japan">{t("filter.originJapan")}</SelectItem>
+                    <SelectItem value="usa">{t("filter.originUSA")}</SelectItem>
+                    <SelectItem value="iran">{t("filter.originIran")}</SelectItem>
+                    <SelectItem value="spain">{t("filter.originSpain")}</SelectItem>
+                    <SelectItem value="uae">{t("filter.originUAE")}</SelectItem>
+                    <SelectItem value="sweden">{t("filter.originSweden")}</SelectItem>
+                    <SelectItem value="china">{t("filter.originChina")}</SelectItem>
+                    <SelectItem value="italy">{t("filter.originItaly")}</SelectItem>
+                    <SelectItem value="uk">{t("filter.originUK")}</SelectItem>
+                    <SelectItem value="russia">{t("filter.originRussia")}</SelectItem>
+                    <SelectItem value="france">{t("filter.originFrance")}</SelectItem>
+                    <SelectItem value="korea">{t("filter.originKorea")}</SelectItem>
+                    <SelectItem value="malaysia">{t("filter.originMalaysia")}</SelectItem>
+                    <SelectItem value="netherlands">{t("filter.originNetherlands")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.license")}</Label>
+                <Select value={editForm.license || "none"} onValueChange={v => setEditForm(f => ({ ...f, license: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="licensed">{t("filter.licensed")}</SelectItem>
+                    <SelectItem value="unlicensed">{t("filter.unlicensed")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.insurance")}</Label>
+                <Select value={editForm.insurance || "none"} onValueChange={v => setEditForm(f => ({ ...f, insurance: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="mandatory">{t("filter.insuranceMandatory")}</SelectItem>
+                    <SelectItem value="comprehensive">{t("filter.insuranceComprehensive")}</SelectItem>
+                    <SelectItem value="uninsured">{t("filter.insuranceNone")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>{t("filter.customs")}</Label>
+                <Select value={editForm.customs || "none"} onValueChange={v => setEditForm(f => ({ ...f, customs: v === "none" ? "" : v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("marketplace.selectOption")}</SelectItem>
+                    <SelectItem value="cleared">{t("filter.customsCleared")}</SelectItem>
+                    <SelectItem value="not_cleared">{t("filter.customsNotCleared")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("filter.interiorSpecs")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {["auxUsb","airbags","powerSeats","steeringControl","seatMemory","powerWindows","centralLock","heatedSeats","cdPlayer","leatherSeats","sportSeats","heatedSteering","rearElectric","cooledSeats","ac","alarm"].map(feat => (
+                  <button key={feat} type="button"
+                    onClick={() => setEditForm(prev => ({ ...prev, interiorFeatures: prev.interiorFeatures.includes(feat) ? prev.interiorFeatures.filter(i => i !== feat) : [...prev.interiorFeatures, feat] }))}
+                    className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${editForm.interiorFeatures.includes(feat) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}>
+                    {t(`filter.int${feat.charAt(0).toUpperCase() + feat.slice(1)}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("filter.exteriorSpecs")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {["sunroof","panoramicRoof","rearCamera","360Camera","parkingSensors","frontCamera","ledLights","adaptiveLights","remoteStart","keylessEntry","spareWheel","towHook","roofRack","runFlatTires"].map(feat => (
+                  <button key={feat} type="button"
+                    onClick={() => setEditForm(prev => ({ ...prev, exteriorFeatures: prev.exteriorFeatures.includes(feat) ? prev.exteriorFeatures.filter(i => i !== feat) : [...prev.exteriorFeatures, feat] }))}
+                    className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${editForm.exteriorFeatures.includes(feat) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-border"}`}>
+                    {t(`filter.ext${feat.charAt(0).toUpperCase() + feat.slice(1)}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("incoming.form.status")}</Label>
+              <Select value={editForm.status} onValueChange={v => setEditForm(f => ({ ...f, status: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="coming">{t("incoming.status.coming")}</SelectItem>
+                  <SelectItem value="arrived">{t("incoming.status.arrived")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("incoming.estimatedArrival")}</Label>
+              <Input value={editForm.estimatedArrival} onChange={e => setEditForm(f => ({ ...f, estimatedArrival: e.target.value }))}
+                placeholder={language === "ar" ? "مثال: خلال أسبوعين" : "e.g. 2 weeks"} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("marketplace.location")}</Label>
+              <Input value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("marketplace.contactPhone")}</Label>
+              <Input value={editForm.contactPhone} onChange={e => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} dir="ltr" />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("incoming.details")}</Label>
+              <Textarea value={editForm.details} onChange={e => setEditForm(f => ({ ...f, details: e.target.value }))} className="min-h-[80px]" />
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              <Button className="flex-1" onClick={handleEditSubmit} disabled={isEditSubmitting} data-testid="button-submit-edit-incoming">
+                {isEditSubmitting ? (language === "ar" ? "جاري الحفظ..." : "Saving...") : (language === "ar" ? "حفظ التعديلات" : "Save Changes")}
+              </Button>
+              <Button variant="outline" onClick={() => setEditCar(null)}>{t("admin.form.cancel")}</Button>
             </div>
           </div>
         </DialogContent>

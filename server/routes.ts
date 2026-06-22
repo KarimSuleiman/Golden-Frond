@@ -1046,14 +1046,57 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/admin/incoming-cars/:id", isAuthenticated, isAdmin, async (req: any, res) => {
+  app.put("/api/admin/incoming-cars/:id", isAuthenticated, isAdmin, (req: any, res: any, next: any) => {
+    upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }])(req, res, (err: any) => {
+      if (err) return res.status(400).json({ message: err.message || "File upload error" });
+      next();
+    });
+  }, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      const updated = await storage.updateIncomingCar(id, req.body);
+      const existing = await storage.getIncomingCar(id);
+      if (!existing) return res.status(404).json({ message: "Not found" });
+
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const b = req.body;
+
+      // Handle main image — replace if new one provided
+      let imageUrl = existing.imageUrl;
+      if (files?.image?.[0]) {
+        if (existing.imageUrl?.includes(R2_PUBLIC_URL)) await deleteFromR2(existing.imageUrl);
+        imageUrl = await uploadToR2(files.image[0].buffer, files.image[0].originalname, files.image[0].mimetype);
+      }
+
+      // Handle additional images — start from kept existing, add new uploads
+      let imagesArr: string[] = b.existingImages ? JSON.parse(b.existingImages) : ((existing.images as string[]) || []);
+      if (files?.images?.length) {
+        const newImgs = await Promise.all(files.images.map((f: Express.Multer.File) => uploadToR2(f.buffer, f.originalname, f.mimetype)));
+        imagesArr = [...imagesArr, ...newImgs];
+      }
+      // Delete R2 images that were removed by the user
+      const removedImgs = ((existing.images as string[]) || []).filter(img => !imagesArr.includes(img));
+      for (const img of removedImgs) { if (img?.includes(R2_PUBLIC_URL)) await deleteFromR2(img); }
+
+      const updated = await storage.updateIncomingCar(id, {
+        make: b.make, model: b.model, year: parseInt(b.year),
+        color: b.color || null, imageUrl, images: imagesArr.length > 0 ? imagesArr : null,
+        details: b.details || null, status: b.status || "coming",
+        estimatedArrival: b.estimatedArrival || null,
+        price: b.price ? parseInt(b.price) : null, condition: b.condition || null,
+        mileage: b.mileage ? parseInt(b.mileage) : null, bodyType: b.bodyType || null,
+        transmission: b.transmission || null, fuelType: b.fuelType || null,
+        engineSize: b.engineSize || null, seats: b.seats ? parseInt(b.seats) : null,
+        interiorColor: b.interiorColor || null,
+        interiorFeatures: b.interiorFeatures ? JSON.parse(b.interiorFeatures) : null,
+        exteriorFeatures: b.exteriorFeatures ? JSON.parse(b.exteriorFeatures) : null,
+        regionalSpecs: b.regionalSpecs || null, countryOfOrigin: b.countryOfOrigin || null,
+        license: b.license || null, insurance: b.insurance || null, customs: b.customs || null,
+        location: b.location || null, contactPhone: b.contactPhone || null,
+      });
       res.json(updated);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Update incoming car error:", error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: error?.message || "Server error" });
     }
   });
 
