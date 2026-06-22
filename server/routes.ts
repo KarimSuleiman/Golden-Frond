@@ -317,6 +317,8 @@ export async function registerRoutes(
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          isAdmin: user.isAdmin,
+          role: user.role,
         }
       });
     } catch (error) {

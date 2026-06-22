@@ -36,17 +36,25 @@ export default function Login() {
       return res.json();
     },
     onSuccess: async (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/is-admin"] });
+      // Set user data immediately in cache so Admin.tsx doesn't see null
+      if (data.user) {
+        queryClient.setQueryData(["/api/auth/user"], data.user);
+      }
       queryClient.removeQueries({ queryKey: ["/api/admin/users"] });
       queryClient.removeQueries({ queryKey: ["/api/admin/cars"] });
+
+      // Check if user is admin and redirect accordingly
+      const isAdminRes = await fetch("/api/auth/is-admin", { credentials: "include" });
+      const isAdminData = await isAdminRes.json();
+
+      // Update is-admin cache too
+      queryClient.setQueryData(["/api/auth/is-admin"], isAdminData);
+
       toast({
         title: t("login.welcome"),
         description: t("login.success"),
       });
-      // Check if user is admin and redirect accordingly
-      const isAdminRes = await fetch("/api/auth/is-admin", { credentials: "include" });
-      const isAdminData = await isAdminRes.json();
+
       if (isAdminData.isAdmin) {
         setLocation("/admin");
       } else {
