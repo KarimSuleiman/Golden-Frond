@@ -822,6 +822,8 @@ export default function Admin() {
                                               ? "bg-blue-500/20 text-blue-600"
                                               : car.status === "Purchased"
                                               ? "bg-green-500/20 text-green-600"
+                                              : car.status === "In Loading"
+                                              ? "bg-purple-500/20 text-purple-600"
                                               : "bg-yellow-500/20 text-yellow-600"
                                           }`}
                                         >
@@ -829,6 +831,8 @@ export default function Admin() {
                                             ? t("car.status.inTransit")
                                             : car.status === "Purchased"
                                             ? t("car.status.purchased")
+                                            : car.status === "In Loading"
+                                            ? t("car.status.inLoading")
                                             : t("car.status.reserved")}
                                         </span>
                                         <Button 
@@ -956,6 +960,7 @@ export default function Admin() {
                       <SelectItem value="Purchased">{t("car.status.purchased")}</SelectItem>
                       <SelectItem value="Reserved">{t("car.status.reserved")}</SelectItem>
                       <SelectItem value="In Transit">{t("car.status.inTransit")}</SelectItem>
+                      <SelectItem value="In Loading">{t("car.status.inLoading")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -989,6 +994,8 @@ export default function Admin() {
                               ? "bg-blue-500/20 text-blue-600"
                               : car.status === "Purchased"
                               ? "bg-green-500/20 text-green-600"
+                              : car.status === "In Loading"
+                              ? "bg-purple-500/20 text-purple-600"
                               : "bg-yellow-500/20 text-yellow-600"
                           }`}
                         >
@@ -996,6 +1003,8 @@ export default function Admin() {
                             ? t("car.status.inTransit")
                             : car.status === "Purchased"
                             ? t("car.status.purchased")
+                            : car.status === "In Loading"
+                            ? t("car.status.inLoading")
                             : t("car.status.reserved")}
                         </span>
                       </div>
@@ -1471,6 +1480,7 @@ export default function Admin() {
                           <SelectItem value="Purchased">{t("car.status.purchased")}</SelectItem>
                           <SelectItem value="Reserved">{t("car.status.reserved")}</SelectItem>
                           <SelectItem value="In Transit">{t("car.status.inTransit")}</SelectItem>
+                          <SelectItem value="In Loading">{t("car.status.inLoading")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

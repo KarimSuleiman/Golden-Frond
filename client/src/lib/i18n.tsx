@@ -154,6 +154,7 @@ const translations: Translations = {
   "car.status.purchased": { ar: "تم الشراء", en: "Purchased" },
   "car.status.reserved": { ar: "محجوز", en: "Reserved" },
   "car.status.inTransit": { ar: "قيد الشحن", en: "In Transit" },
+  "car.status.inLoading": { ar: "قيد التحميل", en: "In Loading" },
   
   // Listing (marketplace)
   "listing.mileage": { ar: "الكيلومترات", en: "Mileage" },
