@@ -314,13 +314,22 @@ export default function CarDetail() {
           )}
 
           {/* ── Shipping / Tracking ── */}
-          {(car.containerNumber || car.bookingNumber || car.trackingUrl) && (
+          {(car.containerNumber || car.bookingNumber || car.trackingUrl || (c as any).shippingLine) && (
             <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800" data-testid="section-shipping">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
                   <Ship className="w-5 h-5" />
                   <span>{t("carDetail.shippingInfo")}</span>
                 </div>
+                {(c as any).shippingLine && (
+                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                    <Ship className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                    <div>
+                      <span className="text-xs text-muted-foreground block">{language === "ar" ? "الخط الملاحي" : "Shipping Lane"}</span>
+                      <span className="font-medium text-sm" data-testid="text-shipping-line">{(c as any).shippingLine}</span>
+                    </div>
+                  </div>
+                )}
                 {(car.containerNumber || car.bookingNumber) && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {car.containerNumber && (

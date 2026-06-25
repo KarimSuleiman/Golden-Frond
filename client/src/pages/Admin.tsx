@@ -109,6 +109,7 @@ export default function Admin() {
     containerNumber: "",
     bookingNumber: "",
     trackingUrl: "",
+    shippingLine: "",
     customUrl: "",
     customUrlReason: "",
     condition: "",
@@ -507,6 +508,7 @@ export default function Admin() {
       containerNumber: carForm.containerNumber || null,
       bookingNumber: carForm.bookingNumber || null,
       trackingUrl: carForm.trackingUrl || null,
+      shippingLine: carForm.shippingLine || null,
       customUrl: carForm.customUrl || null,
       customUrlReason: carForm.customUrlReason || null,
       details: carForm.details || null,
@@ -548,6 +550,7 @@ export default function Admin() {
       containerNumber: car.containerNumber || "",
       bookingNumber: car.bookingNumber || "",
       trackingUrl: car.trackingUrl || "",
+      shippingLine: (car as any).shippingLine || "",
       customUrl: car.customUrl || "",
       customUrlReason: car.customUrlReason || "",
       condition: (car as any).condition || "",
@@ -1575,6 +1578,17 @@ export default function Admin() {
                         data-testid="input-booking"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{language === "ar" ? "الخط الملاحي" : "Shipping Lane"}</Label>
+                    <Input
+                      value={carForm.shippingLine}
+                      onChange={(e) => setCarForm({ ...carForm, shippingLine: e.target.value })}
+                      placeholder={language === "ar" ? "مثال: MSC، Hapag-Lloyd" : "e.g. MSC, Hapag-Lloyd"}
+                      dir="ltr"
+                      data-testid="input-shipping-line"
+                    />
                   </div>
 
                   <div className="space-y-2">

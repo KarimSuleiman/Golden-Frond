@@ -23,6 +23,7 @@ export const cars = pgTable("cars", {
   containerNumber: text("container_number"),
   bookingNumber: text("booking_number"),
   trackingUrl: text("tracking_url"),
+  shippingLine: text("shipping_line"),
   customUrl: text("custom_url"),
   customUrlReason: text("custom_url_reason"),
   pdfUrl: text("pdf_url"),
