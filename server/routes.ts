@@ -928,9 +928,15 @@ export async function registerRoutes(
         return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
       }
 
-      const user = await authStorage.getUser(id);
-      if (!user) {
+      const targetUser = await authStorage.getUser(id);
+      if (!targetUser) {
         return res.status(404).json({ message: "المستخدم غير موجود" });
+      }
+
+      // Backup admins cannot change main admin's password
+      const requestingUser = await authStorage.getUser(req.user.claims.sub);
+      if (requestingUser?.role === "backup_admin" && targetUser.role === "main_admin") {
+        return res.status(403).json({ message: "لا يمكن للأدمن الاحتياطي تغيير كلمة مرور الأدمن الرئيسي" });
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);

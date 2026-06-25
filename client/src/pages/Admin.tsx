@@ -780,20 +780,22 @@ export default function Admin() {
                             </div>
                           </div>
                           <div className="flex gap-1 mt-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="flex-1 text-muted-foreground"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedUserForPassword(user);
-                                setShowPasswordModal(true);
-                              }}
-                              data-testid={`button-change-password-${user.id}`}
-                            >
-                              <Key className="w-4 h-4" />
-                              <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
-                            </Button>
+                            {!(user.role === "main_admin" && !adminInfo.isMainAdmin) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="flex-1 text-muted-foreground"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedUserForPassword(user);
+                                  setShowPasswordModal(true);
+                                }}
+                                data-testid={`button-change-password-${user.id}`}
+                              >
+                                <Key className="w-4 h-4" />
+                                <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
+                              </Button>
+                            )}
                           </div>
                           {adminInfo?.isMainAdmin && user.role !== "main_admin" && (
                             <div className="mt-2" onClick={(e) => e.stopPropagation()}>
@@ -840,19 +842,21 @@ export default function Admin() {
                                 <span className="text-muted-foreground">{t("login.password")}:</span>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs text-muted-foreground">{"••••••••"}</span>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedUserForPassword(user);
-                                      setShowPasswordModal(true);
-                                    }}
-                                    data-testid={`button-inline-change-pw-${user.id}`}
-                                  >
-                                    <Key className="w-3 h-3" />
-                                    <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
-                                  </Button>
+                                  {!(user.role === "main_admin" && !adminInfo.isMainAdmin) && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedUserForPassword(user);
+                                        setShowPasswordModal(true);
+                                      }}
+                                      data-testid={`button-inline-change-pw-${user.id}`}
+                                    >
+                                      <Key className="w-3 h-3" />
+                                      <span className={language === "ar" ? "mr-1" : "ml-1"}>{t("admin.changePassword")}</span>
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             </div>
