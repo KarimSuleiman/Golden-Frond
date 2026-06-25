@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { Navbar } from "@/components/Navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import type { Car } from "@shared/schema";
 export default function MyCars() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const { t, language, dir } = useLanguage();
+  usePageMeta({ title: "سياراتي - السعفة الذهبية", description: "تتبع سياراتك المشتراة وتفاصيل شحنها في منصة السعفة الذهبية." });
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string; isTrader: boolean }>({
     queryKey: ["/api/auth/is-admin"],

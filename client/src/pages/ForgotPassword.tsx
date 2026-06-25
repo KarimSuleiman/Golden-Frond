@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { Loader2, Mail, ArrowLeft, ArrowRight, Key, Lock, Eye, EyeOff, Globe, CheckCircle } from "lucide-react";
 import logoImage from "@assets/logo_optimized.png";
 
@@ -14,6 +15,7 @@ export default function ForgotPassword() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { t, language, setLanguage, dir } = useLanguage();
+  usePageMeta({ title: "استعادة كلمة المرور - السعفة الذهبية", description: "استعد كلمة المرور لحسابك في منصة السعفة الذهبية." });
   const [email, setEmail] = useState("");
   const [step, setStep] = useState<"request" | "reset" | "success">("request");
   const [tokenInput, setTokenInput] = useState("");

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Car as CarType, Listing } from "@shared/schema";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +52,7 @@ export default function Admin() {
   const { user, isLoading: authLoading, isFetching: authFetching } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  usePageMeta({ title: "لوحة التحكم - السعفة الذهبية", description: "لوحة تحكم الأدمن لإدارة السيارات والمستخدمين في منصة السعفة الذهبية." });
   const [showAddCar, setShowAddCar] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);

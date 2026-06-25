@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { Loader2, Car, Lock, Mail, Eye, EyeOff, Globe } from "lucide-react";
 import logoImage from "@assets/logo_optimized.png";
 
@@ -17,6 +18,11 @@ export default function Login() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { t, language, setLanguage, dir } = useLanguage();
+
+  usePageMeta({
+    title: "تسجيل الدخول - السعفة الذهبية",
+    description: "سجّل دخولك إلى منصة السعفة الذهبية لتداول وتتبع السيارات في الأردن.",
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

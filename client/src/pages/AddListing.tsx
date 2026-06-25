@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ export default function AddListing() {
   const { t, language, dir } = useLanguage();
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  usePageMeta({ title: "إضافة إعلان سيارة - السعفة الذهبية", description: "أضف سيارتك للبيع في منصة السعفة الذهبية لتداول السيارات في الأردن." });
   const queryClient = useQueryClient();
 
   const [imageFile, setImageFile] = useState<File | null>(null);

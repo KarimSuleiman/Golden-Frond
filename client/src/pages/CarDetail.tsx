@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import { Navbar } from "@/components/Navbar";
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
@@ -44,6 +45,11 @@ export default function CarDetail() {
   const { data: car, isLoading } = useQuery<Car>({
     queryKey: [`/api/cars/${carId}`],
     enabled: !!carId && !!user,
+  });
+
+  usePageMeta({
+    title: car ? `${car.make} ${car.model} ${car.year} - السعفة الذهبية` : "تفاصيل السيارة - السعفة الذهبية",
+    description: car ? `تفاصيل سيارة ${car.make} ${car.model} ${car.year} - منصة السعفة الذهبية لتداول وتتبع السيارات في الأردن.` : "تفاصيل السيارة - منصة السعفة الذهبية.",
   });
 
   useEffect(() => {
