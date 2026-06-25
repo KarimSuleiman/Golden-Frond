@@ -11,7 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock, FileText, ShoppingCart } from "lucide-react";
+import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock, FileText, ShoppingCart, UserPlus, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Car as CarType, Listing } from "@shared/schema";
 import { useLanguage } from "@/lib/i18n";
 import {
@@ -71,6 +77,18 @@ export default function Admin() {
   const [selectedUserForPassword, setSelectedUserForPassword] = useState<AdminUser | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
+
+  // Create user states
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [newUserShowPassword, setNewUserShowPassword] = useState(false);
+  const [userForm, setUserForm] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    role: "user",
+  });
   
   // Expanded user states
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
@@ -224,6 +242,31 @@ export default function Admin() {
       toast({ title: t("admin.userDeleted") });
       setExpandedUserId(null);
       setFilterByUserId("");
+    },
+    onError: (error: Error) => {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+    },
+  });
+
+  const createUserMutation = useMutation({
+    mutationFn: async (data: typeof userForm) => {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: language === "ar" ? "تم إنشاء الحساب بنجاح" : "User created successfully" });
+      setShowAddUser(false);
+      setUserForm({ email: "", password: "", firstName: "", lastName: "", phone: "", role: "user" });
     },
     onError: (error: Error) => {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
@@ -624,10 +667,25 @@ export default function Admin() {
       <div className="container py-8 px-4">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-foreground">{t("admin.title")}</h1>
-          <Button onClick={() => setShowAddCar(true)} data-testid="button-add-car">
-            <Plus className="w-4 h-4 ml-2" />
-            {t("admin.addCar")}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button data-testid="button-admin-actions">
+                <Plus className="w-4 h-4 ml-2" />
+                {language === "ar" ? "إضافة جديد" : "Add New"}
+                <ChevronDown className="w-4 h-4 mr-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setShowAddCar(true)} data-testid="menu-add-car">
+                <Car className="w-4 h-4 ml-2" />
+                {t("admin.addCar")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowAddUser(true)} data-testid="menu-add-user">
+                <UserPlus className="w-4 h-4 ml-2" />
+                {language === "ar" ? "إضافة مستخدم" : "Add User"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -1758,6 +1816,135 @@ export default function Admin() {
           </div>
         )}
       </div>
+
+      {/* Create User Dialog */}
+      {showAddUser && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <UserPlus className="w-5 h-5" />
+                {language === "ar" ? "إضافة مستخدم جديد" : "Add New User"}
+              </CardTitle>
+              <button onClick={() => setShowAddUser(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  createUserMutation.mutate(userForm);
+                }}
+                className="space-y-4"
+              >
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label>{language === "ar" ? "الاسم الأول" : "First Name"}</Label>
+                    <Input
+                      value={userForm.firstName}
+                      onChange={(e) => setUserForm(f => ({ ...f, firstName: e.target.value }))}
+                      placeholder={language === "ar" ? "الاسم الأول" : "First name"}
+                      data-testid="input-new-user-firstname"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>{language === "ar" ? "اسم العائلة" : "Last Name"}</Label>
+                    <Input
+                      value={userForm.lastName}
+                      onChange={(e) => setUserForm(f => ({ ...f, lastName: e.target.value }))}
+                      placeholder={language === "ar" ? "اسم العائلة" : "Last name"}
+                      data-testid="input-new-user-lastname"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label>{language === "ar" ? "البريد الإلكتروني" : "Email"} *</Label>
+                  <Input
+                    type="email"
+                    value={userForm.email}
+                    onChange={(e) => setUserForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="example@email.com"
+                    required
+                    dir="ltr"
+                    data-testid="input-new-user-email"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>{language === "ar" ? "كلمة المرور" : "Password"} *</Label>
+                  <div className="relative">
+                    <Input
+                      type={newUserShowPassword ? "text" : "password"}
+                      value={userForm.password}
+                      onChange={(e) => setUserForm(f => ({ ...f, password: e.target.value }))}
+                      placeholder="••••••••"
+                      required
+                      dir="ltr"
+                      className="pl-10"
+                      data-testid="input-new-user-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setNewUserShowPassword(v => !v)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {newUserShowPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{language === "ar" ? "6 أحرف على الأقل" : "At least 6 characters"}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label>{language === "ar" ? "رقم الهاتف" : "Phone"}</Label>
+                  <Input
+                    type="tel"
+                    value={userForm.phone}
+                    onChange={(e) => setUserForm(f => ({ ...f, phone: e.target.value }))}
+                    placeholder="0791234567"
+                    dir="ltr"
+                    data-testid="input-new-user-phone"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>{language === "ar" ? "الدور" : "Role"}</Label>
+                  <Select value={userForm.role} onValueChange={(v) => setUserForm(f => ({ ...f, role: v }))}>
+                    <SelectTrigger data-testid="select-new-user-role">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">{t("admin.role.user")}</SelectItem>
+                      <SelectItem value="trader">{t("admin.role.trader")}</SelectItem>
+                      <SelectItem value="backup_admin">{t("admin.role.backup_admin")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={createUserMutation.isPending || !userForm.email || userForm.password.length < 6}
+                    data-testid="button-create-user"
+                  >
+                    {createUserMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin ml-2" />
+                    ) : (
+                      <UserPlus className="w-4 h-4 ml-2" />
+                    )}
+                    {language === "ar" ? "إنشاء الحساب" : "Create Account"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddUser(false)}
+                    data-testid="button-cancel-create-user"
+                  >
+                    {language === "ar" ? "إلغاء" : "Cancel"}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -643,6 +643,44 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/users", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { email, password, firstName, lastName, phone, role } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
+      }
+      if (password.length < 6) {
+        return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      }
+
+      const existing = await authStorage.getUserByEmail(email);
+      if (existing) {
+        return res.status(400).json({ message: "هذا البريد الإلكتروني مسجل بالفعل" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userId = crypto.randomUUID();
+      const userRole = role || "user";
+
+      await authStorage.upsertUser({
+        id: userId,
+        email,
+        password: hashedPassword,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        phone: phone || null,
+        role: userRole,
+        isAdmin: (userRole === "main_admin" || userRole === "backup_admin") ? "true" : "false",
+      });
+
+      res.status(201).json({ message: "تم إنشاء الحساب بنجاح", userId });
+    } catch (error) {
+      console.error("Admin create user error:", error);
+      res.status(500).json({ message: "حدث خطأ أثناء إنشاء الحساب" });
+    }
+  });
+
   app.delete("/api/admin/users/:id", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const { id } = req.params;

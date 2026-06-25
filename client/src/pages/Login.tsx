@@ -184,16 +184,6 @@ export default function Login() {
               >
                 {t("forgot.title")}
               </a>
-              <div>
-                <span className="text-sm text-muted-foreground">{t("login.noAccount")} </span>
-                <a
-                  href="/register"
-                  className="text-sm text-primary hover:underline"
-                  data-testid="link-register"
-                >
-                  {t("login.register")}
-                </a>
-              </div>
             </div>
           </form>
         </CardContent>
