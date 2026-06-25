@@ -509,7 +509,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/listings", isAuthenticated, async (req: any, res) => {
+  app.post("/api/listings", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const listingData = {
         ...req.body,

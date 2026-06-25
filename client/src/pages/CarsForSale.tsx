@@ -219,7 +219,7 @@ export default function CarsForSale() {
               </span>
             </p>
           </div>
-          {user && (
+          {user?.isAdmin === "true" && (
             <Link href="/add-listing">
               <Button data-testid="button-add-listing">
                 <Plus className="w-4 h-4" />
@@ -358,7 +358,7 @@ export default function CarsForSale() {
             <p className="text-muted-foreground max-w-md">
               {t("marketplace.noListingsDesc")}
             </p>
-            {user && (
+            {user?.isAdmin === "true" && (
               <Link href="/add-listing">
                 <Button className="mt-6" data-testid="button-add-first-listing">
                   <Plus className="w-4 h-4" />

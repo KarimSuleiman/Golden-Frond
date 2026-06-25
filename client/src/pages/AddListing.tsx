@@ -58,6 +58,11 @@ export default function AddListing() {
     return null;
   }
 
+  if (!authLoading && user && user.isAdmin !== "true") {
+    window.location.href = "/cars-for-sale";
+    return null;
+  }
+
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
