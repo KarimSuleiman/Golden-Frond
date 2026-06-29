@@ -354,8 +354,39 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile: Language button + theme toggle + hamburger */}
+        {/* Mobile: Cars dropdown + Language + hamburger */}
         <div className="flex items-center gap-1 md:hidden">
+          {/* Cars for Sale dropdown — always visible on mobile */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground/80 hover:text-primary hover:bg-secondary transition-colors text-sm font-medium"
+                data-testid="button-cars-dropdown-mobile"
+              >
+                <Car className="w-4 h-4" />
+                <ChevronDown className="w-3 h-3 opacity-60" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align={language === "ar" ? "end" : "start"} className="w-64">
+              <DropdownMenuItem asChild>
+                <Link href="/cars-for-sale">
+                  <div className="flex items-center gap-3 p-2 cursor-pointer w-full" data-testid="mobile-dropdown-cars-for-sale">
+                    <Car className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-sm">{language === "ar" ? "سيارات للبيع في المنطقة الحرة - الأردن" : "Cars for Sale – Free Zone, Jordan"}</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/incoming-cars">
+                  <div className="flex items-center gap-3 p-2 cursor-pointer w-full" data-testid="mobile-dropdown-incoming-cars">
+                    <Truck className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-sm">{language === "ar" ? "سيارات للبيع - قيد التحميل" : "Cars for Sale – Loading"}</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <button
             onClick={toggleLanguage}
             className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground/80 hover:text-primary hover:bg-secondary transition-colors text-sm font-medium"
@@ -367,13 +398,6 @@ export function Navbar() {
               alt={language === "ar" ? "English" : "عربي"}
               className="w-6 h-4 object-cover rounded-sm shadow-sm"
             />
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-foreground/80 hover:text-primary transition-colors"
-            data-testid="button-theme-toggle-mobile"
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <button
             className="text-foreground p-2"
