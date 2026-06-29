@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/logo_optimized.png";
-import logoTransparent from "@assets/logo_transparent.png";
 import heroCarImage from "@assets/ChatGPT_Image_Jun_23,_2026,_12_11_58_AM_1782163256728.png";
 import showroomImage from "@assets/Gemini_Generated_Image_idp5n7idp5n7idp5_1782165132858.png";
 import logoImpact from "@assets/5c2b7587-b6f3-4754-923d-fb3aceda9632_1775085234273.JPG";
@@ -92,94 +91,119 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative w-full min-h-screen overflow-hidden">
-        {/* Background */}
-        <img src={heroCarImage} alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.60) 60%, rgba(0,0,0,0.80) 100%)" }} />
+      {/* Hero Section — full image visible */}
+      <section className="relative w-full overflow-hidden">
+        {/* Full image — natural size, no cropping */}
+        <img
+          src={heroCarImage}
+          alt={t("landing.heroImageAlt")}
+          className="w-full h-auto block"
+        />
 
-        {/* Gold diagonal stripe — right side */}
-        <div className="absolute top-0 right-0 h-full w-10 hidden lg:block pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, rgba(212,175,55,0.7), rgba(212,175,55,0.2), transparent)", transform: "skewX(-8deg) translateX(4px)" }} />
+        {/* Overlay for text readability */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to top, rgba(10,8,5,0.85) 0%, rgba(10,8,5,0.50) 50%, rgba(10,8,5,0.10) 100%)" }}
+        />
 
-        {/* CENTER: Logo + Brand + CTA */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
-          <motion.img
-            src={logoTransparent}
-            alt={t("common.altLogo")}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="h-44 sm:h-56 md:h-64 lg:h-72 w-auto object-contain drop-shadow-2xl mb-4"
-          />
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white drop-shadow-lg"
-          >
-            {language === "ar" ? "السعفة الذهبية" : "Golden Palm"}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.32 }}
-            className="text-xl sm:text-2xl text-white/60 tracking-widest mt-1 mb-8"
-          >
-            {language === "ar" ? "للسيارات" : "For Cars"}
-          </motion.p>
+        {/* Content — overlaid on image */}
+        <div className="absolute inset-0 z-10 flex items-end md:items-center px-5 sm:px-8 md:px-12 lg:px-20 pb-8 md:py-16">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.44 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="w-full max-w-xl space-y-4 md:space-y-8"
           >
-            <a href="/cars-for-sale">
-              <Button
-                size="lg"
-                className="bg-primary text-black font-bold px-12 py-5 h-auto text-lg shadow-2xl hover:scale-105 transition-all"
-                data-testid="button-cars-for-sale-hero"
-              >
-                <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                {t("nav.carsForSale")}
-              </Button>
-            </a>
+            {/* Logo + Brand name */}
+            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-2">
+              <img src={logoImage} alt={t("common.altLogo")} className="h-14 md:h-16 w-auto object-contain drop-shadow-lg" />
+              <span className="text-white text-xl md:text-3xl font-bold tracking-wide drop-shadow-md leading-snug">
+                {t("landing.tagline")}
+              </span>
+            </motion.div>
+
+            {/* Main heading */}
+            <motion.div variants={itemVariants}>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
+                {t("landing.title1")}
+                <br />
+                <span className="text-primary drop-shadow-sm">{t("landing.title2")}</span>
+              </h1>
+            </motion.div>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-sm md:text-lg text-white/80 max-w-md leading-relaxed"
+            >
+              {t("landing.description")}
+            </motion.p>
+
+            {/* CTA buttons */}
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-3">
+              {isAdminCheck?.isAdmin ? (
+                <>
+                  <a href="/admin">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                      data-testid="button-admin-hero"
+                    >
+                      <Settings className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      {t("admin.title")}
+                    </Button>
+                  </a>
+                  <a href="/cars-for-sale">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto border-white/50 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm hover:scale-105 transition-all"
+                      data-testid="button-cars-for-sale-hero"
+                    >
+                      <Car className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      {t("nav.carsForSale")}
+                    </Button>
+                  </a>
+                </>
+              ) : (
+                <a href="/cars-for-sale">
+                  <Button
+                    size="lg"
+                    className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
+                    data-testid="button-cars-for-sale-hero"
+                  >
+                    {t("nav.carsForSale")}{" "}
+                    <ArrowIcon className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
+                  </Button>
+                </a>
+              )}
+            </motion.div>
+
+            {/* Stats row */}
+            <motion.div
+              variants={itemVariants}
+              className="grid grid-cols-3 gap-4 md:gap-6 pt-4 md:pt-6 border-t border-white/20"
+            >
+              <div>
+                <h4 className="text-xl md:text-3xl font-bold text-white">+21</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
+                  {t("landing.years")}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-xl md:text-3xl font-bold text-white">100%</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
+                  {t("landing.secure")}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-xl md:text-3xl font-bold text-white">24/7</h4>
+                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
+                  {t("landing.support")}
+                </p>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
-
-        {/* LEFT panel — desktop only, bottom-left */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="absolute bottom-10 left-8 xl:left-14 z-10 hidden lg:flex flex-col w-72 xl:w-80"
-          dir={dir}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <img src={logoTransparent} alt="" className="h-8 w-auto" />
-            <span className="text-white text-xs font-semibold">{language === "ar" ? "السعفة الذهبية لتجارة السيارات" : "Golden Palm Car Trading"}</span>
-          </div>
-          <h2 className="font-bold leading-snug mb-2">
-            <span className="text-white text-3xl xl:text-4xl block">{language === "ar" ? "تتبع سياراتك" : "Track Your Cars"}</span>
-            <span className="text-primary text-3xl xl:text-4xl block">{language === "ar" ? "بكل سهولة" : "With Ease"}</span>
-          </h2>
-          <p className="text-white/55 text-sm leading-relaxed mb-4">
-            {language === "ar"
-              ? "السعفة الذهبية توفر لك منصة رقمية لمتابعة سياراتك المحجوزة والمشتراة مع جميع تفاصيل الشحن والتتبع"
-              : "Golden Palm provides a digital platform to track your reserved and purchased cars with full shipping and tracking details"}
-          </p>
-          <div className="grid grid-cols-3 gap-1 pt-3 border-t border-white/15">
-            {[
-              { val: "24/7", label: language === "ar" ? "متاح على مدار الساعة" : "Always Available" },
-              { val: "100%", label: language === "ar" ? "شركات موثوقة" : "Trusted" },
-              { val: "+21", label: language === "ar" ? "سنة من الخبرة" : "Years Exp." },
-            ].map((s, i) => (
-              <div key={i} className="text-center">
-                <p className="text-xl font-bold text-white">{s.val}</p>
-                <p className="text-[10px] text-white/45 mt-0.5 leading-tight">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
       </section>
 
       {/* About Section */}
