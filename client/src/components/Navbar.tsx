@@ -49,6 +49,7 @@ export function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [showCarsSubMenu, setShowCarsSubMenu] = useState(false);
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
@@ -62,8 +63,6 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: t("nav.home"), icon: Home },
-    { href: "/cars-for-sale", label: t("nav.carsForSale"), icon: Car },
-    { href: "/incoming-cars", label: t("nav.incomingCars"), icon: Truck },
     ...(authInfo?.isTrader
       ? [
           {
@@ -261,6 +260,42 @@ export function Navbar() {
 
         {/* Right side: Main nav links + login/logout */}
         <div className="hidden md:flex items-center gap-4">
+          {/* Cars for Sale Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                  location === "/cars-for-sale" || location === "/incoming-cars"
+                    ? "text-primary font-semibold"
+                    : "text-foreground/70"
+                }`}
+                data-testid="button-cars-dropdown"
+              >
+                <Car className="w-4 h-4" />
+                <span>{t("nav.carsForSale")}</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align={language === "ar" ? "end" : "start"} className="w-64">
+              <DropdownMenuItem asChild>
+                <Link href="/cars-for-sale">
+                  <div className="flex items-center gap-3 p-1 cursor-pointer w-full" data-testid="link-cars-free-zone">
+                    <Car className="w-4 h-4 text-primary" />
+                    <span>{language === "ar" ? "سيارات للبيع في المنطقة الحرة - الأردن" : "Cars for Sale - Free Zone Jordan"}</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/incoming-cars">
+                  <div className="flex items-center gap-3 p-1 cursor-pointer w-full" data-testid="link-cars-in-transit">
+                    <Truck className="w-4 h-4 text-primary" />
+                    <span>{language === "ar" ? "سيارات للبيع - قيد التحميل" : "Cars for Sale - In Transit"}</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {navLinks.filter((link) => !link.iconOnly).map((link) =>
             link.isAnchor ? (
               <a
@@ -361,6 +396,43 @@ export function Navbar() {
             className="md:hidden border-t border-border bg-card"
           >
             <div className="p-4 space-y-4">
+              {/* Cars for Sale expandable sub-menu in mobile */}
+              <div>
+                <button
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground w-full"
+                  onClick={() => setShowCarsSubMenu(!showCarsSubMenu)}
+                  data-testid="button-mobile-cars-menu"
+                >
+                  <Car className="w-5 h-5 text-primary" />
+                  <span className="flex-1 text-start">{t("nav.carsForSale")}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${showCarsSubMenu ? "rotate-180" : ""}`} />
+                </button>
+                {showCarsSubMenu && (
+                  <div className={`${language === "ar" ? "mr-8" : "ml-8"} mt-1 space-y-1`}>
+                    <Link href="/cars-for-sale">
+                      <div
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
+                        onClick={() => { setIsMobileMenuOpen(false); setShowCarsSubMenu(false); }}
+                        data-testid="link-mobile-cars-free-zone"
+                      >
+                        <Car className="w-4 h-4 text-primary" />
+                        <span className="text-sm">{language === "ar" ? "سيارات للبيع في المنطقة الحرة - الأردن" : "Cars for Sale - Free Zone Jordan"}</span>
+                      </div>
+                    </Link>
+                    <Link href="/incoming-cars">
+                      <div
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
+                        onClick={() => { setIsMobileMenuOpen(false); setShowCarsSubMenu(false); }}
+                        data-testid="link-mobile-cars-in-transit"
+                      >
+                        <Truck className="w-4 h-4 text-primary" />
+                        <span className="text-sm">{language === "ar" ? "سيارات للبيع - قيد التحميل" : "Cars for Sale - In Transit"}</span>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               {navLinks.map((link) =>
                 link.isAnchor ? (
                   <a
