@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/logo_optimized.png";
+import logoTransparent from "@assets/logo_transparent.png";
 import heroCarImage from "@assets/ChatGPT_Image_Jun_23,_2026,_12_11_58_AM_1782163256728.png";
 import showroomImage from "@assets/Gemini_Generated_Image_idp5n7idp5n7idp5_1782165132858.png";
 import logoImpact from "@assets/5c2b7587-b6f3-4754-923d-fb3aceda9632_1775085234273.JPG";
@@ -91,118 +92,186 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
-      {/* Hero Section — full image visible */}
-      <section className="relative w-full overflow-hidden">
-        {/* Full image — natural size, no cropping */}
+      {/* Hero Section — full screen cinematic */}
+      <section className="relative w-full min-h-[100svh] overflow-hidden flex flex-col">
+        {/* Background image — full cover */}
         <img
           src={heroCarImage}
           alt={t("landing.heroImageAlt")}
-          className="w-full h-auto block"
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
 
-        {/* Overlay for text readability */}
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to top, rgba(10,8,5,0.85) 0%, rgba(10,8,5,0.50) 50%, rgba(10,8,5,0.10) 100%)" }}
-        />
+        {/* Multi-layer dark overlay */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(5,4,2,0.70) 0%, rgba(5,4,2,0.55) 45%, rgba(5,4,2,0.65) 100%)" }} />
 
-        {/* Content — overlaid on image */}
-        <div className="absolute inset-0 z-10 flex items-end md:items-center px-5 sm:px-8 md:px-12 lg:px-20 pb-8 md:py-16">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="w-full max-w-xl space-y-4 md:space-y-8"
-          >
-            {/* Logo + Brand name */}
-            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-2">
-              <img src={logoImage} alt={t("common.altLogo")} className="h-14 md:h-16 w-auto object-contain drop-shadow-lg" />
-              <span className="text-white text-xl md:text-3xl font-bold tracking-wide drop-shadow-md leading-snug">
-                {t("landing.tagline")}
-              </span>
-            </motion.div>
+        {/* Golden diagonal accent */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute"
+            style={{
+              top: 0, right: 0,
+              width: "55%", height: "100%",
+              background: "linear-gradient(220deg, rgba(212,175,55,0.10) 0%, transparent 55%)",
+            }}
+          />
+          {/* Diagonal gold stripe */}
+          <div
+            className="absolute hidden lg:block"
+            style={{
+              top: "10%", right: "30%",
+              width: "3px", height: "80%",
+              background: "linear-gradient(to bottom, transparent, rgba(212,175,55,0.5), transparent)",
+              transform: "rotate(12deg)",
+            }}
+          />
+        </div>
 
-            {/* Main heading */}
-            <motion.div variants={itemVariants}>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
-                {t("landing.title1")}
-                <br />
-                <span className="text-primary drop-shadow-sm">{t("landing.title2")}</span>
-              </h1>
-            </motion.div>
+        {/* Main content area */}
+        <div className="relative z-10 flex-1 flex items-center">
+          <div className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-8 px-5 sm:px-10 lg:px-16 xl:px-24 py-12">
 
-            <motion.p
-              variants={itemVariants}
-              className="text-sm md:text-lg text-white/80 max-w-md leading-relaxed"
-            >
-              {t("landing.description")}
-            </motion.p>
+            {/* ── CENTER: Logo + Brand + CTA ── */}
+            <div className="flex-1 flex flex-col items-center text-center order-1">
+              <motion.img
+                src={logoTransparent}
+                alt={t("common.altLogo")}
+                initial={{ opacity: 0, scale: 0.75 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.9, ease: "easeOut" }}
+                className="h-36 sm:h-44 md:h-52 lg:h-56 w-auto object-contain drop-shadow-2xl mb-4"
+              />
 
-            {/* CTA buttons */}
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-3">
-              {isAdminCheck?.isAdmin ? (
-                <>
-                  <a href="/admin">
-                    <Button
-                      size="lg"
-                      className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
-                      data-testid="button-admin-hero"
-                    >
-                      <Settings className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                      {t("admin.title")}
-                    </Button>
-                  </a>
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.25 }}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white drop-shadow-lg leading-tight"
+              >
+                {language === "ar" ? "السعفة الذهبية" : "Golden Palm"}
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.38 }}
+                className="text-lg sm:text-2xl md:text-3xl text-white/65 tracking-widest mt-2 mb-8"
+              >
+                {language === "ar" ? "للسيارات" : "For Cars"}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="flex flex-wrap gap-3 justify-center"
+              >
+                {isAdminCheck?.isAdmin ? (
+                  <>
+                    <a href="/admin">
+                      <Button
+                        size="lg"
+                        className="bg-primary text-black font-bold px-8 md:px-10 py-5 md:py-6 h-auto text-base md:text-lg shadow-2xl hover:scale-105 transition-all"
+                        data-testid="button-admin-hero"
+                      >
+                        <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                        {t("admin.title")}
+                      </Button>
+                    </a>
+                    <a href="/cars-for-sale">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="border-white/40 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm px-8 md:px-10 py-5 md:py-6 h-auto text-base md:text-lg hover:scale-105 transition-all"
+                        data-testid="button-cars-for-sale-hero"
+                      >
+                        <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                        {t("nav.carsForSale")}
+                      </Button>
+                    </a>
+                  </>
+                ) : (
                   <a href="/cars-for-sale">
                     <Button
                       size="lg"
-                      variant="outline"
-                      className="text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto border-white/50 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm hover:scale-105 transition-all"
+                      className="bg-primary text-black font-bold px-10 md:px-12 py-5 md:py-6 h-auto text-lg md:text-xl shadow-2xl hover:scale-105 transition-all"
                       data-testid="button-cars-for-sale-hero"
                     >
-                      <Car className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                      <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
                       {t("nav.carsForSale")}
                     </Button>
                   </a>
-                </>
-              ) : (
-                <a href="/cars-for-sale">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
-                    data-testid="button-cars-for-sale-hero"
-                  >
-                    {t("nav.carsForSale")}{" "}
-                    <ArrowIcon className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
-                  </Button>
-                </a>
-              )}
-            </motion.div>
+                )}
+              </motion.div>
 
-            {/* Stats row */}
+              {/* Mobile stats */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.65 }}
+                className="grid grid-cols-3 gap-6 mt-10 pt-6 border-t border-white/15 w-full max-w-xs lg:hidden"
+              >
+                {[
+                  { val: "24/7", label: t("landing.support") },
+                  { val: "100%", label: t("landing.secure") },
+                  { val: "+21", label: t("landing.years") },
+                ].map((s, i) => (
+                  <div key={i} className="text-center">
+                    <p className="text-xl font-bold text-white">{s.val}</p>
+                    <p className="text-[10px] text-white/50 uppercase tracking-wider mt-0.5 leading-tight">{s.label}</p>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* ── SIDE: Info panel — desktop only ── */}
             <motion.div
-              variants={itemVariants}
-              className="grid grid-cols-3 gap-4 md:gap-6 pt-4 md:pt-6 border-t border-white/20"
+              initial={{ opacity: 0, x: language === "ar" ? -50 : 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="hidden lg:flex flex-col w-80 xl:w-96 bg-black/50 backdrop-blur-lg border border-white/10 rounded-3xl p-6 xl:p-8 flex-shrink-0 order-2"
             >
-              <div>
-                <h4 className="text-xl md:text-3xl font-bold text-white">+21</h4>
-                <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
-                  {t("landing.years")}
-                </p>
+              {/* Panel header */}
+              <div className="flex items-center gap-3 mb-5 pb-4 border-b border-white/10">
+                <img src={logoTransparent} alt="" className="h-10 w-auto object-contain" />
+                <div>
+                  <p className="text-white text-xs font-semibold leading-tight">
+                    {language === "ar" ? "السعفة الذهبية" : "Golden Palm"}
+                  </p>
+                  <p className="text-white/50 text-xs leading-tight">
+                    {language === "ar" ? "لتجارة السيارات" : "Car Trading"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-xl md:text-3xl font-bold text-white">100%</h4>
-                <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
-                  {t("landing.secure")}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-xl md:text-3xl font-bold text-white">24/7</h4>
-                <p className="text-xs text-white/60 uppercase tracking-widest mt-1">
-                  {t("landing.support")}
-                </p>
+
+              {/* Main headline */}
+              <h2 className="text-3xl xl:text-4xl font-bold leading-snug mb-3">
+                <span className="text-white">{language === "ar" ? "تتبع سياراتك" : "Track Your Cars"}</span>
+                <br />
+                <span className="text-primary">{language === "ar" ? "بكل سهولة" : "With Ease"}</span>
+              </h2>
+
+              {/* Description */}
+              <p className="text-white/55 text-sm leading-relaxed mb-6">
+                {language === "ar"
+                  ? "السعفة الذهبية توفر لك منصة رقمية لمتابعة سياراتك المحجوزة والمشتراة مع جميع تفاصيل الشحن والتتبع"
+                  : "Golden Palm provides a digital platform to track your reserved and purchased cars with full shipping and tracking details"}
+              </p>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/10">
+                {[
+                  { val: "24/7", label: language === "ar" ? "متاح على\nمدار الساعة" : "Always\nAvailable" },
+                  { val: "100%", label: language === "ar" ? "شركات\nموثوقة" : "Trusted\nCompanies" },
+                  { val: "+21", label: language === "ar" ? "سنة من\nالخبرة" : "Years of\nExperience" },
+                ].map((s, i) => (
+                  <div key={i} className={`text-center py-2 ${i === 1 ? "border-x border-white/10" : ""}`}>
+                    <p className="text-2xl font-bold text-white">{s.val}</p>
+                    <p className="text-[10px] text-white/45 mt-1 leading-tight whitespace-pre-line">{s.label}</p>
+                  </div>
+                ))}
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
