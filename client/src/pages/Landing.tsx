@@ -164,18 +164,7 @@ export default function Landing() {
                     </Button>
                   </a>
                 </>
-              ) : (
-                <a href="/cars-for-sale">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground text-sm md:text-base px-6 md:px-8 py-4 md:py-5 h-auto shadow-xl hover:scale-105 transition-all"
-                    data-testid="button-cars-for-sale-hero"
-                  >
-                    {t("nav.carsForSale")}{" "}
-                    <ArrowIcon className={`w-4 h-4 md:w-5 md:h-5 ${language === "ar" ? "mr-2" : "ml-2"}`} />
-                  </Button>
-                </a>
-              )}
+              ) : null}
             </motion.div>
 
             {/* Stats row */}
