@@ -25,7 +25,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/hooks/use-theme";
-import logoImage from "@assets/logo_optimized.png";
+import logoImage from "@assets/logo_transparent.png";
 import {
   AlertDialog,
   AlertDialogAction,
