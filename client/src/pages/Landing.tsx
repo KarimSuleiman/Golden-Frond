@@ -92,187 +92,94 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col" dir={dir}>
       <Navbar />
 
-      {/* Hero Section — full screen cinematic */}
-      <section className="relative w-full min-h-[100svh] overflow-hidden flex flex-col">
-        {/* Background image — full cover */}
-        <img
-          src={heroCarImage}
-          alt={t("landing.heroImageAlt")}
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
+      {/* Hero Section */}
+      <section className="relative w-full min-h-screen overflow-hidden">
+        {/* Background */}
+        <img src={heroCarImage} alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.60) 60%, rgba(0,0,0,0.80) 100%)" }} />
 
-        {/* Multi-layer dark overlay */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(5,4,2,0.70) 0%, rgba(5,4,2,0.55) 45%, rgba(5,4,2,0.65) 100%)" }} />
+        {/* Gold diagonal stripe — right side */}
+        <div className="absolute top-0 right-0 h-full w-10 hidden lg:block pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, rgba(212,175,55,0.7), rgba(212,175,55,0.2), transparent)", transform: "skewX(-8deg) translateX(4px)" }} />
 
-        {/* Golden diagonal accent */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div
-            className="absolute"
-            style={{
-              top: 0, right: 0,
-              width: "55%", height: "100%",
-              background: "linear-gradient(220deg, rgba(212,175,55,0.10) 0%, transparent 55%)",
-            }}
+        {/* CENTER: Logo + Brand + CTA */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
+          <motion.img
+            src={logoTransparent}
+            alt={t("common.altLogo")}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="h-44 sm:h-56 md:h-64 lg:h-72 w-auto object-contain drop-shadow-2xl mb-4"
           />
-          {/* Diagonal gold stripe */}
-          <div
-            className="absolute hidden lg:block"
-            style={{
-              top: "10%", right: "30%",
-              width: "3px", height: "80%",
-              background: "linear-gradient(to bottom, transparent, rgba(212,175,55,0.5), transparent)",
-              transform: "rotate(12deg)",
-            }}
-          />
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white drop-shadow-lg"
+          >
+            {language === "ar" ? "السعفة الذهبية" : "Golden Palm"}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.32 }}
+            className="text-xl sm:text-2xl text-white/60 tracking-widest mt-1 mb-8"
+          >
+            {language === "ar" ? "للسيارات" : "For Cars"}
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.44 }}
+          >
+            <a href="/cars-for-sale">
+              <Button
+                size="lg"
+                className="bg-primary text-black font-bold px-12 py-5 h-auto text-lg shadow-2xl hover:scale-105 transition-all"
+                data-testid="button-cars-for-sale-hero"
+              >
+                <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
+                {t("nav.carsForSale")}
+              </Button>
+            </a>
+          </motion.div>
         </div>
 
-        {/* Main content area */}
-        <div className="relative z-10 flex-1 flex items-center">
-          <div className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-8 px-5 sm:px-10 lg:px-16 xl:px-24 py-12">
-
-            {/* ── CENTER: Logo + Brand + CTA ── */}
-            <div className="flex-1 flex flex-col items-center text-center order-1">
-              <motion.img
-                src={logoTransparent}
-                alt={t("common.altLogo")}
-                initial={{ opacity: 0, scale: 0.75 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
-                className="h-36 sm:h-44 md:h-52 lg:h-56 w-auto object-contain drop-shadow-2xl mb-4"
-              />
-
-              <motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.25 }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white drop-shadow-lg leading-tight"
-              >
-                {language === "ar" ? "السعفة الذهبية" : "Golden Palm"}
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.38 }}
-                className="text-lg sm:text-2xl md:text-3xl text-white/65 tracking-widest mt-2 mb-8"
-              >
-                {language === "ar" ? "للسيارات" : "For Cars"}
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="flex flex-wrap gap-3 justify-center"
-              >
-                {isAdminCheck?.isAdmin ? (
-                  <>
-                    <a href="/admin">
-                      <Button
-                        size="lg"
-                        className="bg-primary text-black font-bold px-8 md:px-10 py-5 md:py-6 h-auto text-base md:text-lg shadow-2xl hover:scale-105 transition-all"
-                        data-testid="button-admin-hero"
-                      >
-                        <Settings className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                        {t("admin.title")}
-                      </Button>
-                    </a>
-                    <a href="/cars-for-sale">
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="border-white/40 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm px-8 md:px-10 py-5 md:py-6 h-auto text-base md:text-lg hover:scale-105 transition-all"
-                        data-testid="button-cars-for-sale-hero"
-                      >
-                        <Car className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                        {t("nav.carsForSale")}
-                      </Button>
-                    </a>
-                  </>
-                ) : (
-                  <a href="/cars-for-sale">
-                    <Button
-                      size="lg"
-                      className="bg-primary text-black font-bold px-10 md:px-12 py-5 md:py-6 h-auto text-lg md:text-xl shadow-2xl hover:scale-105 transition-all"
-                      data-testid="button-cars-for-sale-hero"
-                    >
-                      <ArrowIcon className={`w-5 h-5 ${language === "ar" ? "ml-2" : "mr-2"}`} />
-                      {t("nav.carsForSale")}
-                    </Button>
-                  </a>
-                )}
-              </motion.div>
-
-              {/* Mobile stats */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.65 }}
-                className="grid grid-cols-3 gap-6 mt-10 pt-6 border-t border-white/15 w-full max-w-xs lg:hidden"
-              >
-                {[
-                  { val: "24/7", label: t("landing.support") },
-                  { val: "100%", label: t("landing.secure") },
-                  { val: "+21", label: t("landing.years") },
-                ].map((s, i) => (
-                  <div key={i} className="text-center">
-                    <p className="text-xl font-bold text-white">{s.val}</p>
-                    <p className="text-[10px] text-white/50 uppercase tracking-wider mt-0.5 leading-tight">{s.label}</p>
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* ── SIDE: Info panel — desktop only ── */}
-            <motion.div
-              initial={{ opacity: 0, x: language === "ar" ? -50 : 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="hidden lg:flex flex-col w-80 xl:w-96 bg-black/50 backdrop-blur-lg border border-white/10 rounded-3xl p-6 xl:p-8 flex-shrink-0 order-2"
-            >
-              {/* Panel header */}
-              <div className="flex items-center gap-3 mb-5 pb-4 border-b border-white/10">
-                <img src={logoTransparent} alt="" className="h-10 w-auto object-contain" />
-                <div>
-                  <p className="text-white text-xs font-semibold leading-tight">
-                    {language === "ar" ? "السعفة الذهبية" : "Golden Palm"}
-                  </p>
-                  <p className="text-white/50 text-xs leading-tight">
-                    {language === "ar" ? "لتجارة السيارات" : "Car Trading"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Main headline */}
-              <h2 className="text-3xl xl:text-4xl font-bold leading-snug mb-3">
-                <span className="text-white">{language === "ar" ? "تتبع سياراتك" : "Track Your Cars"}</span>
-                <br />
-                <span className="text-primary">{language === "ar" ? "بكل سهولة" : "With Ease"}</span>
-              </h2>
-
-              {/* Description */}
-              <p className="text-white/55 text-sm leading-relaxed mb-6">
-                {language === "ar"
-                  ? "السعفة الذهبية توفر لك منصة رقمية لمتابعة سياراتك المحجوزة والمشتراة مع جميع تفاصيل الشحن والتتبع"
-                  : "Golden Palm provides a digital platform to track your reserved and purchased cars with full shipping and tracking details"}
-              </p>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/10">
-                {[
-                  { val: "24/7", label: language === "ar" ? "متاح على\nمدار الساعة" : "Always\nAvailable" },
-                  { val: "100%", label: language === "ar" ? "شركات\nموثوقة" : "Trusted\nCompanies" },
-                  { val: "+21", label: language === "ar" ? "سنة من\nالخبرة" : "Years of\nExperience" },
-                ].map((s, i) => (
-                  <div key={i} className={`text-center py-2 ${i === 1 ? "border-x border-white/10" : ""}`}>
-                    <p className="text-2xl font-bold text-white">{s.val}</p>
-                    <p className="text-[10px] text-white/45 mt-1 leading-tight whitespace-pre-line">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+        {/* LEFT panel — desktop only, bottom-left */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="absolute bottom-10 left-8 xl:left-14 z-10 hidden lg:flex flex-col w-72 xl:w-80"
+          dir={dir}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <img src={logoTransparent} alt="" className="h-8 w-auto" />
+            <span className="text-white text-xs font-semibold">{language === "ar" ? "السعفة الذهبية لتجارة السيارات" : "Golden Palm Car Trading"}</span>
           </div>
-        </div>
+          <h2 className="font-bold leading-snug mb-2">
+            <span className="text-white text-3xl xl:text-4xl block">{language === "ar" ? "تتبع سياراتك" : "Track Your Cars"}</span>
+            <span className="text-primary text-3xl xl:text-4xl block">{language === "ar" ? "بكل سهولة" : "With Ease"}</span>
+          </h2>
+          <p className="text-white/55 text-sm leading-relaxed mb-4">
+            {language === "ar"
+              ? "السعفة الذهبية توفر لك منصة رقمية لمتابعة سياراتك المحجوزة والمشتراة مع جميع تفاصيل الشحن والتتبع"
+              : "Golden Palm provides a digital platform to track your reserved and purchased cars with full shipping and tracking details"}
+          </p>
+          <div className="grid grid-cols-3 gap-1 pt-3 border-t border-white/15">
+            {[
+              { val: "24/7", label: language === "ar" ? "متاح على مدار الساعة" : "Always Available" },
+              { val: "100%", label: language === "ar" ? "شركات موثوقة" : "Trusted" },
+              { val: "+21", label: language === "ar" ? "سنة من الخبرة" : "Years Exp." },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <p className="text-xl font-bold text-white">{s.val}</p>
+                <p className="text-[10px] text-white/45 mt-0.5 leading-tight">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* About Section */}
