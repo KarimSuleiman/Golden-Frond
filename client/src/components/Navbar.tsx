@@ -62,8 +62,6 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: t("nav.home"), icon: Home },
-    { href: "/cars-for-sale", label: t("nav.carsForSale"), icon: Car },
-    { href: "/incoming-cars", label: t("nav.incomingCars"), icon: Truck },
     ...(authInfo?.isTrader
       ? [
           {
@@ -292,6 +290,42 @@ export function Navbar() {
             ),
           )}
 
+          {/* Cars for Sale dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                  location === "/cars-for-sale" || location === "/incoming-cars"
+                    ? "text-primary font-semibold"
+                    : "text-foreground/70"
+                }`}
+                data-testid="button-cars-dropdown"
+              >
+                <Car className="w-4 h-4" />
+                <span>{language === "ar" ? "سيارات للبيع" : "Cars for Sale"}</span>
+                <ChevronDown className="w-3 h-3 opacity-60" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align={language === "ar" ? "end" : "start"} className="w-64">
+              <DropdownMenuItem asChild>
+                <Link href="/cars-for-sale">
+                  <div className="flex items-center gap-3 p-2 cursor-pointer w-full" data-testid="dropdown-cars-for-sale">
+                    <Car className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-sm">{language === "ar" ? "سيارات للبيع في المنطقة الحرة - الأردن" : "Cars for Sale – Free Zone, Jordan"}</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/incoming-cars">
+                  <div className="flex items-center gap-3 p-2 cursor-pointer w-full" data-testid="dropdown-incoming-cars">
+                    <Truck className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-sm">{language === "ar" ? "سيارات للبيع - قيد التحميل" : "Cars for Sale – Loading"}</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div
             className={`${language === "ar" ? "pr-4 border-r" : "pl-4 border-l"} border-border`}
           >
@@ -387,6 +421,31 @@ export function Navbar() {
                   </Link>
                 ),
               )}
+
+              {/* Cars for Sale mobile section */}
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground px-3 uppercase tracking-wider">
+                  {language === "ar" ? "سيارات للبيع" : "Cars for Sale"}
+                </p>
+                <Link href="/cars-for-sale">
+                  <div
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Car className="w-5 h-5 text-primary" />
+                    <span className="text-sm">{language === "ar" ? "سيارات في المنطقة الحرة - الأردن" : "Cars – Free Zone, Jordan"}</span>
+                  </div>
+                </Link>
+                <Link href="/incoming-cars">
+                  <div
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer text-foreground"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Truck className="w-5 h-5 text-primary" />
+                    <span className="text-sm">{language === "ar" ? "سيارات للبيع - قيد التحميل" : "Cars for Sale – Loading"}</span>
+                  </div>
+                </Link>
+              </div>
 
               {/* Contact Options Mobile - For all non-admin users including guests */}
               {!isAdminCheck?.isAdmin && (
