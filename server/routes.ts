@@ -1028,7 +1028,7 @@ export async function registerRoutes(
   });
 
   app.post("/api/admin/incoming-cars", isAuthenticated, isAdmin, (req: any, res: any, next: any) => {
-    upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }])(req, res, (err: any) => {
+    upload.any()(req, res, (err: any) => {
       if (err) {
         console.error("Multer error on incoming-cars upload:", err);
         return res.status(400).json({ message: err.message || "File upload error" });
@@ -1038,9 +1038,9 @@ export async function registerRoutes(
   }, async (req: any, res) => {
     try {
       console.log("POST /api/admin/incoming-cars — handler reached");
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      const mainImage = files?.image?.[0];
-      const additionalImages = files?.images || [];
+      const allFiles = (req.files as Express.Multer.File[]) || [];
+      const mainImage = allFiles.find(f => f.fieldname === "image");
+      const additionalImages = allFiles.filter(f => f.fieldname === "images");
 
       if (!mainImage) return res.status(400).json({ message: "صورة السيارة مطلوبة" });
 
@@ -1091,7 +1091,7 @@ export async function registerRoutes(
   });
 
   app.put("/api/admin/incoming-cars/:id", isAuthenticated, isAdmin, (req: any, res: any, next: any) => {
-    upload.fields([{ name: "image", maxCount: 1 }, { name: "images", maxCount: 10 }])(req, res, (err: any) => {
+    upload.any()(req, res, (err: any) => {
       if (err) return res.status(400).json({ message: err.message || "File upload error" });
       next();
     });
@@ -1101,20 +1101,22 @@ export async function registerRoutes(
       const existing = await storage.getIncomingCar(id);
       if (!existing) return res.status(404).json({ message: "Not found" });
 
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const allFiles = (req.files as Express.Multer.File[]) || [];
       const b = req.body;
 
       // Handle main image — replace if new one provided
       let imageUrl = existing.imageUrl;
-      if (files?.image?.[0]) {
+      const mainImageFile = allFiles.find(f => f.fieldname === "image");
+      if (mainImageFile) {
         if (existing.imageUrl?.includes(R2_PUBLIC_URL)) await deleteFromR2(existing.imageUrl);
-        imageUrl = await uploadToR2(files.image[0].buffer, files.image[0].originalname, files.image[0].mimetype);
+        imageUrl = await uploadToR2(mainImageFile.buffer, mainImageFile.originalname, mainImageFile.mimetype);
       }
 
       // Handle additional images — start from kept existing, add new uploads
       let imagesArr: string[] = b.existingImages ? JSON.parse(b.existingImages) : ((existing.images as string[]) || []);
-      if (files?.images?.length) {
-        const newImgs = await Promise.all(files.images.map((f: Express.Multer.File) => uploadToR2(f.buffer, f.originalname, f.mimetype)));
+      const additionalImageFiles = allFiles.filter(f => f.fieldname === "images");
+      if (additionalImageFiles.length) {
+        const newImgs = await Promise.all(additionalImageFiles.map((f: Express.Multer.File) => uploadToR2(f.buffer, f.originalname, f.mimetype)));
         imagesArr = [...imagesArr, ...newImgs];
       }
       // Delete R2 images that were removed by the user
