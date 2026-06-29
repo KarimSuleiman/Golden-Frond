@@ -1081,7 +1081,7 @@ export default function Admin() {
                         </h3>
                         <p className="text-xs text-muted-foreground mt-0.5">{car.color}</p>
                         <p className="text-xs text-muted-foreground mt-0.5" dir="ltr">VIN: {car.vin}</p>
-                        <p className="text-xs text-primary mt-1 truncate">{t("admin.owner")}: {getUserName(car.userId)}</p>
+                        <p className="text-sm font-bold text-foreground mt-1 truncate">{t("admin.owner")}: {getUserName(car.userId)}</p>
                         <div className="flex gap-1.5 mt-2">
                           <Button size="sm" variant="outline" className="flex-1 h-7 text-xs" onClick={() => handleEdit(car)} data-testid={`button-edit-car-${car.id}`}>
                             <Edit className="w-3 h-3 ml-1" />
