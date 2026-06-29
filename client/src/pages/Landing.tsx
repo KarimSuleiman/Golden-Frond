@@ -21,7 +21,7 @@ import {
   Car,
 } from "lucide-react";
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
-import logoImage from "@assets/logo_optimized.png";
+import logoImage from "/logo_nobg.png";
 import heroCarImage from "@assets/ChatGPT_Image_Jun_23,_2026,_12_11_58_AM_1782163256728.png";
 import showroomImage from "@assets/Gemini_Generated_Image_idp5n7idp5n7idp5_1782165132858.png";
 import logoImpact from "@assets/5c2b7587-b6f3-4754-923d-fb3aceda9632_1775085234273.JPG";
