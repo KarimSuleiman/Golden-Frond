@@ -112,19 +112,19 @@ export default function Landing() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-xl space-y-4 md:space-y-8"
+            className="w-full max-w-xl space-y-2 sm:space-y-4 md:space-y-8"
           >
             {/* Logo + Brand name */}
-            <motion.div variants={itemVariants} className="flex items-center gap-4 mb-2">
-              <img src={logoImage} alt={t("common.altLogo")} className="h-14 md:h-16 w-auto object-contain drop-shadow-lg" />
-              <span className="text-white text-xl md:text-3xl font-bold tracking-wide drop-shadow-md leading-snug">
+            <motion.div variants={itemVariants} className="flex items-center gap-2 md:gap-4 mb-0">
+              <img src={logoImage} alt={t("common.altLogo")} className="h-10 md:h-16 w-auto object-contain drop-shadow-lg" />
+              <span className="text-white text-base md:text-3xl font-bold tracking-wide drop-shadow-md leading-snug">
                 {t("landing.tagline")}
               </span>
             </motion.div>
 
             {/* Main heading */}
             <motion.div variants={itemVariants}>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight text-white drop-shadow-md">
                 {t("landing.title1")}
                 <br />
                 <span className="text-primary drop-shadow-sm">{t("landing.title2")}</span>
@@ -181,7 +181,7 @@ export default function Landing() {
             {/* Stats row */}
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-3 gap-4 md:gap-6 pt-4 md:pt-6 border-t border-white/20"
+              className="grid grid-cols-3 gap-2 md:gap-6 pt-2 md:pt-6 border-t border-white/20"
             >
               <div>
                 <h4 className="text-xl md:text-3xl font-bold text-white">+21</h4>
