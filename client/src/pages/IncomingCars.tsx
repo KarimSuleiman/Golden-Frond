@@ -444,6 +444,78 @@ export default function IncomingCars() {
           onClear={clearAllFilters}
         />
 
+        {/* Quick Body Type + Make Filter Bar */}
+        <div className="mb-8 space-y-5">
+          {/* Body Type */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {language === "ar" ? "نوع الهيكل" : "Body Type"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {BODY_TYPES_QUICK.map((bt) => {
+                const active = bt.value !== "" && selectedBodyType === bt.value;
+                return (
+                  <button
+                    key={bt.value || "other"}
+                    onClick={() => setSelectedBodyType(active ? "" : bt.value)}
+                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                    }`}
+                    data-testid={`button-incoming-body-type-${bt.value}`}
+                  >
+                    <span className="w-16 h-9">{bt.svg}</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-wide leading-none">
+                      {language === "ar" ? bt.arLabel : bt.enLabel}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Car Make */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {language === "ar" ? "الماركة" : "Make"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {CAR_MAKES_QUICK.map((make) => {
+                const active = selectedMake === make.value;
+                return (
+                  <button
+                    key={make.value}
+                    onClick={() => setSelectedMake(active ? "" : make.value)}
+                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
+                      active
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                    data-testid={`button-incoming-make-${make.slug}`}
+                  >
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${make.slug}.png`}
+                      alt={make.value}
+                      className="w-12 h-12 object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                    <span className={`text-[11px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>
+                      {language === "ar" ? make.arLabel : make.value}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-72 rounded-2xl" />)}
