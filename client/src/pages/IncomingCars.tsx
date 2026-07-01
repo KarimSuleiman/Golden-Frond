@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Trash2, Upload, X, Truck, Package, Calendar, Pencil, Search, ArrowUpDown, ArrowUp, ArrowDown, Clock, Tag, Gauge } from "lucide-react";
+import { Plus, Trash2, Upload, X, Truck, Package, Calendar, Pencil, Search, ArrowUpDown, ArrowUp, ArrowDown, Clock, Tag, Gauge, Filter } from "lucide-react";
 import { useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
@@ -60,6 +60,7 @@ export default function IncomingCars() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
     queryKey: ["/api/auth/is-admin"],
@@ -103,6 +104,15 @@ export default function IncomingCars() {
   }, [cars, searchQuery, selectedStatus, selectedBodyType, selectedMake, sortBy]);
 
   const hasActiveFilters = searchQuery || selectedStatus || selectedBodyType || selectedMake;
+
+  const activeFilterCount = useMemo(() => {
+    let n = 0;
+    if (selectedStatus) n++;
+    if (selectedBodyType) n++;
+    if (selectedMake) n++;
+    if (searchQuery) n++;
+    return n;
+  }, [selectedStatus, selectedBodyType, selectedMake, searchQuery]);
 
   const clearAllFilters = () => {
     setSearchQuery("");
@@ -385,154 +395,54 @@ export default function IncomingCars() {
 
       <div className="container mx-auto px-4 py-8">
 
-        {/* Search + Sort + Status row */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground ${dir === "rtl" ? "right-3" : "left-3"}`} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder={language === "ar" ? "ابحث بالماركة أو الموديل أو السنة..." : "Search by make, model, year…"}
-              className={`w-full h-10 rounded-lg border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 ${dir === "rtl" ? "pr-9 pl-9 text-right" : "pl-9 pr-9"}`}
-              data-testid="input-incoming-search"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground ${dir === "rtl" ? "left-3" : "right-3"}`}
-              >
+        <div className="space-y-4 mb-6">
+          <div className="flex gap-3 flex-wrap">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className={`absolute ${language === "ar" ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`} />
+              <Input
+                placeholder={language === "ar" ? "ابحث عن سيارة..." : "Search for a car..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={language === "ar" ? "pr-10" : "pl-10"}
+                data-testid="input-incoming-search"
+              />
+            </div>
+            <IncomingSortPopover sortBy={sortBy} setSortBy={setSortBy} language={language} />
+            <Button
+              variant="outline"
+              onClick={() => setShowFilterPanel(true)}
+              className="relative"
+              data-testid="button-toggle-filters"
+            >
+              <Filter className="w-4 h-4" />
+              <span className={language === "ar" ? "mr-2" : "ml-2"}>{language === "ar" ? "فلترة" : "Filter"}</span>
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </Button>
+            {hasActiveFilters && (
+              <Button variant="ghost" onClick={clearAllFilters} data-testid="button-clear-filters">
                 <X className="w-4 h-4" />
-              </button>
+                <span className={language === "ar" ? "mr-1" : "ml-1"}>{language === "ar" ? "مسح" : "Clear"}</span>
+              </Button>
             )}
           </div>
-
-          {/* Sort dropdown */}
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-              className="h-10 rounded-lg border border-border bg-card text-sm px-3 pe-8 focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer appearance-none min-w-[150px]"
-              data-testid="select-incoming-sort"
-            >
-              <option value="newest">{language === "ar" ? "الأحدث أولاً" : "Newest first"}</option>
-              <option value="oldest">{language === "ar" ? "الأقدم أولاً" : "Oldest first"}</option>
-              <option value="yearNew">{language === "ar" ? "سنة الصنع (جديد)" : "Year (new→old)"}</option>
-              <option value="yearOld">{language === "ar" ? "سنة الصنع (قديم)" : "Year (old→new)"}</option>
-              <option value="priceHigh">{language === "ar" ? "السعر (الأعلى)" : "Price (high→low)"}</option>
-              <option value="priceLow">{language === "ar" ? "السعر (الأقل)" : "Price (low→high)"}</option>
-            </select>
-            <ArrowUpDown className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none ${dir === "rtl" ? "left-2.5" : "right-2.5"}`} />
-          </div>
         </div>
 
-        {/* Status filter chips */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {[
-            { value: "", label: language === "ar" ? "الكل" : "All", icon: <Gauge className="w-3.5 h-3.5" /> },
-            { value: "coming", label: language === "ar" ? "قيد الشحن" : "Shipping", icon: <Truck className="w-3.5 h-3.5" /> },
-            { value: "arrived", label: language === "ar" ? "وصلت" : "Arrived", icon: <Clock className="w-3.5 h-3.5" /> },
-          ].map(s => (
-            <button
-              key={s.value}
-              onClick={() => setSelectedStatus(s.value)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                selectedStatus === s.value
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
-              }`}
-              data-testid={`button-status-${s.value || "all"}`}
-            >
-              {s.icon}
-              {s.label}
-            </button>
-          ))}
-
-          {/* Active filter count + clear all */}
-          {hasActiveFilters && (
-            <button
-              onClick={clearAllFilters}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-destructive/40 text-destructive bg-destructive/5 hover:bg-destructive/10 transition-all ms-auto"
-              data-testid="button-clear-filters"
-            >
-              <X className="w-3.5 h-3.5" />
-              {language === "ar" ? "مسح الفلاتر" : "Clear filters"}
-            </button>
-          )}
-        </div>
-
-        {/* Quick Body Type + Make Filter Bar */}
-        <div className="mb-8 space-y-5">
-          {/* Body Type */}
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                {language === "ar" ? "نوع الهيكل" : "Body Type"}
-              </span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {BODY_TYPES_QUICK.map((bt) => {
-                const active = bt.value !== "" && selectedBodyType === bt.value;
-                return (
-                  <button
-                    key={bt.value || "other"}
-                    onClick={() => setSelectedBodyType(active ? "" : bt.value)}
-                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
-                      active
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                    }`}
-                    data-testid={`button-incoming-body-type-${bt.value}`}
-                  >
-                    <span className="w-16 h-9">{bt.svg}</span>
-                    <span className="text-[11px] font-semibold uppercase tracking-wide leading-none">
-                      {language === "ar" ? bt.arLabel : bt.enLabel}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Car Make */}
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                {language === "ar" ? "الماركة" : "Make"}
-              </span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {CAR_MAKES_QUICK.map((make) => {
-                const active = selectedMake === make.value;
-                return (
-                  <button
-                    key={make.value}
-                    onClick={() => setSelectedMake(active ? "" : make.value)}
-                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
-                      active
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-card hover:border-primary/50"
-                    }`}
-                    data-testid={`button-incoming-make-${make.slug}`}
-                  >
-                    <img
-                      src={`https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${make.slug}.png`}
-                      alt={make.value}
-                      className="w-12 h-12 object-contain"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                    <span className={`text-[11px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>
-                      {language === "ar" ? make.arLabel : make.value}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <IncomingFilterPanel
+          open={showFilterPanel}
+          onClose={() => setShowFilterPanel(false)}
+          language={language}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          selectedBodyType={selectedBodyType}
+          setSelectedBodyType={setSelectedBodyType}
+          selectedMake={selectedMake}
+          setSelectedMake={setSelectedMake}
+          onClear={clearAllFilters}
+        />
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -1206,6 +1116,212 @@ export default function IncomingCars() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function IncomingSortPopover({ sortBy, setSortBy, language }: { sortBy: string; setSortBy: (v: string) => void; language: string }) {
+  const [open, setOpen] = useState(false);
+  const ar = language === "ar";
+
+  const categories = [
+    {
+      key: "posted", icon: Clock,
+      label: ar ? "تاريخ الإضافة" : "Posted",
+      color: "from-violet-500/20 to-violet-500/5", iconColor: "text-violet-500",
+      high: { value: "newest", label: ar ? "الأحدث" : "Newest" },
+      low:  { value: "oldest", label: ar ? "الأقدم" : "Oldest" },
+    },
+    {
+      key: "year", icon: Calendar,
+      label: ar ? "سنة الصنع" : "Year",
+      color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-500",
+      high: { value: "yearNew", label: ar ? "الأحدث" : "Newest" },
+      low:  { value: "yearOld", label: ar ? "الأقدم" : "Oldest" },
+    },
+    {
+      key: "price", icon: Tag,
+      label: ar ? "السعر" : "Price",
+      color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500",
+      high: { value: "priceHigh", label: ar ? "الأعلى" : "Highest" },
+      low:  { value: "priceLow",  label: ar ? "الأقل"  : "Lowest" },
+    },
+  ];
+
+  const isActive = sortBy !== "newest";
+  const activeLabel = (() => {
+    if (!isActive) return ar ? "ترتيب" : "Sort";
+    for (const c of categories) {
+      if (sortBy === c.high.value) return `${c.label} · ${c.high.label}`;
+      if (sortBy === c.low.value)  return `${c.label} · ${c.low.label}`;
+    }
+    return ar ? "ترتيب" : "Sort";
+  })();
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        onClick={() => setOpen(true)}
+        className={`gap-2 whitespace-nowrap transition-all ${isActive ? "border-primary text-primary bg-primary/5" : ""}`}
+        data-testid="button-sort"
+      >
+        <ArrowUpDown className="w-4 h-4" />
+        <span>{activeLabel}</span>
+      </Button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="relative z-10 w-full max-w-sm bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-primary" />
+                <h2 className="font-bold text-base text-foreground">{ar ? "ترتيب حسب" : "Sort By"}</h2>
+              </div>
+              <button onClick={() => setOpen(false)} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-4 grid grid-cols-2 gap-3">
+              {categories.map((cat) => {
+                const Icon = cat.icon;
+                const isHighActive = sortBy === cat.high.value;
+                const isLowActive  = sortBy === cat.low.value;
+                const isCatActive  = isHighActive || isLowActive;
+                return (
+                  <div key={cat.key} className={`rounded-xl border-2 overflow-hidden transition-all ${isCatActive ? "border-primary" : "border-border"}`}>
+                    <div className={`bg-gradient-to-br ${cat.color} px-3 py-3 flex items-center gap-2`}>
+                      <div className="w-7 h-7 rounded-lg bg-background/60 flex items-center justify-center">
+                        <Icon className={`w-4 h-4 ${cat.iconColor}`} />
+                      </div>
+                      <span className="text-sm font-bold text-foreground">{cat.label}</span>
+                    </div>
+                    <div className="flex border-t border-border">
+                      <button onClick={() => { setSortBy(cat.high.value); setOpen(false); }}
+                        className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-semibold transition-colors border-r border-border ${isHighActive ? "bg-primary text-primary-foreground" : "hover:bg-accent text-muted-foreground hover:text-foreground"}`}>
+                        <ArrowDown className="w-3.5 h-3.5" />{cat.high.label}
+                      </button>
+                      <button onClick={() => { setSortBy(cat.low.value); setOpen(false); }}
+                        className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-semibold transition-colors ${isLowActive ? "bg-primary text-primary-foreground" : "hover:bg-accent text-muted-foreground hover:text-foreground"}`}>
+                        <ArrowUp className="w-3.5 h-3.5" />{cat.low.label}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {isActive && (
+              <div className="px-4 pb-4">
+                <button onClick={() => { setSortBy("newest"); setOpen(false); }}
+                  className="w-full py-2 rounded-xl border border-dashed border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">
+                  {ar ? "إعادة تعيين الترتيب" : "Reset Sort"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function IncomingFilterPanel({
+  open, onClose, language,
+  selectedStatus, setSelectedStatus,
+  selectedBodyType, setSelectedBodyType,
+  selectedMake, setSelectedMake,
+  onClear,
+}: {
+  open: boolean; onClose: () => void; language: string;
+  selectedStatus: string; setSelectedStatus: (v: string) => void;
+  selectedBodyType: string; setSelectedBodyType: (v: string) => void;
+  selectedMake: string; setSelectedMake: (v: string) => void;
+  onClear: () => void;
+}) {
+  if (!open) return null;
+  const ar = language === "ar";
+
+  return (
+    <div className="fixed inset-0 z-50 flex" dir={ar ? "rtl" : "ltr"}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className={`relative z-10 w-full max-w-sm bg-background shadow-2xl flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300 ${ar ? "mr-0 ml-auto" : "ml-auto mr-0"}`}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-primary" />
+            <h2 className="font-bold text-base">{ar ? "الفلاتر" : "Filters"}</h2>
+          </div>
+          <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-7">
+
+          {/* Status */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">{ar ? "الحالة" : "Status"}</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: "", label: ar ? "الكل" : "All" },
+                { value: "coming", label: ar ? "قيد الشحن" : "Shipping" },
+                { value: "arrived", label: ar ? "وصلت" : "Arrived" },
+              ].map(s => (
+                <button key={s.value} onClick={() => setSelectedStatus(s.value)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all ${selectedStatus === s.value ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:border-primary/50"}`}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Body Type */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">{ar ? "نوع الهيكل" : "Body Type"}</p>
+            <div className="flex flex-wrap gap-2">
+              {BODY_TYPES_QUICK.map((bt) => {
+                const active = bt.value !== "" && selectedBodyType === bt.value;
+                return (
+                  <button key={bt.value || "other"} onClick={() => setSelectedBodyType(active ? "" : bt.value)}
+                    className={`flex flex-col items-center gap-1.5 min-w-[72px] px-2 py-2.5 rounded-xl border transition-all ${active ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground hover:border-primary/50"}`}
+                    data-testid={`button-filter-body-type-${bt.value}`}>
+                    <span className="w-14 h-8">{bt.svg}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wide leading-none">{ar ? bt.arLabel : bt.enLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Make */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">{ar ? "الماركة" : "Make"}</p>
+            <div className="flex flex-wrap gap-2">
+              {CAR_MAKES_QUICK.map((make) => {
+                const active = selectedMake === make.value;
+                return (
+                  <button key={make.value} onClick={() => setSelectedMake(active ? "" : make.value)}
+                    className={`flex flex-col items-center gap-1.5 min-w-[72px] px-2 py-2.5 rounded-xl border transition-all ${active ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/50"}`}
+                    data-testid={`button-filter-make-${make.slug}`}>
+                    <img src={`https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${make.slug}.png`}
+                      alt={make.value} className="w-10 h-10 object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <span className={`text-[10px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>{ar ? make.arLabel : make.value}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="shrink-0 px-5 py-4 border-t border-border flex gap-3">
+          <Button variant="outline" className="flex-1" onClick={onClear}>{ar ? "مسح الكل" : "Clear All"}</Button>
+          <Button className="flex-1" onClick={onClose}>{ar ? "تطبيق" : "Apply"}</Button>
+        </div>
+      </div>
     </div>
   );
 }
