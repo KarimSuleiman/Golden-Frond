@@ -359,7 +359,7 @@ export default function ListingDetail() {
           <div className="md:col-span-2 space-y-6">
             <div>
               <p className="text-primary font-bold text-2xl mb-1" data-testid="text-listing-price">
-                {listing.price ? `${listing.price.toLocaleString()} ${t("marketplace.currency")}` : t("marketplace.priceOnRequest")}
+                {listing.price ? (listing.currency === "JOD" ? `${listing.price.toLocaleString()} ${language === "ar" ? "د.أ" : "JOD"}` : `$${listing.price.toLocaleString()}`) : t("marketplace.priceOnRequest")}
               </p>
               <h1 className="text-xl font-bold text-foreground" data-testid="text-listing-title">
                 {listingTitle}
@@ -523,7 +523,7 @@ export default function ListingDetail() {
                           </p>
                           {item.price && (
                             <p className="text-primary font-bold text-sm mt-1">
-                              {item.price.toLocaleString()} {t("marketplace.currency")}
+                              {item.currency === "JOD" ? `${item.price.toLocaleString()} ${language === "ar" ? "د.أ" : "JOD"}` : `$${item.price.toLocaleString()}`}
                             </p>
                           )}
                         </CardContent>

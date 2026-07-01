@@ -589,7 +589,7 @@ const ListingCard = memo(function ListingCard({ listing }: { listing: Listing })
             {title}
           </h3>
           <p className="text-primary font-bold text-sm md:text-xl mb-1.5 md:mb-3" data-testid={`text-price-${listing.id}`}>
-            {listing.price ? `${listing.price.toLocaleString()} ${t("marketplace.currency")}` : t("marketplace.priceOnRequest")}
+            {listing.price ? (listing.currency === "JOD" ? `${listing.price.toLocaleString()} ${language === "ar" ? "د.أ" : "JOD"}` : `$${listing.price.toLocaleString()}`) : t("marketplace.priceOnRequest")}
           </p>
           <div className="flex items-center gap-1.5 md:gap-3 text-xs md:text-sm text-muted-foreground flex-wrap">
             {listing.year && (

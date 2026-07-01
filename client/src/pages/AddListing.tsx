@@ -34,6 +34,7 @@ export default function AddListing() {
     model: "",
     year: "",
     price: "",
+    currency: "USD",
     color: "",
     interiorColor: "",
     condition: "used",
@@ -180,6 +181,7 @@ export default function AddListing() {
       model: form.model || null,
       year: form.year ? parseInt(form.year) : null,
       price: form.price ? parseInt(form.price) : null,
+      currency: form.currency || "USD",
       color: form.color || null,
       interiorColor: form.interiorColor || null,
       condition: form.condition || "used",
@@ -258,7 +260,13 @@ export default function AddListing() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("marketplace.priceLabel")}</Label>
-                  <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} data-testid="input-price" />
+                  <div className="flex gap-2 items-center">
+                    <div className="flex border border-input rounded-md overflow-hidden text-xs">
+                      <button type="button" onClick={() => setForm(f => ({...f, currency: "USD"}))} className={`px-2 py-1 font-bold transition-colors ${form.currency === "USD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>$</button>
+                      <button type="button" onClick={() => setForm(f => ({...f, currency: "JOD"}))} className={`px-2 py-1 font-bold transition-colors ${form.currency === "JOD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>د.أ</button>
+                    </div>
+                    <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} data-testid="input-price" className="flex-1" />
+                  </div>
                 </div>
               </div>
 

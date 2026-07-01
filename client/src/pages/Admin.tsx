@@ -107,6 +107,7 @@ export default function Admin() {
     color: "",
     status: "Purchased",
     price: 0,
+    currency: "USD",
     details: "",
     containerNumber: "",
     bookingNumber: "",
@@ -388,6 +389,7 @@ export default function Admin() {
       color: "",
       status: "Purchased",
       price: 0,
+      currency: "USD",
       details: "",
       containerNumber: "",
       bookingNumber: "",
@@ -1139,7 +1141,7 @@ export default function Admin() {
                       </div>
                       <div className="p-3 space-y-1">
                         <p className="font-semibold text-sm truncate">{listing.make} {listing.model} {listing.year}</p>
-                        <p className="text-xs text-muted-foreground">{listing.price ? `${listing.price.toLocaleString()} د.أ` : "-"}</p>
+                        <p className="text-xs text-muted-foreground">{listing.price ? (listing.currency === "JOD" ? `${listing.price.toLocaleString()} د.أ` : `$${listing.price.toLocaleString()}`) : "-"}</p>
                         <div className="flex gap-2 pt-1">
                           <Button size="sm" variant="outline" className="flex-1 h-7 text-xs" onClick={() => openEditListing(listing)} data-testid={`button-edit-listing-${listing.id}`}>
                             <Edit className="w-3 h-3 ml-1" />
@@ -1221,7 +1223,13 @@ export default function Admin() {
                   </div>
                   <div className="space-y-1">
                     <Label>{t("admin.form.price")}</Label>
-                    <Input type="number" value={listingForm.price || ""} onChange={(e) => setListingForm(f => ({ ...f, price: parseInt(e.target.value) || null }))} />
+                    <div className="flex gap-2 items-center">
+                      <div className="flex border border-input rounded-md overflow-hidden text-xs">
+                        <button type="button" onClick={() => setListingForm(f => ({...f, currency: "USD"}))} className={`px-2 py-1 font-bold transition-colors ${listingForm.currency === "USD" || !listingForm.currency ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>$</button>
+                        <button type="button" onClick={() => setListingForm(f => ({...f, currency: "JOD"}))} className={`px-2 py-1 font-bold transition-colors ${listingForm.currency === "JOD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>د.أ</button>
+                      </div>
+                      <Input type="number" value={listingForm.price || ""} onChange={(e) => setListingForm(f => ({ ...f, price: parseInt(e.target.value) || null }))} className="flex-1" />
+                    </div>
                   </div>
                   <div className="space-y-1">
                     <Label>{t("admin.form.color")}</Label>
@@ -1553,13 +1561,13 @@ export default function Admin() {
                     </div>
                     <div className="space-y-2">
                       <Label>{t("admin.form.price")}</Label>
-                      <Input
-                        type="number"
-                        value={carForm.price || ""}
-                        onChange={(e) => setCarForm({ ...carForm, price: parseInt(e.target.value) || 0 })}
-                        placeholder="50000"
-                        data-testid="input-price"
-                      />
+                      <div className="flex gap-2 items-center">
+                        <div className="flex border border-input rounded-md overflow-hidden text-xs">
+                          <button type="button" onClick={() => setCarForm(f => ({...f, currency: "USD"}))} className={`px-2 py-1 font-bold transition-colors ${carForm.currency === "USD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>$</button>
+                          <button type="button" onClick={() => setCarForm(f => ({...f, currency: "JOD"}))} className={`px-2 py-1 font-bold transition-colors ${carForm.currency === "JOD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>د.أ</button>
+                        </div>
+                        <Input type="number" value={carForm.price || ""} onChange={(e) => setCarForm({ ...carForm, price: parseInt(e.target.value) || 0 })} placeholder="50000" data-testid="input-price" className="flex-1" />
+                      </div>
                     </div>
                   </div>
 

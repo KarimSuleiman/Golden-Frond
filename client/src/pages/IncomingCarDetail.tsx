@@ -358,8 +358,10 @@ export default function IncomingCarDetail() {
 
               {car.price && (
                 <div className="flex items-center gap-2 text-2xl font-bold text-primary">
-                  <DollarSign className="w-5 h-5" />
-                  {car.price.toLocaleString()} {language === "ar" ? "دينار" : "JOD"}
+                  {car.currency === "JOD"
+                    ? <span>{car.price.toLocaleString()} {language === "ar" ? "د.أ" : "JOD"}</span>
+                    : <><DollarSign className="w-5 h-5" />{car.price.toLocaleString()}</>
+                  }
                 </div>
               )}
 

@@ -130,7 +130,7 @@ export default function CarDetail() {
     c.countryOfOrigin && { key: language === "ar" ? "بلد المنشأ"       : "Origin",       val: c.countryOfOrigin },
     c.regionalSpecs   && { key: language === "ar" ? "المواصفات الإقليمية" : "Regional Specs", val: c.regionalSpecs },
     car.vin           && { key: t("car.vin"),                                            val: car.vin },
-    car.price         && { key: language === "ar" ? "السعر"            : "Price",        val: `$${car.price.toLocaleString()}` },
+    car.price         && { key: language === "ar" ? "السعر"            : "Price",        val: car.currency === "JOD" ? `${car.price.toLocaleString()} ${language === "ar" ? "د.أ" : "JOD"}` : `$${car.price.toLocaleString()}` },
   ].filter(Boolean) as { key: string; val: string }[];
 
   const intFeatures = (c.interiorFeatures as string[] | null) || [];
@@ -207,10 +207,10 @@ export default function CarDetail() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-6">
           {car.price && (
             <div className="text-3xl font-bold text-primary mb-1" data-testid="text-price">
-              <span className="flex items-center gap-1">
-                <DollarSign className="w-6 h-6" />
-                {car.price.toLocaleString()}
-              </span>
+              {car.currency === "JOD"
+                ? <span>{car.price.toLocaleString()} {language === "ar" ? "د.أ" : "JOD"}</span>
+                : <span className="flex items-center gap-1"><DollarSign className="w-6 h-6" />{car.price.toLocaleString()}</span>
+              }
             </div>
           )}
           <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">

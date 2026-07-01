@@ -107,7 +107,7 @@ export default function MyCars() {
                     </h3>
                     {car.price && (
                       <p className="text-primary font-bold text-xl" data-testid={`text-car-price-${car.id}`}>
-                        ${car.price.toLocaleString()}
+                        {car.currency === "JOD" ? `${car.price.toLocaleString()} د.أ` : `$${car.price.toLocaleString()}`}
                       </p>
                     )}
                     <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">

@@ -92,7 +92,7 @@ export default function IncomingCars() {
   const [form, setForm] = useState({
     make: "", model: "", year: "", color: "",
     details: "", status: "coming", estimatedArrival: "",
-    price: "", condition: "used", mileage: "", bodyType: "",
+    price: "", currency: "USD", condition: "used", mileage: "", bodyType: "",
     transmission: "", fuelType: "", engineSize: "", seats: "",
     interiorColor: "", interiorFeatures: [] as string[],
     exteriorFeatures: [] as string[],
@@ -110,7 +110,7 @@ export default function IncomingCars() {
   const [editCar, setEditCar] = useState<IncomingCar | null>(null);
   const [editForm, setEditForm] = useState({
     make: "", model: "", year: "", color: "", details: "", status: "coming", estimatedArrival: "",
-    price: "", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
+    price: "", currency: "USD", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
     engineSize: "", seats: "", interiorColor: "", interiorFeatures: [] as string[],
     exteriorFeatures: [] as string[], regionalSpecs: "", countryOfOrigin: "", license: "",
     insurance: "", customs: "", location: "", contactPhone: "",
@@ -129,7 +129,7 @@ export default function IncomingCars() {
       make: car.make || "", model: car.model || "", year: String(car.year || ""),
       color: car.color || "", details: car.details || "", status: car.status || "coming",
       estimatedArrival: car.estimatedArrival || "", price: car.price ? String(car.price) : "",
-      condition: car.condition || "used", mileage: car.mileage ? String(car.mileage) : "",
+      currency: car.currency || "USD", condition: car.condition || "used", mileage: car.mileage ? String(car.mileage) : "",
       bodyType: car.bodyType || "", transmission: car.transmission || "", fuelType: car.fuelType || "",
       engineSize: car.engineSize || "", seats: car.seats ? String(car.seats) : "",
       interiorColor: car.interiorColor || "",
@@ -172,6 +172,7 @@ export default function IncomingCars() {
       fd.append("status", editForm.status);
       fd.append("estimatedArrival", editForm.estimatedArrival);
       fd.append("price", editForm.price);
+      fd.append("currency", editForm.currency || "USD");
       fd.append("condition", editForm.condition);
       fd.append("mileage", editForm.mileage);
       fd.append("bodyType", editForm.bodyType);
@@ -245,6 +246,7 @@ export default function IncomingCars() {
       fd.append("status", form.status);
       fd.append("estimatedArrival", form.estimatedArrival);
       fd.append("price", form.price);
+      fd.append("currency", form.currency || "USD");
       fd.append("condition", form.condition);
       fd.append("mileage", form.mileage);
       fd.append("bodyType", form.bodyType);
@@ -275,7 +277,7 @@ export default function IncomingCars() {
       setShowAddModal(false);
       setForm({
         make: "", model: "", year: "", color: "", details: "", status: "coming", estimatedArrival: "",
-        price: "", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
+        price: "", currency: "USD", condition: "used", mileage: "", bodyType: "", transmission: "", fuelType: "",
         engineSize: "", seats: "", interiorColor: "", interiorFeatures: [], exteriorFeatures: [],
         regionalSpecs: "", countryOfOrigin: "", license: "", insurance: "", customs: "",
         location: "", contactPhone: "",
@@ -457,7 +459,13 @@ export default function IncomingCars() {
               </div>
               <div className="space-y-2">
                 <Label>{t("marketplace.priceLabel")}</Label>
-                <Input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} data-testid="input-incoming-price" />
+                <div className="flex gap-2 items-center">
+                  <div className="flex border border-input rounded-md overflow-hidden text-xs">
+                    <button type="button" onClick={() => setForm(f => ({...f, currency: "USD"}))} className={`px-2 py-1 font-bold transition-colors ${form.currency === "USD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>$</button>
+                    <button type="button" onClick={() => setForm(f => ({...f, currency: "JOD"}))} className={`px-2 py-1 font-bold transition-colors ${form.currency === "JOD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>د.أ</button>
+                  </div>
+                  <Input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} data-testid="input-incoming-price" className="flex-1" />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>{t("filter.exteriorColor")}</Label>
@@ -763,7 +771,14 @@ export default function IncomingCars() {
               <div className="space-y-2"><Label>{t("marketplace.yearLabel")} *</Label>
                 <Input type="number" value={editForm.year} onChange={e => setEditForm(f => ({ ...f, year: e.target.value }))} placeholder="2025" /></div>
               <div className="space-y-2"><Label>{t("marketplace.priceLabel")}</Label>
-                <Input type="number" value={editForm.price} onChange={e => setEditForm(f => ({ ...f, price: e.target.value }))} /></div>
+                <div className="flex gap-2 items-center">
+                  <div className="flex border border-input rounded-md overflow-hidden text-xs">
+                    <button type="button" onClick={() => setEditForm(f => ({...f, currency: "USD"}))} className={`px-2 py-1 font-bold transition-colors ${editForm.currency === "USD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>$</button>
+                    <button type="button" onClick={() => setEditForm(f => ({...f, currency: "JOD"}))} className={`px-2 py-1 font-bold transition-colors ${editForm.currency === "JOD" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-muted"}`}>د.أ</button>
+                  </div>
+                  <Input type="number" value={editForm.price} onChange={e => setEditForm(f => ({ ...f, price: e.target.value }))} className="flex-1" />
+                </div>
+              </div>
               <div className="space-y-2"><Label>{t("filter.exteriorColor")}</Label>
                 <Select value={editForm.color || "none"} onValueChange={v => setEditForm(f => ({ ...f, color: v === "none" ? "" : v }))}>
                   <SelectTrigger><SelectValue placeholder={t("marketplace.selectOption")} /></SelectTrigger>
