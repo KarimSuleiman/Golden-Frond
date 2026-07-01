@@ -72,7 +72,7 @@ export function applyFilters(listings: Listing[], filters: FilterState, searchQu
       if (!match) return false;
     }
     if (filters.condition && listing.condition !== filters.condition) return false;
-    if (filters.make && listing.make !== filters.make) return false;
+    if (filters.make && listing.make?.toLowerCase() !== filters.make.toLowerCase()) return false;
     if (filters.model && listing.model !== filters.model) return false;
     if (filters.minYear) {
       if (!listing.year || listing.year < parseInt(filters.minYear)) return false;
@@ -219,7 +219,7 @@ export function FilterPanel({ open, onClose, filters, onFiltersChange, listings,
 
   const uniqueModels = useMemo(() => {
     const filtered = filters.make
-      ? listings.filter(l => l.make === filters.make)
+      ? listings.filter(l => l.make?.toLowerCase() === filters.make.toLowerCase())
       : listings;
     return Array.from(new Set(filtered.map(l => l.model).filter(Boolean))).sort() as string[];
   }, [listings, filters.make]);
