@@ -12,6 +12,6 @@ export const CAR_MAKES = [
   "Lexus",
   "Mercedes-Benz",
   "Nissan",
-  "Tesla",
   "Toyota",
+  "Volkswagen",
 ];

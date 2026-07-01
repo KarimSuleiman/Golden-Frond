@@ -16,10 +16,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Trash2, Upload, X, Truck, Package, Calendar, Pencil } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
 import type { IncomingCar } from "@shared/schema";
+import { BODY_TYPES_QUICK, CAR_MAKES_QUICK } from "@/lib/car-filters";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,6 +55,8 @@ export default function IncomingCars() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [selectedBodyType, setSelectedBodyType] = useState("");
+  const [selectedMake, setSelectedMake] = useState("");
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
     queryKey: ["/api/auth/is-admin"],
@@ -63,6 +66,17 @@ export default function IncomingCars() {
   const { data: cars, isLoading } = useQuery<IncomingCar[]>({
     queryKey: ["/api/incoming-cars"],
   });
+
+  const filteredCars = useMemo(() => {
+    let result = cars ?? [];
+    if (selectedBodyType) {
+      result = result.filter(c => c.bodyType?.toLowerCase() === selectedBodyType.toLowerCase());
+    }
+    if (selectedMake) {
+      result = result.filter(c => c.make?.toLowerCase() === selectedMake.toLowerCase());
+    }
+    return result;
+  }, [cars, selectedBodyType, selectedMake]);
 
   useJsonLd(cars?.length ? {
     "@context": "https://schema.org",
@@ -336,18 +350,91 @@ export default function IncomingCars() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+
+        {/* Quick Body Type + Make Filter Bar */}
+        <div className="mb-8 space-y-5">
+          {/* Body Type */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {language === "ar" ? "نوع الهيكل" : "Body Type"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {BODY_TYPES_QUICK.map((bt) => {
+                const active = bt.value !== "" && selectedBodyType === bt.value;
+                return (
+                  <button
+                    key={bt.value || "other"}
+                    onClick={() => setSelectedBodyType(active ? "" : bt.value)}
+                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                    }`}
+                    data-testid={`button-incoming-body-type-${bt.value}`}
+                  >
+                    <span className="w-16 h-9">{bt.svg}</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-wide leading-none">
+                      {language === "ar" ? bt.arLabel : bt.enLabel}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Car Make */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {language === "ar" ? "الماركة" : "Make"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {CAR_MAKES_QUICK.map((make) => {
+                const active = selectedMake === make.value;
+                return (
+                  <button
+                    key={make.value}
+                    onClick={() => setSelectedMake(active ? "" : make.value)}
+                    className={`flex flex-col items-center gap-2 min-w-[82px] px-3 py-3 rounded-xl border transition-all cursor-pointer ${
+                      active
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                    data-testid={`button-incoming-make-${make.slug}`}
+                  >
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${make.slug}.png`}
+                      alt={make.value}
+                      className="w-12 h-12 object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                    <span className={`text-[11px] font-semibold uppercase tracking-wide leading-none ${active ? "text-primary" : "text-muted-foreground"}`}>
+                      {language === "ar" ? make.arLabel : make.value}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-72 rounded-2xl" />)}
           </div>
-        ) : !cars?.length ? (
+        ) : !filteredCars.length ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <Package className="w-14 h-14 text-muted-foreground/40 mb-4" />
             <p className="text-lg font-medium text-muted-foreground">{t("incoming.noCars")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {cars.map((car, i) => (
+            {filteredCars.map((car, i) => (
               <motion.div key={car.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <Link href={`/incoming-cars/${car.id}`} className="block group">
                   <Card className="overflow-hidden rounded-2xl border border-border hover:shadow-lg transition-all cursor-pointer">
