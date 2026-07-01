@@ -14,6 +14,7 @@ import { Search, Filter, Plus, MapPin, Calendar, Gauge, X, Phone, ArrowUpDown, A
 import { SiWhatsapp, SiFacebook } from "react-icons/si";
 import logoImage from "@assets/logo_optimized.png";
 import { FilterPanel, FilterState, emptyFilters, hasActiveFiltersCheck, applyFilters } from "@/components/FilterPanel";
+import { CAR_MAKES } from "@/lib/car-makes";
 import type { Listing } from "@shared/schema";
 
 /* ── Body-type icons – professional silhouettes (UXWing, no attribution required) ── */
@@ -109,6 +110,7 @@ export default function CarsForSale() {
 
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [quickMakeFilter, setQuickMakeFilter] = useState("");
 
   const { data: listings = [], isLoading } = useQuery<Listing[]>({
     queryKey: ["/api/listings"],
@@ -146,7 +148,10 @@ export default function CarsForSale() {
   } : null);
 
   const filteredListings = useMemo(() => {
-    const filtered = applyFilters(listings, filters, searchQuery);
+    const byMake = quickMakeFilter
+      ? listings.filter(l => l.make?.toLowerCase() === quickMakeFilter.toLowerCase())
+      : listings;
+    const filtered = applyFilters(byMake, filters, searchQuery);
     const sorted = [...filtered];
     switch (sortBy) {
       case "newest":
@@ -227,6 +232,32 @@ export default function CarsForSale() {
               </Button>
             </Link>
           )}
+        </div>
+
+        {/* ── Brand logo quick-filter row ── */}
+        <div className="mb-6 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+          <div className="flex gap-2 w-max">
+            <button
+              onClick={() => setQuickMakeFilter("")}
+              className={`flex-shrink-0 px-4 py-2 rounded-xl border text-sm font-bold transition-all ${!quickMakeFilter ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-card text-muted-foreground border-border hover:border-primary hover:text-primary"}`}
+              data-testid="button-brand-all"
+            >
+              {language === "ar" ? "الكل" : "All"}
+            </button>
+            {CAR_MAKES.map(brand => {
+              const active = quickMakeFilter === brand;
+              return (
+                <button
+                  key={brand}
+                  onClick={() => setQuickMakeFilter(active ? "" : brand)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-xl border text-sm font-bold transition-all ${active ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-card text-muted-foreground border-border hover:border-primary hover:text-primary"}`}
+                  data-testid={`button-brand-${brand.replace(/[\s-]/g, "").toLowerCase()}`}
+                >
+                  {brand}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="space-y-4 mb-6">

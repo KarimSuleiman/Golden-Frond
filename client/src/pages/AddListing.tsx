@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, X, ArrowRight, ArrowLeft } from "lucide-react";
+import { MakeSelect } from "@/components/MakeSelect";
 
 export default function AddListing() {
   const [, setLocation] = useLocation();
@@ -245,7 +246,7 @@ export default function AddListing() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>{t("marketplace.brand")}</Label>
-                  <Input value={form.make} onChange={(e) => setForm({ ...form, make: e.target.value })} data-testid="input-make" />
+                  <MakeSelect value={form.make} onChange={v => setForm(f => ({...f, make: v}))} testId="input-make" />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("marketplace.model")}</Label>

@@ -1,0 +1,17 @@
+export const CAR_MAKES = [
+  "BYD",
+  "BMW",
+  "Chevrolet",
+  "Ford",
+  "Genesis",
+  "GMC",
+  "Honda",
+  "Hyundai",
+  "Jeep",
+  "Kia",
+  "Lexus",
+  "Mercedes-Benz",
+  "Nissan",
+  "Tesla",
+  "Toyota",
+];

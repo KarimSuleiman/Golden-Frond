@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
+import { MakeSelect } from "@/components/MakeSelect";
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { useJsonLd } from "@/hooks/use-json-ld";
 import { useAuth } from "@/hooks/use-auth";
@@ -758,7 +759,7 @@ export default function ListingDetail() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>{t("marketplace.brand")}</Label>
-                  <Input value={editForm.make || ""} onChange={(e) => setEditForm(f => ({ ...f, make: e.target.value }))} />
+                  <MakeSelect value={editForm.make || ""} onChange={v => setEditForm(f => ({...f, make: v}))} />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("marketplace.model")}</Label>

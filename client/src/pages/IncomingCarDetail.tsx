@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/lib/i18n";
+import { MakeSelect } from "@/components/MakeSelect";
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { useJsonLd } from "@/hooks/use-json-ld";
 import { useAuth } from "@/hooks/use-auth";
@@ -568,7 +569,7 @@ export default function IncomingCarDetail() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2"><Label>{t("marketplace.brand")} *</Label>
-                <Input value={editForm.make} onChange={e => setEditForm(f => ({ ...f, make: e.target.value }))} /></div>
+                <MakeSelect value={editForm.make} onChange={v => setEditForm(f => ({...f, make: v}))} required /></div>
               <div className="space-y-2"><Label>{t("marketplace.model")} *</Label>
                 <Input value={editForm.model} onChange={e => setEditForm(f => ({ ...f, model: e.target.value }))} /></div>
               <div className="space-y-2"><Label>{t("marketplace.yearLabel")} *</Label>

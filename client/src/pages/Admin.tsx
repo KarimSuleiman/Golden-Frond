@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, Plus, Users, Car, Upload, Trash2, Edit, X, Search, Filter, Key, Eye, EyeOff, Heart, Clock, FileText, ShoppingCart, UserPlus, ChevronDown } from "lucide-react";
+import { MakeSelect } from "@/components/MakeSelect";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1211,7 +1212,7 @@ export default function Admin() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label>{t("admin.form.make")}</Label>
-                    <Input value={listingForm.make || ""} onChange={(e) => setListingForm(f => ({ ...f, make: e.target.value }))} />
+                    <MakeSelect value={listingForm.make || ""} onChange={v => setListingForm(f => ({...f, make: v}))} />
                   </div>
                   <div className="space-y-1">
                     <Label>{t("admin.form.model")}</Label>
@@ -1372,12 +1373,7 @@ export default function Admin() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>{t("admin.form.make")}</Label>
-                      <Input
-                        value={carForm.make}
-                        onChange={(e) => setCarForm({ ...carForm, make: e.target.value })}
-                        placeholder="Toyota"
-                        data-testid="input-make"
-                      />
+                      <MakeSelect value={carForm.make} onChange={v => setCarForm(f => ({...f, make: v}))} testId="input-make" />
                     </div>
                     <div className="space-y-2">
                       <Label>{t("admin.form.model")}</Label>
