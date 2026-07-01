@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Trash2, Upload, X, Truck, Package, Calendar, Pencil } from "lucide-react";
+import { Plus, Trash2, Upload, X, Truck, Package, Calendar, Pencil, Search, ArrowUpDown, ArrowUp, ArrowDown, Clock, Tag, Gauge } from "lucide-react";
 import { useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
@@ -57,6 +57,9 @@ export default function IncomingCars() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [selectedBodyType, setSelectedBodyType] = useState("");
   const [selectedMake, setSelectedMake] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const { data: authInfo } = useQuery<{ isAdmin: boolean; role: string }>({
     queryKey: ["/api/auth/is-admin"],
@@ -69,14 +72,45 @@ export default function IncomingCars() {
 
   const filteredCars = useMemo(() => {
     let result = cars ?? [];
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(c =>
+        c.make?.toLowerCase().includes(q) ||
+        c.model?.toLowerCase().includes(q) ||
+        String(c.year ?? "").includes(q) ||
+        c.color?.toLowerCase().includes(q)
+      );
+    }
+    if (selectedStatus) {
+      result = result.filter(c => c.status === selectedStatus);
+    }
     if (selectedBodyType) {
       result = result.filter(c => c.bodyType?.toLowerCase() === selectedBodyType.toLowerCase());
     }
     if (selectedMake) {
       result = result.filter(c => c.make?.toLowerCase() === selectedMake.toLowerCase());
     }
-    return result;
-  }, [cars, selectedBodyType, selectedMake]);
+    const sorted = [...result];
+    switch (sortBy) {
+      case "newest": sorted.sort((a, b) => (b.id ?? 0) - (a.id ?? 0)); break;
+      case "oldest": sorted.sort((a, b) => (a.id ?? 0) - (b.id ?? 0)); break;
+      case "yearNew": sorted.sort((a, b) => (b.year ?? 0) - (a.year ?? 0)); break;
+      case "yearOld": sorted.sort((a, b) => (a.year ?? 0) - (b.year ?? 0)); break;
+      case "priceHigh": sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0)); break;
+      case "priceLow": sorted.sort((a, b) => (Number(a.price) || Infinity) - (Number(b.price) || Infinity)); break;
+    }
+    return sorted;
+  }, [cars, searchQuery, selectedStatus, selectedBodyType, selectedMake, sortBy]);
+
+  const hasActiveFilters = searchQuery || selectedStatus || selectedBodyType || selectedMake;
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setSelectedStatus("");
+    setSelectedBodyType("");
+    setSelectedMake("");
+    setSortBy("newest");
+  };
 
   useJsonLd(cars?.length ? {
     "@context": "https://schema.org",
@@ -350,6 +384,83 @@ export default function IncomingCars() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+
+        {/* Search + Sort + Status row */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground ${dir === "rtl" ? "right-3" : "left-3"}`} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder={language === "ar" ? "ابحث بالماركة أو الموديل أو السنة..." : "Search by make, model, year…"}
+              className={`w-full h-10 rounded-lg border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 ${dir === "rtl" ? "pr-9 pl-9 text-right" : "pl-9 pr-9"}`}
+              data-testid="input-incoming-search"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground ${dir === "rtl" ? "left-3" : "right-3"}`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Sort dropdown */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+              className="h-10 rounded-lg border border-border bg-card text-sm px-3 pe-8 focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer appearance-none min-w-[150px]"
+              data-testid="select-incoming-sort"
+            >
+              <option value="newest">{language === "ar" ? "الأحدث أولاً" : "Newest first"}</option>
+              <option value="oldest">{language === "ar" ? "الأقدم أولاً" : "Oldest first"}</option>
+              <option value="yearNew">{language === "ar" ? "سنة الصنع (جديد)" : "Year (new→old)"}</option>
+              <option value="yearOld">{language === "ar" ? "سنة الصنع (قديم)" : "Year (old→new)"}</option>
+              <option value="priceHigh">{language === "ar" ? "السعر (الأعلى)" : "Price (high→low)"}</option>
+              <option value="priceLow">{language === "ar" ? "السعر (الأقل)" : "Price (low→high)"}</option>
+            </select>
+            <ArrowUpDown className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none ${dir === "rtl" ? "left-2.5" : "right-2.5"}`} />
+          </div>
+        </div>
+
+        {/* Status filter chips */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { value: "", label: language === "ar" ? "الكل" : "All", icon: <Gauge className="w-3.5 h-3.5" /> },
+            { value: "coming", label: language === "ar" ? "قيد الشحن" : "Shipping", icon: <Truck className="w-3.5 h-3.5" /> },
+            { value: "arrived", label: language === "ar" ? "وصلت" : "Arrived", icon: <Clock className="w-3.5 h-3.5" /> },
+          ].map(s => (
+            <button
+              key={s.value}
+              onClick={() => setSelectedStatus(s.value)}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                selectedStatus === s.value
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+              }`}
+              data-testid={`button-status-${s.value || "all"}`}
+            >
+              {s.icon}
+              {s.label}
+            </button>
+          ))}
+
+          {/* Active filter count + clear all */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-destructive/40 text-destructive bg-destructive/5 hover:bg-destructive/10 transition-all ms-auto"
+              data-testid="button-clear-filters"
+            >
+              <X className="w-3.5 h-3.5" />
+              {language === "ar" ? "مسح الفلاتر" : "Clear filters"}
+            </button>
+          )}
+        </div>
 
         {/* Quick Body Type + Make Filter Bar */}
         <div className="mb-8 space-y-5">
