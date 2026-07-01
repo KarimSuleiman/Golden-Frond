@@ -57,16 +57,6 @@ export default function AddListing() {
     contactPhone: "",
   });
 
-  if (!authLoading && !user) {
-    window.location.href = "/login";
-    return null;
-  }
-
-  if (!authLoading && user && user.isAdmin !== "true") {
-    window.location.href = "/cars-for-sale";
-    return null;
-  }
-
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
@@ -118,6 +108,16 @@ export default function AddListing() {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     },
   });
+
+  if (!authLoading && !user) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  if (!authLoading && user && user.isAdmin !== "true") {
+    window.location.href = "/cars-for-sale";
+    return null;
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
