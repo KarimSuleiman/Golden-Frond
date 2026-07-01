@@ -77,7 +77,7 @@ export const CAR_MAKES_QUICK = [
   { value: "Nissan", slug: "nissan", arLabel: "نيسان" },
   { value: "Ford", slug: "ford", arLabel: "فورد" },
   { value: "Chevrolet", slug: "chevrolet", arLabel: "شيفروليه" },
-  { value: "Volkswagen", slug: "volkswagen", arLabel: "فولكس" },
+  { value: "Tesla", slug: "tesla", arLabel: "تيسلا" },
   { value: "GMC", slug: "gmc", arLabel: "GMC" },
   { value: "Honda", slug: "honda", arLabel: "هوندا" },
   { value: "Lexus", slug: "lexus", arLabel: "ليكسز" },
