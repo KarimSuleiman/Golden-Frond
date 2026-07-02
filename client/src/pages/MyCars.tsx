@@ -313,6 +313,12 @@ export default function MyCars() {
                             </span>
                           )}
                         </div>
+                        {(car as any).estimatedArrival && (
+                          <div className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5 w-fit" data-testid={`text-estimated-arrival-${car.id}`}>
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{language === "ar" ? "الوصول المتوقع:" : "Expected Arrival:"} {(car as any).estimatedArrival}</span>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </Link>

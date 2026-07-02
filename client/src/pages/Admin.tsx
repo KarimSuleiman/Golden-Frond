@@ -113,6 +113,7 @@ export default function Admin() {
     containerNumber: "",
     bookingNumber: "",
     trackingUrl: "",
+    estimatedArrival: "",
     shippingLine: "",
     customUrl: "",
     customUrlReason: "",
@@ -395,6 +396,8 @@ export default function Admin() {
       containerNumber: "",
       bookingNumber: "",
       trackingUrl: "",
+      estimatedArrival: "",
+      shippingLine: "",
       customUrl: "",
       customUrlReason: "",
       condition: "",
@@ -513,6 +516,7 @@ export default function Admin() {
       containerNumber: carForm.containerNumber || null,
       bookingNumber: carForm.bookingNumber || null,
       trackingUrl: carForm.trackingUrl || null,
+      estimatedArrival: carForm.estimatedArrival || null,
       shippingLine: carForm.shippingLine || null,
       customUrl: carForm.customUrl || null,
       customUrlReason: carForm.customUrlReason || null,
@@ -555,6 +559,7 @@ export default function Admin() {
       containerNumber: car.containerNumber || "",
       bookingNumber: car.bookingNumber || "",
       trackingUrl: car.trackingUrl || "",
+      estimatedArrival: (car as any).estimatedArrival || "",
       shippingLine: (car as any).shippingLine || "",
       customUrl: car.customUrl || "",
       customUrlReason: car.customUrlReason || "",
@@ -1588,6 +1593,16 @@ export default function Admin() {
                         data-testid="input-booking"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{language === "ar" ? "تاريخ الوصول المتوقع" : "Expected Arrival"}</Label>
+                    <Input
+                      value={carForm.estimatedArrival}
+                      onChange={(e) => setCarForm({ ...carForm, estimatedArrival: e.target.value })}
+                      placeholder={language === "ar" ? "15 يوليو 2026" : "July 15, 2026"}
+                      data-testid="input-estimated-arrival"
+                    />
                   </div>
 
                   <div className="space-y-2">
