@@ -173,7 +173,7 @@ export default function Landing() {
               className="grid grid-cols-3 gap-2 md:gap-6 pt-2 md:pt-6 border-t border-white/20"
             >
               <div>
-                <h4 className="text-xl md:text-3xl font-bold text-white">+21</h4>
+                <h4 className="text-xl md:text-3xl font-bold text-white">+23</h4>
                 <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 md:mt-1">
                   {t("landing.years")}
                 </p>
@@ -290,7 +290,7 @@ export default function Landing() {
               <div
                 className={`absolute -bottom-6 ${language === "ar" ? "-right-6" : "-left-6"} bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl`}
               >
-                <p className="text-3xl font-bold">+21</p>
+                <p className="text-3xl font-bold">+23</p>
                 <p className="text-sm">{t("landing.yearsExp")}</p>
               </div>
             </motion.div>
