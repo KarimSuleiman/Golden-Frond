@@ -44,17 +44,17 @@ const translations: Translations = {
   "landing.partners": { ar: "شركاؤنا في المزادات", en: "Our Auction Partners" },
   "landing.about": { ar: "من نحن", en: "About Us" },
   "landing.about.text1": { 
-    ar: "السعفة الذهبية شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست عام 2004، مع أكثر من 21 عاماً من الخبرة في توفير أفضل السيارات للعملاء الكرام.", 
-    en: "Golden Frond is a leading company in car trading and importing, established in 2004, with over 21 years of experience providing the best cars for valued customers." 
+    ar: "السعفة الذهبية شركة رائدة في مجال تجارة السيارات واستيرادها، تأسست عام 2003، مع أكثر من 23 عاماً من الخبرة في توفير أفضل السيارات للعملاء الكرام.", 
+    en: "Golden Frond is a leading company in car trading and importing, established in 2003, with over 23 years of experience providing the best cars for valued customers." 
   },
   "landing.about.text2": { 
     ar: "متخصصون في استيراد السيارات من أمريكا وأوروبا والصين وكوريا، مع تقديم خدمات التتبع والشحن لعملائنا وضمان الجودة والشفافية في كل خطوة.", 
     en: "Specialized in importing cars from America, Europe, China and Korea, providing tracking and shipping services for customers with guaranteed quality and transparency at every step." 
   },
   "landing.founded": { ar: "تأسست في", en: "Founded" },
-  "landing.foundedDate": { ar: "2004", en: "2004" },
+  "landing.foundedDate": { ar: "2003", en: "2003" },
   "landing.experience": { ar: "سنوات الخبرة", en: "Years of Experience" },
-  "landing.experienceYears": { ar: "+21 سنة", en: "21+ Years" },
+  "landing.experienceYears": { ar: "+23 سنة", en: "23+ Years" },
   "landing.yearsExp": { ar: "سنة خبرة", en: "Years Exp." },
   "landing.brandName": { ar: "السعفة الذهبية", en: "Golden Frond" },
   
