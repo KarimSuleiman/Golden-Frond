@@ -1,0 +1,1 @@
+- [Publishing security scan](publishing-security-scan.md) — a publish can fail after a successful build when the publishing security scan loses its connection.
