@@ -22,7 +22,6 @@ import { eq, desc, and, sql, count } from "drizzle-orm";
 export interface IStorage {
   getCars(userId: string): Promise<Car[]>;
   getAllCars(): Promise<Car[]>;
-  getCarsByVin(vin: string): Promise<Car[]>;
   getCar(id: number): Promise<Car | undefined>;
   createCar(car: InsertCar): Promise<Car>;
   updateCar(id: number, updates: UpdateCarRequest): Promise<Car>;
@@ -82,13 +81,6 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(cars)
       .orderBy(desc(cars.createdAt));
-  }
-
-  async getCarsByVin(vin: string): Promise<Car[]> {
-    const normalizedVin = vin.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    return await db.select()
-      .from(cars)
-      .where(sql`upper(regexp_replace(${cars.vin}, '[^A-Za-z0-9]', '', 'g')) = ${normalizedVin}`);
   }
 
   async getAllUsers(): Promise<User[]> {

@@ -1,1 +1,2 @@
 - [Publishing security scan](publishing-security-scan.md) — a publish can fail after a successful build when the publishing security scan loses its connection.
+- [Frozen production database](frozen-production-database.md) — production can be frozen while development remains reachable; unfreeze it from the Database tool before debugging app code.
