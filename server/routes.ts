@@ -361,29 +361,36 @@ export async function registerRoutes(
         return res.status(401).json({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
       }
 
+      let authenticatedUser = user;
       if (user.email === MAIN_ADMIN_EMAIL && user.role !== "main_admin") {
-        await authStorage.updateUserRole(user.id, "main_admin");
+        authenticatedUser = (await authStorage.updateUserRole(user.id, "main_admin")) || user;
       }
 
       req.session.user = {
         claims: {
-          sub: user.id,
-          email: user.email,
-          first_name: user.firstName,
-          last_name: user.lastName,
+          sub: authenticatedUser.id,
+          email: authenticatedUser.email,
+          first_name: authenticatedUser.firstName,
+          last_name: authenticatedUser.lastName,
         }
       };
 
-      storage.updateLastActive(user.id).catch(() => {});
-      lastActiveCache.set(user.id, Date.now());
+      storage.updateLastActive(authenticatedUser.id).catch(() => {});
+      lastActiveCache.set(authenticatedUser.id, Date.now());
 
       res.json({ 
         message: "تم تسجيل الدخول بنجاح",
         user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          id: authenticatedUser.id,
+          email: authenticatedUser.email,
+          firstName: authenticatedUser.firstName,
+          lastName: authenticatedUser.lastName,
+          phone: authenticatedUser.phone,
+          profileImageUrl: authenticatedUser.profileImageUrl,
+          isAdmin: authenticatedUser.isAdmin,
+          role: authenticatedUser.role,
+          createdAt: authenticatedUser.createdAt,
+          updatedAt: authenticatedUser.updatedAt,
         }
       });
     } catch (error) {
