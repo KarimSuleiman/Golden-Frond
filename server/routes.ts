@@ -700,6 +700,61 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/users", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const email = typeof req.body.email === "string" ? req.body.email.trim() : "";
+      const password = typeof req.body.password === "string" ? req.body.password : "";
+      const firstName = typeof req.body.firstName === "string" ? req.body.firstName.trim() : "";
+      const lastName = typeof req.body.lastName === "string" ? req.body.lastName.trim() : "";
+      const phone = typeof req.body.phone === "string" ? req.body.phone.trim() : "";
+      const role = typeof req.body.role === "string" ? req.body.role : "user";
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
+      }
+      if (password.length < 6) {
+        return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      }
+      if (!["user", "trader", "backup_admin"].includes(role)) {
+        return res.status(400).json({ message: "رتبة غير صالحة" });
+      }
+
+      const existing = await authStorage.getUserByEmail(email);
+      if (existing) {
+        return res.status(400).json({ message: "هذا البريد الإلكتروني مسجل بالفعل" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userId = crypto.randomUUID();
+      const createdUser = await authStorage.createUser({
+        id: userId,
+        email,
+        password: hashedPassword,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        phone: phone || null,
+        role,
+        isAdmin: role === "backup_admin" ? "true" : "false",
+      });
+
+      return res.status(201).json({
+        message: "تم إنشاء الحساب بنجاح",
+        user: {
+          id: createdUser.id,
+          email: createdUser.email,
+          firstName: createdUser.firstName,
+          lastName: createdUser.lastName,
+          phone: createdUser.phone,
+          role: createdUser.role,
+          isAdmin: createdUser.isAdmin,
+        },
+      });
+    } catch (error) {
+      console.error("Admin create user error:", error);
+      return res.status(500).json({ message: "حدث خطأ أثناء إنشاء الحساب" });
+    }
+  });
+
   app.delete("/api/admin/users/:id", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const { id } = req.params;
